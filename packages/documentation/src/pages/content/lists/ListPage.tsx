@@ -15,9 +15,9 @@ export default function ListPage() {
             const response = await fetch("/assets/materials.json")
 
             if (response.ok) {
-                let rows : any[] = await response.json();
-                let splice = rows.slice(query.index, query.index + query.limit);
-                callback(splice, rows.length)
+                let table : any = await response.json();
+                let splice = table.rows.slice(query.index, query.index + query.limit);
+                callback(splice, table.size)
             }
 
         }

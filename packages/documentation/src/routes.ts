@@ -15,6 +15,7 @@ import PagesPage from "./pages/content/layout/PagesPage";
 import ListPage from "./pages/content/lists/ListPage";
 import TablePage from "./pages/content/lists/TablePage";
 import SchemaFormPage from "./pages/content/meta/SchemaFormPage";
+import SchemaTablePage from "./pages/content/meta/SchemaTablePage";
 
 export const routes : Route[] = [
     {
@@ -95,6 +96,10 @@ export const routes : Route[] = [
                             {
                                 path: "/form",
                                 component : SchemaFormPage
+                            },
+                            {
+                                path : "/table",
+                                component : SchemaTablePage
                             }
                         ]
                     }

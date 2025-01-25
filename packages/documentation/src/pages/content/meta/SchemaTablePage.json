@@ -1,0 +1,54 @@
+{
+  "features": [
+    {
+      "name": "Schema-based Rendering",
+      "description": "Automatically adapts to and renders table columns and filters based on a provided schema."
+    },
+    {
+      "name": "Complex Data Type Support",
+      "description": "Handles various data types, including images, nested objects, collections, and temporal values."
+    },
+    {
+      "name": "Dynamic Cell Content",
+      "description": "Customizable rendering of cell content based on schema-defined widget types."
+    },
+    {
+      "name": "Integrated Filtering and Sorting",
+      "description": "Enables schema-defined filters and sorting capabilities for table data."
+    },
+    {
+      "name": "Pluggable Data Loader",
+      "description": "Supports asynchronous data fetching with pagination and schema updates."
+    },
+    {
+      "name": "Row Selection and Click Handling",
+      "description": "Allows rows to be selectable and handles row click events."
+    },
+    {
+      "name": "Filter Integration with SchemaFactory",
+      "description": "Leverages `SchemaFactory` to dynamically render input elements in table filter cells."
+    }
+  ],
+  "props": [
+    {
+      "name": "loader",
+      "type": "Loader",
+      "description": "A custom class instance for managing data loading with methods for fetching rows and handling schema updates."
+    },
+    {
+      "name": "onRowClick",
+      "type": "function",
+      "description": "Callback function triggered when a table row is clicked, receiving the clicked row's data."
+    },
+    {
+      "name": "selectable",
+      "type": "boolean",
+      "description": "Determines if rows in the table are selectable by the user."
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "description": "An identifier for the table, typically used for distinguishing between multiple tables."
+    }
+  ]
+}

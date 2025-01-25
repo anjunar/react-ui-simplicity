@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {CSSProperties, useState} from "react"
 import Table from "../../lists/table/Table"
 import SchemaFactory from "./SchemaFactory";
 import Image from "../../inputs/upload/image/Image";
@@ -11,7 +11,7 @@ import Tab from "../../layout/tabs/Tab";
 
 function SchemaTable(properties: SchemaTable.Attributes) {
 
-    const {loader, onRowClick, selectable, name} = properties
+    const {loader, onRowClick, selectable, name, style} = properties
 
     const [schema, setSchema] = useState(null)
 
@@ -23,7 +23,7 @@ function SchemaTable(properties: SchemaTable.Attributes) {
         }
     }
 
-    const tableLoader = new (class extends Loader {
+    const tableLoader = new (class extends SchemaTable.Loader {
         onLoad(query: any, callback: any) {
             loader.onLoad(query, (rows, size, loadedSchema) => {
                     if (schema && loadedSchema) {
@@ -105,7 +105,7 @@ function SchemaTable(properties: SchemaTable.Attributes) {
     }
 
     return (
-        <Table className={"table"} loader={tableLoader} onRowClick={onRowClick} selectable={selectable} name={name}>
+        <Table className={"table"} loader={tableLoader} onRowClick={onRowClick} selectable={selectable} name={name} style={style}>
             <Table.Filter>
                 {toArray(schema).map(([key, value]: [key: string, value: NodeDescriptor & Validable]) => (
                     <Table.Filter.Cell key={key}>
@@ -132,35 +132,36 @@ function SchemaTable(properties: SchemaTable.Attributes) {
     )
 }
 
-export abstract class Loader {
-    listener: any
-
-    abstract onLoad(query: Query, callback: Callback): void
-
-    fire() {
-        if (this.listener) {
-            this.listener();
-        }
-    }
-}
-
-export interface Query {
-    index: number
-    limit: number
-    filter : any
-    sort : any
-}
-
-export interface Callback {
-    (rows: any[], size: number, schema: ObjectDescriptor): void
-}
-
 namespace SchemaTable {
     export interface Attributes {
         loader: Loader
         onRowClick?: any
         selectable?: boolean
         name?: string
+        style? : CSSProperties
+    }
+
+    export abstract class Loader {
+        listener: any
+
+        abstract onLoad(query: Query, callback: Callback): void
+
+        fire() {
+            if (this.listener) {
+                this.listener();
+            }
+        }
+    }
+
+    export interface Query {
+        index: number
+        limit: number
+        filter : any
+        sort : any
+    }
+
+    export interface Callback {
+        (rows: any[], size: number, schema: ObjectDescriptor): void
     }
 }
 
