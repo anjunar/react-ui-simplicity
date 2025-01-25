@@ -1,0 +1,1 @@
+Can you provide the features and the props in a human-readable JSON format? The props type property should be not general

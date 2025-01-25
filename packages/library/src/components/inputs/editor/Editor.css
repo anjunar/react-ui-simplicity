@@ -1,0 +1,20 @@
+.editor {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    &.content {
+        flex: 1;
+    }
+
+    .editor-selected {
+        border : 1px solid var(--color-selected);
+    }
+
+    table.editable td:empty:before {
+        content: 'Hier etwas schreiben...';
+        color: var(--color-background-secondary);
+    }
+}
+

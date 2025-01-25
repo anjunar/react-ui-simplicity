@@ -1,0 +1,166 @@
+{
+  "features": [
+    {
+      "name": "Lazy Loading",
+      "description": "Loads options dynamically based on user interaction or search input to reduce initial data load."
+    },
+    {
+      "name": "Pagination",
+      "description": "Supports pagination with navigation buttons to load options incrementally."
+    },
+    {
+      "name": "Multi-Select",
+      "description": "Enables users to select multiple options, displaying the selected options as a concatenated string."
+    },
+    {
+      "name": "Search Filtering",
+      "description": "Includes a search box to filter the dropdown options with deferred execution for better performance."
+    },
+    {
+      "name": "Customizable Option Rendering",
+      "description": "Allows developers to provide custom rendering for dropdown options using child components."
+    },
+    {
+      "name": "Dynamic Width Adjustment",
+      "description": "Optionally adjusts the dropdown width dynamically based on the content."
+    },
+    {
+      "name": "Validation Support",
+      "description": "Provides validation rules, including minimum and maximum selection requirements and custom validators."
+    },
+    {
+      "name": "Standalone and Form Modes",
+      "description": "Can function independently or within a form context for controlled or uncontrolled usage."
+    },
+    {
+      "name": "Keyboard and Mouse Accessibility",
+      "description": "Supports accessibility with proper keyboard and mouse event handling."
+    },
+    {
+      "name": "Error Feedback",
+      "description": "Highlights errors or invalid selections with specific styles or messages."
+    }
+  ],
+  "props": [
+    {
+      "name": "loader",
+      "type": "(query: { index: number; limit: number; value?: string }) => Promise<void>",
+      "description": "Function to load data dynamically based on pagination and search criteria."
+    },
+    {
+      "name": "limit",
+      "type": "number",
+      "description": "Specifies the number of options to load per page."
+    },
+    {
+      "name": "index",
+      "type": "number",
+      "description": "Current page index used for pagination."
+    },
+    {
+      "name": "value",
+      "type": "any | any[]",
+      "description": "The current selected value(s). Supports single or multi-select modes."
+    },
+    {
+      "name": "onChange",
+      "type": "(selected: any | any[]) => void",
+      "description": "Callback function triggered when the selected value(s) change."
+    },
+    {
+      "name": "multiSelect",
+      "type": "boolean",
+      "description": "Indicates whether multiple options can be selected."
+    },
+    {
+      "name": "placeholder",
+      "type": "string",
+      "description": "Placeholder text displayed when no value is selected."
+    },
+    {
+      "name": "getId",
+      "type": "(value: any) => string | number",
+      "description": "Function to extract a unique identifier from an option."
+    },
+    {
+      "name": "getName",
+      "type": "(value: any) => string",
+      "description": "Function to extract a display name from an option."
+    },
+    {
+      "name": "getValue",
+      "type": "(value: any) => any",
+      "description": "Function to retrieve the option's value."
+    },
+    {
+      "name": "dynamicWidth",
+      "type": "boolean",
+      "description": "If true, adjusts the dropdown width dynamically based on its content."
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "description": "Disables the input and prevents user interaction."
+    },
+    {
+      "name": "min",
+      "type": "number",
+      "description": "Specifies the minimum number of options required to be selected."
+    },
+    {
+      "name": "max",
+      "type": "number",
+      "description": "Specifies the maximum number of options allowed to be selected."
+    },
+    {
+      "name": "validators",
+      "type": "Validator[]",
+      "description": "An array of custom validation rules applied to the selected value(s)."
+    },
+    {
+      "name": "arrowLeft",
+      "type": "() => void",
+      "description": "Callback triggered when the left arrow for pagination is clicked."
+    },
+    {
+      "name": "arrowRight",
+      "type": "() => void",
+      "description": "Callback triggered when the right arrow for pagination is clicked."
+    },
+    {
+      "name": "window",
+      "type": "any[]",
+      "description": "Array of currently visible options in the dropdown."
+    },
+    {
+      "name": "onRowClick",
+      "type": "(row: any) => void",
+      "description": "Callback triggered when a row is clicked."
+    },
+    {
+      "name": "onFocus",
+      "type": "() => void",
+      "description": "Callback triggered when the input field gains focus."
+    },
+    {
+      "name": "onBlur",
+      "type": "() => void",
+      "description": "Callback triggered when the input field loses focus."
+    },
+    {
+      "name": "className",
+      "type": "string",
+      "description": "Additional CSS class names for custom styling."
+    },
+    {
+      "name": "standalone",
+      "type": "boolean",
+      "description": "Specifies whether the component is used outside a form context."
+    },
+    {
+      "name": "selectable",
+      "type": "boolean",
+      "description": "Indicates whether checkboxes are displayed for selectable options."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+.props {
+
+
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    table.properties {
+        border-spacing: 0;
+        font-size: 14px;
+    }
+
+    table.properties > tbody > tr > td {
+        height: 24px;
+        vertical-align: top;
+        min-width: 20px;
+        padding-left: 12px;
+    }
+}
+

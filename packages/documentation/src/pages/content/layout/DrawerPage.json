@@ -1,0 +1,115 @@
+{
+  "Drawer": {
+    "features": [
+      {
+        "name": "Visibility Control",
+        "description": "Allows toggling the visibility of the drawer using the 'open' prop."
+      },
+      {
+        "name": "Customizable Content",
+        "description": "Supports rendering of any React content via the 'children' prop."
+      },
+      {
+        "name": "Styling Flexibility",
+        "description": "Enables customization with the 'style' prop for inline styles."
+      },
+      {
+        "name": "Class Name Support",
+        "description": "Allows adding additional CSS class names through the 'className' prop."
+      },
+      {
+        "name": "Responsive Design",
+        "description": "Designed to integrate seamlessly into responsive UI layouts."
+      }
+    ],
+    "props": [
+      {
+        "name": "children",
+        "type": "React.ReactNode",
+        "description": "Content to be rendered inside the drawer."
+      },
+      {
+        "name": "style",
+        "type": "React.CSSProperties",
+        "description": "Inline styles for the drawer."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "description": "Additional CSS class names for the drawer."
+      },
+      {
+        "name": "open",
+        "type": "boolean",
+        "description": "Determines whether the drawer is visible or hidden."
+      }
+    ]
+  },
+  "Drawer.Container": {
+    "features": [
+      {
+        "name": "Structural Wrapper",
+        "description": "Provides a container to organize and group content inside the drawer."
+      },
+      {
+        "name": "Custom Styling",
+        "description": "Allows the application of custom styles and class names."
+      }
+    ],
+    "props": [
+      {
+        "name": "children",
+        "type": "React.ReactNode",
+        "description": "Content to be rendered inside the container."
+      },
+      {
+        "name": "style",
+        "type": "React.CSSProperties",
+        "description": "Inline styles for the container."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "description": "Additional CSS class names for the container."
+      }
+    ]
+  },
+  "Drawer.Content": {
+    "features": [
+      {
+        "name": "Interactive Area",
+        "description": "Designed to hold interactive elements like buttons or links."
+      },
+      {
+        "name": "Event Handling",
+        "description": "Provides an 'onClick' handler for custom interactions."
+      },
+      {
+        "name": "Styling Options",
+        "description": "Supports custom styles and additional class names."
+      }
+    ],
+    "props": [
+      {
+        "name": "children",
+        "type": "React.ReactNode",
+        "description": "Content to be rendered inside the content area."
+      },
+      {
+        "name": "style",
+        "type": "React.CSSProperties",
+        "description": "Inline styles for the content area."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "description": "Additional CSS class names for the content area."
+      },
+      {
+        "name": "onClick",
+        "type": "React.MouseEventHandler<HTMLDivElement>",
+        "description": "Handler for click events on the content area."
+      }
+    ]
+  }
+}

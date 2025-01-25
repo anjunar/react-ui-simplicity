@@ -1,0 +1,88 @@
+{
+  "features": [
+    {
+      "name": "Dynamic Width",
+      "description": "Allows the select dropdown to adjust its width dynamically based on its content."
+    },
+    {
+      "name": "Form Validation",
+      "description": "Integrates with form validation by adding required and custom validators."
+    },
+    {
+      "name": "Custom State Management",
+      "description": "Uses a custom hook `useInput` to manage the component's state and model."
+    },
+    {
+      "name": "Converter Support",
+      "description": "Provides the ability to convert the selected value using a custom converter function."
+    },
+    {
+      "name": "Controlled Component",
+      "description": "The `Select` component can be used as a controlled component by passing the `value` and `onChange` props."
+    },
+    {
+      "name": "Accessible & Reusable",
+      "description": "Supports accessibility and reusability by allowing dynamic properties like children and custom callbacks."
+    }
+  ],
+  "props": [
+    {
+      "name": "children",
+      "type": "React.ReactNode",
+      "description": "The options to be rendered within the select dropdown."
+    },
+    {
+      "name": "converter",
+      "type": "(value: string) => any",
+      "description": "A function to transform the selected value before it is set in the state."
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "default": false,
+      "description": "Disables the select dropdown when true."
+    },
+    {
+      "name": "dynamicWidth",
+      "type": "boolean",
+      "description": "If true, adjusts the select dropdown's width dynamically based on content."
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "default": "default",
+      "description": "The name of the select input, used in forms."
+    },
+    {
+      "name": "onChange",
+      "type": "(event: React.ChangeEvent<HTMLSelectElement>) => void",
+      "description": "Callback triggered when the value changes."
+    },
+    {
+      "name": "onModel",
+      "type": "(value: Model) => void",
+      "description": "Callback to provide the component's internal model to the parent."
+    },
+    {
+      "name": "required",
+      "type": "boolean",
+      "description": "Marks the select input as required for validation."
+    },
+    {
+      "name": "standalone",
+      "type": "boolean",
+      "default": false,
+      "description": "Determines if the component operates independently of the form context."
+    },
+    {
+      "name": "validators",
+      "type": "Validator[]",
+      "description": "A list of custom validators for the select input."
+    },
+    {
+      "name": "value",
+      "type": "any",
+      "description": "The current value of the select input (for controlled components)."
+    }
+  ]
+}

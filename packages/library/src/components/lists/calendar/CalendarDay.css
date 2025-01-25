@@ -1,0 +1,18 @@
+.calendar-day .week {
+    border-bottom: 1px solid var(--color-background-secondary);
+    border-right: 1px solid var(--color-background-secondary);
+    border-left: 1px solid var(--color-background-secondary);
+    writing-mode: vertical-lr;
+    text-align : center;
+}
+
+.calendar-day .date {
+    border-bottom: 1px solid var(--color-background-secondary);
+    border-right: 1px solid var(--color-background-secondary);
+    width: 100%;
+    min-height: 100px;
+}
+
+.calendar-day.passive {
+    color: var(--color-background-secondary);
+}

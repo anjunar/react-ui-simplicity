@@ -1,0 +1,11 @@
+.year .button-up {
+    position : absolute;
+    top : -20px;
+    width: 100%;
+}
+
+.year .button-down {
+    position : absolute;
+    bottom : -20px;
+    width: 100%;
+}

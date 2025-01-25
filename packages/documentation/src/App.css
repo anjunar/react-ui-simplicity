@@ -1,0 +1,15 @@
+.app {
+    height: calc(100% - 32px);
+
+    ul {
+        margin: 12px;
+
+        li {
+            margin: 12px;
+        }
+    }
+
+    .html {
+        font-family: Consolas, cursive;
+    }
+}

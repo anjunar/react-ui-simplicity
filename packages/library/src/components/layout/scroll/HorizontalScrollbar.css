@@ -1,0 +1,16 @@
+.scrollbar-horizontal {
+    position: absolute;
+    height: 16px;
+    width: calc(100% - 16px);
+    background-color: var(--color-background-tertiary);
+    bottom: 0;
+    left: 0;
+}
+
+.scrollbar-horizontal .cursor {
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    background-color: var(--color-background-secondary);
+    cursor: move;
+}

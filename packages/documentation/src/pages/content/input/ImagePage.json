@@ -1,0 +1,73 @@
+{
+  "features": [
+    {
+      "name": "Image Upload",
+      "description": "Allows users to upload images directly from their device."
+    },
+    {
+      "name": "Image Cropping",
+      "description": "Provides an interface for cropping the uploaded image within a modal."
+    },
+    {
+      "name": "Image Preview",
+      "description": "Displays a live preview of the uploaded and processed image."
+    },
+    {
+      "name": "Base64 Encoding",
+      "description": "Encodes the image data into a Base64 string for compatibility and ease of rendering."
+    },
+    {
+      "name": "Placeholder",
+      "description": "Displays a customizable placeholder when no image is uploaded."
+    },
+    {
+      "name": "Disabled State",
+      "description": "Prevents interaction with the component when disabled."
+    },
+    {
+      "name": "Dynamic Styling",
+      "description": "Supports inline styles for flexible customization."
+    },
+    {
+      "name": "Event Hooks",
+      "description": "Provides an `onChange` callback to handle changes in the uploaded image data."
+    }
+  ],
+  "props": [
+    {
+      "name": "name",
+      "type": "string",
+      "description": "Specifies the name of the input field for form integration."
+    },
+    {
+      "name": "value",
+      "type": "Media",
+      "description": "Represents the current image value, including metadata and image data."
+    },
+    {
+      "name": "onChange",
+      "type": "function",
+      "description": "Callback function triggered when the image value changes."
+    },
+    {
+      "name": "placeholder",
+      "type": "string",
+      "description": "Text or content displayed when no image is uploaded."
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "description": "Disables interaction with the component if set to true."
+    },
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "description": "Inline styles to customize the appearance of the component."
+    },
+    {
+      "name": "standalone",
+      "type": "boolean",
+      "description": "Determines whether the component operates independently of form validation logic."
+    }
+  ]
+}

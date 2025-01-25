@@ -1,0 +1,155 @@
+{
+  "features": [
+    {
+      "name": "Input Field Customization",
+      "description": "Supports various input types like text, number, email, date, datetime-local, checkbox, duration, time, etc., and can adjust the width dynamically based on the input value."
+    },
+    {
+      "name": "Validation",
+      "description": "Integrates multiple validation mechanisms including required, min/max, minLength/maxLength, pattern matching, and email validation. Supports both synchronous and asynchronous validators."
+    },
+    {
+      "name": "State Management",
+      "description": "Manages the input's state and synchronizes it using a custom hook ('useInput'). Provides model-based state tracking and error handling."
+    },
+    {
+      "name": "Custom Event Handlers",
+      "description": "Supports custom event handlers such as onBlur, onFocus, and onChange, allowing custom behavior during focus, change of value, or when the input loses focus."
+    },
+    {
+      "name": "Dynamic Styling",
+      "description": "Applies dynamic CSS classes and styles based on the input's state, such as whether the field is valid, dirty, or pristine."
+    },
+    {
+      "name": "Content Formatting",
+      "description": "Handles complex data types like Temporal and TemporalAmount, formatting values for different input types (e.g., dates, times, durations) before displaying them."
+    }
+  ],
+  "props": [
+    {
+      "name": "asyncValidators",
+      "type": "Array<AsyncValidator>",
+      "description": "An array of asynchronous validators. Each validator should be an instance of the AsyncValidator class, which performs asynchronous validation logic on the input."
+    },
+    {
+      "name": "autoComplete",
+      "type": "string",
+      "description": "Sets the autocomplete attribute for the input element. Possible values include 'on', 'off', or a list of autocomplete suggestions."
+    },
+    {
+      "name": "children",
+      "type": "function (element: any) => React.ReactElement",
+      "description": "A function that renders additional content inside the input component. Receives the input element as an argument and returns a React element."
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "description": "If true, disables the input field, making it uneditable and uninteractive."
+    },
+    {
+      "name": "dynamicWidth",
+      "type": "boolean",
+      "description": "If true, adjusts the input field's width dynamically based on the value entered by the user."
+    },
+    {
+      "name": "email",
+      "type": "boolean",
+      "description": "If true, adds email validation to the input field, ensuring the value entered is a valid email address."
+    },
+    {
+      "name": "max",
+      "type": "number",
+      "description": "Sets the maximum value for number-type inputs. Prevents input values from exceeding this value."
+    },
+    {
+      "name": "maxLength",
+      "type": "number",
+      "description": "Sets the maximum number of characters allowed for text-based inputs."
+    },
+    {
+      "name": "min",
+      "type": "number",
+      "description": "Sets the minimum value for number-type inputs. Prevents input values from being less than this value."
+    },
+    {
+      "name": "minLength",
+      "type": "number",
+      "description": "Sets the minimum number of characters required for text-based inputs."
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "description": "The name of the input field. Used for form submissions to identify the input element."
+    },
+    {
+      "name": "onBlur",
+      "type": "function (event: React.FocusEvent<HTMLInputElement, Element>) => void",
+      "description": "A callback function that is triggered when the input loses focus."
+    },
+    {
+      "name": "onChange",
+      "type": "function (event: React.ChangeEvent<HTMLInputElement>) => void",
+      "description": "A callback function that is triggered when the value of the input changes."
+    },
+    {
+      "name": "onFocus",
+      "type": "function (event: React.FocusEvent<HTMLInputElement, Element>) => void",
+      "description": "A callback function that is triggered when the input gains focus."
+    },
+    {
+      "name": "onModel",
+      "type": "function (model: Model) => void",
+      "description": "A callback function that is triggered to pass the model object for validation state tracking."
+    },
+    {
+      "name": "past",
+      "type": "boolean",
+      "description": "If true, adds validation to ensure the value is a date in the past."
+    },
+    {
+      "name": "pattern",
+      "type": "string",
+      "description": "A regular expression pattern that the input value must match."
+    },
+    {
+      "name": "required",
+      "type": "boolean",
+      "description": "If true, marks the input as required, meaning the user must fill in the field."
+    },
+    {
+      "name": "size",
+      "type": "number",
+      "description": "The size of the input field, in terms of the number of visible characters."
+    },
+    {
+      "name": "standalone",
+      "type": "boolean",
+      "description": "If true, indicates that the component operates independently without external model integration."
+    },
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "description": "Inline styles to be applied to the input element. You can pass a CSSProperties object to style the input."
+    },
+    {
+      "name": "subType",
+      "type": "string",
+      "description": "Specifies a subtype for certain input types, such as 'time' or 'datetime-local'."
+    },
+    {
+      "name": "type",
+      "type": "\"text\" | \"number\" | \"email\" | \"date\" | \"datetime-local\" | \"checkbox\" | \"duration\" | \"time\"",
+      "description": "Specifies the type of the input field. Possible values include 'text', 'number', 'email', 'date', 'datetime-local', 'checkbox', 'duration', and 'time'."
+    },
+    {
+      "name": "validators",
+      "type": "Array<Validator>",
+      "description": "An array of synchronous validators. Each validator should be an instance of the Validator class, which performs validation logic on the input."
+    },
+    {
+      "name": "value",
+      "type": "Temporal | TemporalAmount | string | number | boolean",
+      "description": "The value of the input field, which can be a Temporal object (e.g., LocalDate, LocalTime), TemporalAmount (e.g., Duration), or primitive types like string, number, or boolean."
+    }
+  ]
+}
