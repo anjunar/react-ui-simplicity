@@ -1,0 +1,27 @@
+{
+  "features": [
+    {
+      "name": "Slot-Based Layout",
+      "description": "Allows developers to assign child elements to specific regions (`left`, `middle`, `right`) within the toolbar using the `slot` prop."
+    },
+    {
+      "name": "Structured Design",
+      "description": "Uses an HTML table-based layout to ensure consistent alignment and positioning of elements across the toolbar."
+    },
+    {
+      "name": "Customizable Content",
+      "description": "Supports flexible arrangement of children elements, allowing dynamic content in each slot."
+    },
+    {
+      "name": "Simple Integration",
+      "description": "Designed for easy integration into React applications with minimal configuration."
+    }
+  ],
+  "props": [
+    {
+      "name": "children",
+      "type": "React.ReactNode",
+      "description": "Child elements to be rendered within the toolbar. Each child can specify a `slot` prop to determine its placement (`left`, `middle`, or `right`)."
+    }
+  ]
+}

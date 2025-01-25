@@ -9,6 +9,12 @@ import LazySelectPage from "./pages/content/input/LazySelectPage";
 import ImagePage from "./pages/content/input/ImagePage";
 import LayoutPage from "./pages/content/LayoutPage";
 import DrawerPage from "./pages/content/layout/DrawerPage";
+import TabsPage from "./pages/content/layout/TabsPage";
+import ToolbarPage from "./pages/content/layout/ToolbarPage";
+import PagesPage from "./pages/content/layout/PagesPage";
+import ListPage from "./pages/content/lists/ListPage";
+import TablePage from "./pages/content/lists/TablePage";
+import SchemaFormPage from "./pages/content/meta/SchemaFormPage";
 
 export const routes : Route[] = [
     {
@@ -55,6 +61,40 @@ export const routes : Route[] = [
                             {
                                 path: "/drawer",
                                 component : DrawerPage
+                            },
+                            {
+                                path: "/tabs",
+                                component : TabsPage
+                            },
+                            {
+                                path: "/pages",
+                                component : PagesPage
+                            },
+                            {
+                                path: "/toolbar",
+                                component : ToolbarPage
+                            }
+                        ]
+                    },
+                    {
+                        path : "/lists",
+                        children : [
+                            {
+                                path: "/list",
+                                component : ListPage
+                            },
+                            {
+                                path: "/table",
+                                component : TablePage
+                            }
+                        ]
+                    },
+                    {
+                        path : "/meta",
+                        children : [
+                            {
+                                path: "/form",
+                                component : SchemaFormPage
                             }
                         ]
                     }

@@ -23,9 +23,7 @@ export {default as Tab} from "./src/components/layout/tabs/Tab"
 export {default as Tabs} from "./src/components/layout/tabs/Tabs"
 export {default as ToolBar} from "./src/components/layout/toolbar/ToolBar"
 export {default as Viewport} from "./src/components/layout/viewport/Viewport"
-export * from "./src/components/layout/viewport/ViewService"
 
-export {default as Calendar} from "./src/components/lists/calendar/Calendar"
 export {default as List} from "./src/components/lists/list/List"
 export {default as Table} from "./src/components/lists/table/Table"
 

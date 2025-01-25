@@ -1,0 +1,103 @@
+{
+  "features": [
+    {
+      "name": "Pagination",
+      "description": "The table supports pagination with next/previous navigation and the ability to display a specific number of items per page."
+    },
+    {
+      "name": "Sorting",
+      "description": "Columns can be sorted in ascending, descending, or unsorted states by clicking the sort buttons in the column headers."
+    },
+    {
+      "name": "Filtering",
+      "description": "Each column supports filtering, allowing users to dynamically filter the data based on specific criteria."
+    },
+    {
+      "name": "Row Selection",
+      "description": "Rows can be selected using checkboxes when the `selectable` prop is set to true, enabling multi-row selection."
+    },
+    {
+      "name": "Dynamic Layout",
+      "description": "The table layout adapts dynamically based on the columns provided, allowing for flexible column visibility and sorting."
+    },
+    {
+      "name": "Context API Integration",
+      "description": "The table utilizes React's Context API to manage and pass data about the rows, filters, and selection to child components."
+    },
+    {
+      "name": "Custom Components",
+      "description": "Custom components can be used to define the table’s header, body, and footer, allowing for a fully customizable layout."
+    },
+    {
+      "name": "Inline Editing",
+      "description": "Custom cells (like inputs or checkboxes) can be used for inline editing or other custom interactions within the table."
+    }
+  ],
+  "props": [
+    {
+      "name": "className",
+      "type": "string",
+      "description": "Class name for the table component to apply custom styles."
+    },
+    {
+      "name": "autoload",
+      "type": "boolean",
+      "description": "If true, the table will automatically load data when rendered."
+    },
+    {
+      "name": "onRowClick",
+      "type": "function",
+      "description": "A callback function to handle row clicks."
+    },
+    {
+      "name": "dynamicWidth",
+      "type": "boolean",
+      "description": "If true, the table’s columns will adapt to dynamic widths based on content."
+    },
+    {
+      "name": "loader",
+      "type": "function",
+      "description": "A function to load data for the table, typically an API call."
+    },
+    {
+      "name": "limit",
+      "type": "number",
+      "description": "Number of items to display per page."
+    },
+    {
+      "name": "children",
+      "type": "React.ReactElement[]",
+      "description": "The child components that will be rendered inside the table."
+    },
+    {
+      "name": "value",
+      "type": "array",
+      "description": "The current value or data being displayed in the table."
+    },
+    {
+      "name": "onChange",
+      "type": "function",
+      "description": "A callback function to handle changes in the table data."
+    },
+    {
+      "name": "selectable",
+      "type": "boolean",
+      "description": "If true, the table rows are selectable using checkboxes."
+    },
+    {
+      "name": "showHeader",
+      "type": "boolean",
+      "description": "If true, the table header is displayed."
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "description": "The name of the table, used for form submissions and context."
+    },
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "description": "Custom CSS styles to apply to the table."
+    }
+  ]
+}

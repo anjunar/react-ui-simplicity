@@ -13,8 +13,6 @@ function SchemaForm(properties: SchemaForm.Attributes) {
 
     const {
         children,
-        onSend,
-        onResponse,
         onSubmit,
         validators,
         onInput = () => {},
@@ -89,9 +87,6 @@ function SchemaForm(properties: SchemaForm.Attributes) {
 namespace SchemaForm {
     export interface Attributes {
         children: React.ReactNode
-        schema?: ObjectDescriptor
-        onSend?: any
-        onResponse?: any
         onSubmit?: any
         onInput?: any
         onErrors?: (errors: Error[]) => void

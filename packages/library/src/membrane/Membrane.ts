@@ -142,6 +142,10 @@ export function arrayMembrane(array : any[], callbacks : ((name : string[], valu
 
             let object = Reflect.get(target, p, receiver);
 
+            let newPath = Array.from(path)
+            // @ts-ignore
+            newPath.push(p)
+
             if (object) {
                 if (typeof p === "symbol") {
                     return object
@@ -152,7 +156,7 @@ export function arrayMembrane(array : any[], callbacks : ((name : string[], valu
                     if (object.isProxy) {
                         return object
                     }
-                    return objectMembrane(object, callbacks)
+                    return objectMembrane(object, callbacks, newPath)
                 }
 
                 return object

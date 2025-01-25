@@ -1,0 +1,203 @@
+{
+  "SchemaFactory" : {
+    "features": [
+      {
+        "name": "Dynamic Widget Rendering",
+        "description": "Renders different input types based on the widget specified in the schema. This includes various components like forms, form arrays, select inputs, images, and editors."
+      },
+      {
+        "name": "SubForm Handling",
+        "description": "Handles nested forms with `SchemaSubForm` for different form structures, including conditional sub-forms based on a `subType`."
+      },
+      {
+        "name": "Form Array Handling",
+        "description": "Supports rendering and managing form arrays using `SchemaFormArray`, allowing dynamic additions and removals of form elements."
+      },
+      {
+        "name": "Lazy Select Inputs",
+        "description": "Provides support for lazy loading multi-select and single select inputs, enhancing performance when dealing with large datasets."
+      },
+      {
+        "name": "Conditional Rendering of Input Types",
+        "description": "Renders specific input types based on the schema's configuration, such as `editor`, `image`, and `select` widgets."
+      }
+    ],
+    "props": [
+      {
+        "name": "name",
+        "type": "string",
+        "description": "The name of the schema element to be rendered by the factory."
+      },
+      {
+        "name": "style",
+        "type": "CSSProperties | undefined",
+        "description": "Optional inline styles to be applied to the component."
+      },
+      {
+        "name": "validators",
+        "type": "Validator[] | undefined",
+        "description": "An optional array of validators that should be applied to the form elements rendered by the factory."
+      },
+      {
+        "name": "disabled",
+        "type": "boolean | undefined",
+        "description": "A boolean flag to disable the form element. It can be set to disable the input fields."
+      }
+    ]
+  },
+  "SchemaForm" : {
+    "features": [
+      {
+        "name": "Schema Validation",
+        "description": "The form uses a schema to define the structure of the data and its validation rules."
+      },
+      {
+        "name": "Async Validation",
+        "description": "Supports asynchronous validation such as server-side validation by making an API request to the backend."
+      },
+      {
+        "name": "Custom Submission Logic",
+        "description": "Defines custom behavior for form submission based on validation results or force submit action."
+      },
+      {
+        "name": "Error Handling",
+        "description": "Handles form validation errors and provides an option to handle them with a callback function."
+      },
+      {
+        "name": "Context for Node Access",
+        "description": "Provides a context (`SchemaFormContext`) that enables access to individual form nodes (fields) by their name."
+      }
+    ],
+    "props": [
+      {
+        "name": "children",
+        "type": "React.ReactNode",
+        "description": "The child components that will be rendered inside the `SchemaForm`."
+      },
+      {
+        "name": "schema",
+        "type": "ObjectDescriptor",
+        "description": "An optional schema object that defines the structure and validation rules for the form."
+      },
+      {
+        "name": "onSubmit",
+        "type": "function",
+        "description": "A callback function for handling form submission, which gets triggered when the form is valid."
+      },
+      {
+        "name": "onInput",
+        "type": "function",
+        "description": "A callback function triggered when there is an input change in the form."
+      },
+      {
+        "name": "onErrors",
+        "type": "function",
+        "description": "A callback function to handle and manage form validation errors."
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "description": "The current value of the form, which holds the data being edited or entered."
+      },
+      {
+        "name": "links",
+        "type": "LinkContainerObject",
+        "description": "An optional object containing links, such as validation URLs for async validation."
+      },
+      {
+        "name": "style",
+        "type": "CSSProperties",
+        "description": "Custom CSS styles to apply to the form."
+      },
+      {
+        "name": "validators",
+        "type": "Validator[]",
+        "description": "An optional array of validators to validate the form inputs."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "description": "Custom CSS class name to apply additional styling to the form."
+      }
+    ]
+  },
+  "SchemaFormArray" : {
+    "features": [
+      {
+        "name": "Schema Contextual Access",
+        "description": "Uses the `SchemaFormContext` to access the schema and provides the necessary context for handling nodes in an array of items."
+      },
+      {
+        "name": "Array Item Creation",
+        "description": "Supports the creation of new array items by finding the corresponding class for the item type and initializing it using a custom constructor."
+      },
+      {
+        "name": "Dynamic Validation",
+        "description": "Applies validators dynamically based on the schema of the array's items."
+      },
+      {
+        "name": "Form Array Management",
+        "description": "Manages the array of form items and provides them to the child components, enabling the rendering of individual elements."
+      }
+    ],
+    "props": [
+      {
+        "name": "name",
+        "type": "string",
+        "description": "The name of the schema that the form array will represent."
+      },
+      {
+        "name": "children",
+        "type": "function",
+        "description": "A function that receives the array elements and the form context, and returns React nodes for rendering."
+      }
+    ]
+  },
+  "SchemaSubForm" : {
+    "features": [
+      {
+        "name": "Schema Contextual Access",
+        "description": "Uses the `SchemaFormContext` to access the schema for the given name, providing access to schema properties and descriptors."
+      },
+      {
+        "name": "Dynamic Property Lookup",
+        "description": "Supports the dynamic lookup of properties within the schema, including nested schemas under `oneOf` based on a `subType`."
+      },
+      {
+        "name": "SubForm Rendering",
+        "description": "Renders a `SubForm` component and provides it with the necessary context, such as the schema properties and descriptors for a specific node."
+      },
+      {
+        "name": "Schema SubType Handling",
+        "description": "Handles cases where a sub-type is specified, allowing the schema to adapt to different data structures with a similar form."
+      }
+    ],
+    "props": [
+      {
+        "name": "children",
+        "type": "React.ReactNode",
+        "description": "The child elements to render inside the `SchemaSubForm`."
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "description": "The name of the schema that the sub-form will represent."
+      },
+      {
+        "name": "subType",
+        "type": "string | undefined",
+        "description": "An optional type for handling specific sub-schema configurations (such as when using `oneOf` in the schema)."
+      },
+      {
+        "name": "className",
+        "type": "string | undefined",
+        "description": "An optional class name to apply custom styling to the form."
+      },
+      {
+        "name": "style",
+        "type": "CSSProperties | undefined",
+        "description": "Optional inline styles to apply to the form container."
+      }
+    ]
+  }
+}

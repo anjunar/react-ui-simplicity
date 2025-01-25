@@ -1,0 +1,38 @@
+{
+  "features": [
+    {
+      "name": "Renders Active Page",
+      "description": "Displays the active page based on the `page` index."
+    },
+    {
+      "name": "Render Modes",
+      "description": "Supports two modes: (1) Render only the active page or (2) Render all pages but hide inactive ones using `display: none`."
+    },
+    {
+      "name": "Custom Styles",
+      "description": "Supports a `style` prop to apply custom inline styles to the container."
+    }
+  ],
+  "props": [
+    {
+      "name": "children",
+      "type": "React.ReactElement[]",
+      "description": "An array of React elements, each representing a page to display."
+    },
+    {
+      "name": "page",
+      "type": "number",
+      "description": "The index of the currently active page to be displayed."
+    },
+    {
+      "name": "rendered",
+      "type": "boolean",
+      "description": "Determines whether only the active page is rendered (`true`) or all pages are rendered with inactive ones hidden (`false`)."
+    },
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "description": "An optional CSS style object to apply custom styles to the container."
+    }
+  ]
+}

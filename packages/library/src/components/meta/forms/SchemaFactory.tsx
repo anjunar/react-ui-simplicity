@@ -83,24 +83,24 @@ function SchemaFactory(properties: SchemaFactory.Attributes) {
         }
         case "image":
             return (
-                <SchemaImage style={{width: "100px", height: "100px"}} disabled={schema.readOnly} name={name}/>
+                <SchemaImage style={{width: "100px", height: "100px"}} disabled={schema.readOnly} name={name} {...rest}/>
             )
         case "select":
             return (
-                <SchemaSelect disabled={schema.readOnly || disabled} name={name}/>
+                <SchemaSelect disabled={schema.readOnly || disabled} name={name} {...rest}/>
             )
         case "lazy-multi-select":
             return (
-                <SchemaLazySelect validators={validators} disabled={schema.readOnly || disabled} name={name}
+                <SchemaLazySelect validators={validators} disabled={schema.readOnly || disabled} name={name} {...rest}
                                   multiSelect={true}/>
             )
         case "lazy-select":
             return (
-                <SchemaLazySelect disabled={schema.readOnly || disabled} name={name} validators={validators}/>
+                <SchemaLazySelect disabled={schema.readOnly || disabled} name={name} validators={validators} {...rest}/>
             )
         default:
             return (
-                <SchemaInput disabled={schema.readOnly || disabled} name={name} validators={validators}/>
+                <SchemaInput disabled={schema.readOnly || disabled} name={name} validators={validators} {...rest}/>
             )
     }
 }

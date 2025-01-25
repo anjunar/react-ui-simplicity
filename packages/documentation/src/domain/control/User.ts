@@ -1,5 +1,6 @@
 import {AbstractEntity, Basic, Entity} from "react-ui-simplicity";
 import Address from "./Address";
+import Email from "./Email";
 
 @Entity("User")
 export default class User extends AbstractEntity {
@@ -17,4 +18,7 @@ export default class User extends AbstractEntity {
 
     @Basic()
     address : Address
+
+    @Basic()
+    emails : Email[]
 }

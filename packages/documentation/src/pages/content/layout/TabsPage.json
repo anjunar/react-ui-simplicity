@@ -1,0 +1,96 @@
+{
+  "Tabs": {
+    "features": [
+      {
+        "name": "Dynamic Tab Management",
+        "description": "Automatically manages state for tabs and their selection using internal logic."
+      },
+      {
+        "name": "Custom Tab Selection",
+        "description": "Enables custom behavior for each tab via an abstract `Tab` class, allowing unique actions when a tab is selected."
+      },
+      {
+        "name": "Page Navigation",
+        "description": "Synchronizes the selected tab with the provided `page` prop, making it easy to control and track active pages."
+      },
+      {
+        "name": "Event Handling",
+        "description": "Fires events when tabs are selected, with a listener mechanism to allow granular control."
+      },
+      {
+        "name": "Customizable Appearance",
+        "description": "Allows additional styles and classes through the `style` and `className` props."
+      }
+    ],
+    "props": [
+      {
+        "name": "page",
+        "type": "number",
+        "description": "The index of the currently active tab."
+      },
+      {
+        "name": "onPage",
+        "type": "function",
+        "description": "Callback function triggered when the active tab changes."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "description": "Additional CSS class names to style the `Tabs` container."
+      },
+      {
+        "name": "children",
+        "type": "React.ReactElement[]",
+        "description": "Array of `Tab` elements to be rendered inside the component."
+      },
+      {
+        "name": "style",
+        "type": "CSSProperties",
+        "description": "Inline styles for the `Tabs` container."
+      }
+    ]
+  },
+  "Tab": {
+    "features": [
+      {
+        "name": "Abstract Class",
+        "description": "Serves as the base class for implementing custom behavior on tab selection."
+      },
+      {
+        "name": "Event Listeners",
+        "description": "Supports adding and triggering listeners for tab selection events."
+      },
+      {
+        "name": "Selection State Management",
+        "description": "Maintains the selection state of each tab and fires events when the state changes."
+      }
+    ],
+    "props": [
+      {
+        "name": "onSelect",
+        "type": "abstract method",
+        "description": "To be implemented by subclasses for custom behavior when the tab is selected."
+      },
+      {
+        "name": "addListener",
+        "type": "function(listener: any): void",
+        "description": "Adds a listener to the tab for state change events."
+      },
+      {
+        "name": "fire",
+        "type": "function(selected: any): void",
+        "description": "Fires all registered listeners with the current selected state."
+      },
+      {
+        "name": "listeners",
+        "type": "any[]",
+        "description": "Array of event listeners attached to the tab."
+      },
+      {
+        "name": "selected",
+        "type": "boolean",
+        "description": "Indicates whether the tab is currently selected."
+      }
+    ]
+  }
+}

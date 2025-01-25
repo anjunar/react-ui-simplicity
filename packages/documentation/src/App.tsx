@@ -97,6 +97,58 @@ function App(properties: App.Attributes) {
                                                 </div>
                                             </Link>
                                         </li>
+                                        <li>
+                                            <Link value={"/layout/tabs"}>
+                                                <div className={"center-horizontal"}>
+                                                    <span>Tabs</span>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link value={"/layout/pages"}>
+                                                <div className={"center-horizontal"}>
+                                                    <span>Pages</span>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link value={"/layout/toolbar"}>
+                                                <div className={"center-horizontal"}>
+                                                    <span>Toolbar</span>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    Lists
+                                    <ul>
+                                        <li>
+                                            <Link value={"/lists/list"}>
+                                                <div className={"center-horizontal"}>
+                                                    <span>List</span>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link value={"/lists/table"}>
+                                                <div className={"center-horizontal"}>
+                                                    <span>Table</span>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    Meta
+                                    <ul>
+                                        <li>
+                                            <Link value={"/meta/form"}>
+                                                <div className={"center-horizontal"}>
+                                                    <span>Form</span>
+                                                </div>
+                                            </Link>
+                                        </li>
                                     </ul>
                                 </li>
                             </ul>

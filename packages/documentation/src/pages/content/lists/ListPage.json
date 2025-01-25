@@ -1,0 +1,66 @@
+{
+  "features": [
+    {
+      "name": "Pagination Support",
+      "description": "Enables navigating through the dataset with previous/next buttons and arrow key navigation."
+    },
+    {
+      "name": "Customizable Item Rendering",
+      "description": "Allows defining a custom template for rendering list items using the `List.Item` component."
+    },
+    {
+      "name": "Footer Integration",
+      "description": "Supports adding a custom footer using the `List.Footer` component for additional controls or information."
+    },
+    {
+      "name": "Higher-Order Component Integration",
+      "description": "Uses the `withPageable` HOC to handle pagination logic and state management separately from the UI."
+    },
+    {
+      "name": "Dynamic Dataset",
+      "description": "Displays a subset of items (`window`) from a larger dataset, fetched dynamically via the `loader` function."
+    },
+    {
+      "name": "Context-Based Item Provider",
+      "description": "Provides row-specific data and index through a React Context (`List.ItemProvider`) for flexible item rendering."
+    }
+  ],
+  "props": [
+    {
+      "name": "onRowClick",
+      "type": "function | optional",
+      "description": "Callback triggered when a row is clicked, receiving the row data and index as arguments."
+    },
+    {
+      "name": "loader",
+      "type": "function",
+      "description": "A function to load data for the list, typically used by the `withPageable` HOC."
+    },
+    {
+      "name": "limit",
+      "type": "number | optional",
+      "description": "The number of items to display per page. Defaults to a value defined in the pagination logic."
+    },
+    {
+      "name": "children",
+      "type": "React.ReactNode",
+      "description": "Custom components to define the structure of list items or footer content."
+    },
+    {
+      "name": "value",
+      "type": "any | optional",
+      "description": "An optional value passed to the list for additional configuration or state."
+    },
+    {
+      "name": "onChange",
+      "type": "function | optional",
+      "description": "Callback triggered when the list state changes, such as when the page index updates."
+    },
+    {
+      "name": "style",
+      "type": "CSSProperties | optional",
+      "description": "Inline styles applied to the list container."
+    }
+  ]
+}
+
