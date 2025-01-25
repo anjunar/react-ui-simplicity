@@ -16,7 +16,9 @@ export default function SchemaFormPage() {
 
     const user: User = mapForm({
         $descriptors: {
-            $type: "ObjectDescriptor", type: "User",
+            $type: "ObjectDescriptor",
+            type: "User",
+            widget : "form",
             properties: {
                 name: {
                     $type: "NodeDescriptor",
@@ -41,6 +43,7 @@ export default function SchemaFormPage() {
                 address: {
                     $type: "ObjectDescriptor",
                     type: "Address",
+                    widget : "form",
                     properties: {
                         street: {
                             $type: "NodeDescriptor",
@@ -74,6 +77,7 @@ export default function SchemaFormPage() {
                 },
                 emails: {
                     $type: "CollectionDescriptor",
+                    widget : "form-array",
                     items: {
                         $type: "ObjectDescriptor",
                         type: "Email",
@@ -162,29 +166,8 @@ export default function SchemaFormPage() {
                         <FormSchemaFactory name={"name"}/>
                         <FormSchemaFactory name={"firstName"}/>
                         <FormSchemaFactory name={"lastName"}/>
-                        <SchemaSubForm name={"address"}>
-                            <FormSchemaFactory name={"street"}/>
-                            <FormSchemaFactory name={"number"}/>
-                            <FormSchemaFactory name={"city"}/>
-                            <FormSchemaFactory name={"country"}/>
-                        </SchemaSubForm>
-                        <SchemaFormArray name={"emails"}>
-                            {
-                                ({elements, form}) => elements.map((element, index) => (
-                                    <SubForm key={element.id} index={index}>
-                                        <div style={{display: "flex", width: "100%"}}>
-                                            <FormSchemaFactory name={"email"} style={{flex: 1}}/>
-                                            <button type={"button"} className={"material-icons"}
-                                                    onClick={() => {
-                                                        elements.splice(elements.indexOf(element), 1)
-                                                    }}>
-                                                delete
-                                            </button>
-                                        </div>
-                                    </SubForm>
-                                ))
-                            }
-                        </SchemaFormArray>
+                        <FormSchemaFactory name={"address"}/>
+                        <FormSchemaFactory name={"emails"}/>
                     </SchemaForm>
                     <p>Console: {console}</p>
                 </Section>
@@ -231,6 +214,7 @@ export default function SchemaFormPage() {
                             |                address: {
                             |                    $type: "ObjectDescriptor",
                             |                    type: "Address",
+                            |                    widget : "form",   
                             |                    properties: {
                             |                        street: {
                             |                            $type: "NodeDescriptor",
@@ -264,9 +248,11 @@ export default function SchemaFormPage() {
                             |                },
                             |                emails: {
                             |                    $type: "CollectionDescriptor",
+                            |                    widget : "form-array",   
                             |                    items: {
                             |                        $type: "ObjectDescriptor",
                             |                        type: "Email",
+                            |                        widget : "form",
                             |                        properties: {
                             |                            email: {
                             |                                $type: "NodeDescriptor",
@@ -311,29 +297,8 @@ export default function SchemaFormPage() {
                             |            <FormSchemaFactory name={"name"}/>
                             |            <FormSchemaFactory name={"firstName"}/>
                             |            <FormSchemaFactory name={"lastName"}/>
-                            |            <SchemaSubForm name={"address"}>
-                            |                <FormSchemaFactory name={"street"}/>
-                            |                <FormSchemaFactory name={"number"}/>
-                            |                <FormSchemaFactory name={"city"}/>
-                            |                <FormSchemaFactory name={"country"}/>
-                            |            </SchemaSubForm>
-                            |            <SchemaFormArray name={"emails"}>
-                            |                {
-                            |                    ({elements, form}) => elements.map((element, index) => (
-                            |                        <SubForm key={element.id} index={index}>
-                            |                            <div style={{display: "flex", width: "100%"}}>
-                            |                                <FormSchemaFactory name={"email"} style={{flex: 1}}/>
-                            |                                <button type={"button"} className={"material-icons"}
-                            |                                        onClick={() => {
-                            |                                            elements.splice(elements.indexOf(element), 1)
-                            |                                        }}>
-                            |                                    delete
-                            |                                </button>
-                            |                            </div>
-                            |                        </SubForm>
-                            |                    ))
-                            |                }
-                            |            </SchemaFormArray>
+                            |            <FormSchemaFactory name={"address"}/>
+                            |            <FormSchemaFactory name={"emails"}/>
                             |        </SchemaForm>
                             |        <p>Console: {console}</p>
                             |    )

@@ -58,18 +58,20 @@ function SchemaFactory(properties: SchemaFactory.Attributes) {
             let jsonArray = schema as CollectionDescriptor
 
             let fields = Object.keys(jsonArray.items.properties || {}).map(key => (
-                <SchemaFactory key={key} name={key}/>
+                <SchemaFactory key={key} name={key} style={{flex : 1}}/>
             ))
             return (
                 <SchemaFormArray name={name}>
                     {({elements, form}: { elements: any[], form: any }) =>
                         elements.map((element, index) => (
                             <SubForm key={element.id} index={index}>
-                                {fields}
-                                <button type={"button"}
-                                        onClick={() => elements.splice(elements.indexOf(element), 1)}>
-                                    remove
-                                </button>
+                                <div style={{display : "flex", width : "100%"}}>
+                                    {fields}
+                                    <button type={"button"} className={"material-icons"}
+                                            onClick={() => elements.splice(elements.indexOf(element), 1)}>
+                                        delete
+                                    </button>
+                                </div>
                             </SubForm>
                         ))
                     }
