@@ -1,0 +1,31 @@
+{
+  "features": [
+    {
+      "name": "Media Query Evaluation",
+      "description": "Evaluates a specified CSS media query string and determines whether it matches the current browser state."
+    },
+    {
+      "name": "Dynamic State Management",
+      "description": "Keeps a boolean state that dynamically updates based on whether the media query matches."
+    },
+    {
+      "name": "Responsive UI Support",
+      "description": "Allows developers to adapt the UI and behavior of components based on the media query's evaluation."
+    },
+    {
+      "name": "Event Listener Management",
+      "description": "Registers and deregisters event listeners for media query changes automatically, ensuring efficient resource usage."
+    },
+    {
+      "name": "Memory Safety",
+      "description": "Cleans up event listeners when the component unmounts, preventing memory leaks."
+    }
+  ],
+  "props": [
+    {
+      "name": "value",
+      "type": "string",
+      "description": "The media query string to evaluate, e.g., '(max-width: 768px)'."
+    }
+  ]
+}

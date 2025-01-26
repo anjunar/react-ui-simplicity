@@ -23,6 +23,7 @@ import RouterPage from "./pages/component/navigation/RouterPage";
 import UseArrayHookPage from "./pages/platform/hooks/UseArrayHookPage";
 import UseFormHookPage from "./pages/platform/hooks/UseFormHookPage";
 import UseInputHookPage from "./pages/platform/hooks/UseInputHookPage";
+import UseMatchMediaHookPage from "./pages/platform/hooks/UseMatchMediaHookPage";
 
 export const routes : Route[] = [
     {
@@ -184,6 +185,10 @@ export const routes : Route[] = [
                             {
                                 path: "/use-input",
                                 component : UseInputHookPage
+                            },
+                            {
+                                path: "/use-match-media",
+                                component : UseMatchMediaHookPage
                             }
                         ]
                     }

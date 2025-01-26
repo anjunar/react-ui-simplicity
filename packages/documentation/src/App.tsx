@@ -233,7 +233,13 @@ function App(properties: App.Attributes) {
                                                         </div>
                                                     </Link>
                                                 </li>
-
+                                                <li>
+                                                    <Link value={"/hooks/use-match-media"}>
+                                                        <div>
+                                                            <span>useMatchMedia</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
                                             </ul>
                                         </li>
                                     </ul>
