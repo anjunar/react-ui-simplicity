@@ -210,7 +210,7 @@ function App(properties: App.Attributes) {
                                 <div>
                                     <ul>
                                         <li>
-                                            <Link value={"/platform/hooks"}>
+                                            <Link value={"/hooks/use-array"}>
                                                 <div>
                                                     <span>Hooks</span>
                                                 </div>

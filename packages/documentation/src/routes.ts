@@ -20,6 +20,7 @@ import WindowPage from "./pages/component/modal/WindowPage";
 import DialogPage from "./pages/component/modal/DialogPage";
 import LinkPage from "./pages/component/navigation/LinkPage";
 import RouterPage from "./pages/component/navigation/RouterPage";
+import UseArrayHookPage from "./pages/platform/hooks/UseArrayHookPage";
 
 export const routes : Route[] = [
     {
@@ -131,6 +132,15 @@ export const routes : Route[] = [
                             {
                                 path: "/router",
                                 component : RouterPage
+                            }
+                        ]
+                    },
+                    {
+                        path : "/hooks",
+                        children : [
+                            {
+                                path: "/use-array",
+                                component : UseArrayHookPage
                             }
                         ]
                     }

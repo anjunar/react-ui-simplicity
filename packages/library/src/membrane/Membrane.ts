@@ -104,7 +104,7 @@ export function objectMembrane(object : any, callbacks : ((name : string[], valu
     return object
 }
 
-export function arrayMembrane(array : any[], callbacks : ((name : string[], value : any) => void)[], path : string[]) {
+export function arrayMembrane(array : any[], callbacks : ((name : string[], value : any) => void)[], path : string[] = []) {
     return new Proxy(array, {
         set(target: any[], p: string, newValue: any, receiver: any) {
 

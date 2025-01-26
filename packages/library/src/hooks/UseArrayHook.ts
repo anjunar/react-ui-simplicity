@@ -5,15 +5,15 @@ import ActiveObject from "../domain/container/ActiveObject";
 import LinkContainerObject from "../domain/container/LinkContainerObject";
 import ObjectDescriptor from "../domain/descriptors/ObjectDescriptor";
 
-export function useArray<T extends ActiveObject>(object: [T[], number, LinkContainerObject, ObjectDescriptor]) : [T[], number, LinkContainerObject, ObjectDescriptor] {
-    let [entity, size, links, schema] = object
+export function useArray<T extends ActiveObject>(object: [T[], number, LinkContainerObject, ObjectDescriptor, (path : string[], value : any) => void]) : [T[], number, LinkContainerObject, ObjectDescriptor, (path : string[], value : any) => void] {
+    let [entity, size, links, schema, callbacks] = object
 
     const [state, setState] = useState(() => {
-        let callbacks = [debounce(() => {
-            setState(arrayMembrane(entity, callbacks, undefined))
-        }, 30)];
-        return arrayMembrane(entity, callbacks, undefined)
+        let inner = debounce(() => {
+            setState(arrayMembrane(entity, [inner, callbacks], undefined))
+        }, 30);
+        return arrayMembrane(entity, [inner, callbacks], undefined)
     })
 
-    return [state, size, links, schema]
+    return [state, size, links, schema, callbacks]
 }
