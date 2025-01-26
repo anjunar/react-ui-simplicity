@@ -177,6 +177,18 @@ function App(properties: App.Attributes) {
                                         </li>
                                     </ul>
                                 </li>
+                                <li>
+                                    Navigation
+                                    <ul>
+                                        <li>
+                                            <Link value={"/navigation/link"}>
+                                                <div className={"center-horizontal"}>
+                                                    <span>Link</span>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                    </ul>
+                                </li>
                             </ul>
                         </div>
                     </div>

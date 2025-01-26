@@ -1,0 +1,47 @@
+{
+  "features": [
+    {
+      "name": "Active State Management",
+      "description": "The component tracks the current URL and applies an 'active' class to the link when its value matches the current pathname, visually indicating which link is active."
+    },
+    {
+      "name": "Programmatic Navigation",
+      "description": "On clicking the link, the component prevents the default anchor behavior and uses the 'navigate' function to programmatically change routes within the application."
+    },
+    {
+      "name": "Flexible Rendering",
+      "description": "The component can render links with either icons (symbols) or textual descriptions, allowing customization based on the context (e.g., displaying a 'navigate_next' icon or a descriptive link title)."
+    },
+    {
+      "name": "Support for Custom Styles",
+      "description": "The component allows for custom inline styles and CSS class names through the 'style' and 'className' props, enabling the user to apply custom or dynamic styles to the link element."
+    }
+  ],
+  "props": [
+    {
+      "name": "data",
+      "type": "any",
+      "description": "Optional data that can be passed to the link component. Typically used for additional context or metadata, and it can hold any value."
+    },
+    {
+      "name": "value",
+      "type": "string",
+      "description": "The URL or path that the link points to. This value is used for routing and navigation within the application."
+    },
+    {
+      "name": "children",
+      "type": "ReactNode",
+      "description": "The content to be displayed within the link element. This can be text, icons, or any other valid React component."
+    },
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "description": "Optional inline styles that can be applied to the link element. This allows for custom styling directly within the component."
+    },
+    {
+      "name": "className",
+      "type": "string",
+      "description": "Optional custom CSS class name for the link element. This is useful for applying custom styles or targeting the link with external CSS."
+    }
+  ]
+}

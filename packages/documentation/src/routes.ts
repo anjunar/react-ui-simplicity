@@ -18,6 +18,7 @@ import SchemaFormPage from "./pages/content/meta/SchemaFormPage";
 import SchemaTablePage from "./pages/content/meta/SchemaTablePage";
 import WindowPage from "./pages/content/modal/WindowPage";
 import DialogPage from "./pages/content/modal/DialogPage";
+import LinkPage from "./pages/content/navigation/LinkPage";
 
 export const routes : Route[] = [
     {
@@ -117,6 +118,15 @@ export const routes : Route[] = [
                                 component : DialogPage
                             }
 
+                        ]
+                    },
+                    {
+                        path : "/navigation",
+                        children : [
+                            {
+                                path: "/link",
+                                component : LinkPage
+                            }
                         ]
                     }
                 ]
