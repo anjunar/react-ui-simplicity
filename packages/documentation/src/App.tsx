@@ -1,6 +1,6 @@
 import "./App.css"
 import React, {useEffect, useState} from "react"
-import {Drawer, Link, Router, ToolBar, useMatchMedia, Viewport} from "react-ui-simplicity";
+import {Drawer, Link, Page, Pages, Router, Tab, Tabs, ToolBar, useMatchMedia, Viewport} from "react-ui-simplicity";
 import {init} from "./domain/Persistence";
 import Header from "./layout/Header";
 
@@ -11,6 +11,8 @@ function App(properties: App.Attributes) {
     const [open, setOpen] = useState(false)
 
     const mediaQuery = useMatchMedia("(max-width: 1440px)")
+
+    const [page, setPage] = useState(0)
 
     const onLinkClick = () => {
         if (mediaQuery) {
@@ -36,168 +38,189 @@ function App(properties: App.Attributes) {
             <Drawer.Container>
                 <Drawer open={open}>
                     <div>
-                        <Header>Content</Header>
-                        <div style={{marginTop : "24px"}}>
-                            <ul>
-                                <li>
-                                    <Link value={"/forms"}>
-                                        <div className={"center-horizontal"}>
-                                            <span>Forms</span>
-                                        </div>
-                                    </Link>
+                        <Tabs page={page} onPage={(value) => setPage(value)} style={{height : "82px"}}>
+                            <Tab><h3>Components</h3></Tab>
+                            <Tab><h3>Platform</h3></Tab>
+                        </Tabs>
+                        <Pages page={page}>
+                            <Page>
+                                <div>
                                     <ul>
                                         <li>
-                                            <Link value={"/forms/editor"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Editor</span>
+                                            <Link value={"/forms"}>
+                                                <div>
+                                                    <span>Forms</span>
                                                 </div>
                                             </Link>
+                                            <ul>
+                                                <li>
+                                                    <Link value={"/forms/editor"}>
+                                                        <div>
+                                                            <span>Editor</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link value={"/forms/input"}>
+                                                        <div>
+                                                            <span>Input</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link value={"/forms/select"}>
+                                                        <div>
+                                                            <span>Select</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link value={"/forms/select/lazy"}>
+                                                        <div>
+                                                            <span>Lazy Select</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link value={"/forms/image"}>
+                                                        <div>
+                                                            <span>Image Upload</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                            </ul>
                                         </li>
                                         <li>
-                                            <Link value={"/forms/input"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Input</span>
+                                            <Link value={"/layout"}>
+                                                <div>
+                                                    <span>Layout</span>
                                                 </div>
                                             </Link>
+                                            <ul>
+                                                <li>
+                                                    <Link value={"/layout/drawer"}>
+                                                        <div>
+                                                            <span>Drawer</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link value={"/layout/tabs"}>
+                                                        <div>
+                                                            <span>Tabs</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link value={"/layout/pages"}>
+                                                        <div>
+                                                            <span>Pages</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link value={"/layout/toolbar"}>
+                                                        <div>
+                                                            <span>Toolbar</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                            </ul>
                                         </li>
                                         <li>
-                                            <Link value={"/forms/select"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Select</span>
-                                                </div>
-                                            </Link>
+                                            Lists
+                                            <ul>
+                                                <li>
+                                                    <Link value={"/lists/list"}>
+                                                        <div>
+                                                            <span>List</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link value={"/lists/table"}>
+                                                        <div>
+                                                            <span>Table</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                            </ul>
                                         </li>
                                         <li>
-                                            <Link value={"/forms/select/lazy"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Lazy Select</span>
-                                                </div>
-                                            </Link>
+                                            Meta
+                                            <ul>
+                                                <li>
+                                                    <Link value={"/meta/form"}>
+                                                        <div>
+                                                            <span>Form</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link value={"/meta/table"}>
+                                                        <div>
+                                                            <span>Table</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                            </ul>
                                         </li>
                                         <li>
-                                            <Link value={"/forms/image"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Image Upload</span>
+                                            Modal
+                                            <ul>
+                                                <li>
+                                                    <Link value={"/modal/dialog"}>
+                                                        <div>
+                                                            <span>Dialog</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link value={"/modal/window"}>
+                                                        <div>
+                                                            <span>Window</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            Navigation
+                                            <ul>
+                                                <li>
+                                                    <Link value={"/navigation/link"}>
+                                                        <div>
+                                                            <span>Link</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link value={"/navigation/router"}>
+                                                        <div>
+                                                            <span>Router</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </Page>
+                            <Page>
+                                <div>
+                                    <ul>
+                                        <li>
+                                            <Link value={"/platform/hooks"}>
+                                                <div>
+                                                    <span>Hooks</span>
                                                 </div>
                                             </Link>
                                         </li>
                                     </ul>
-                                </li>
-                                <li>
-                                    <Link value={"/layout"}>
-                                        <div className={"center-horizontal"}>
-                                            <span>Layout</span>
-                                        </div>
-                                    </Link>
-                                    <ul>
-                                        <li>
-                                            <Link value={"/layout/drawer"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Drawer</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link value={"/layout/tabs"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Tabs</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link value={"/layout/pages"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Pages</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link value={"/layout/toolbar"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Toolbar</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    Lists
-                                    <ul>
-                                        <li>
-                                            <Link value={"/lists/list"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>List</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link value={"/lists/table"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Table</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    Meta
-                                    <ul>
-                                        <li>
-                                            <Link value={"/meta/form"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Form</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link value={"/meta/table"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Table</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    Modal
-                                    <ul>
-                                        <li>
-                                            <Link value={"/modal/dialog"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Dialog</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link value={"/modal/window"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Window</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    Navigation
-                                    <ul>
-                                        <li>
-                                            <Link value={"/navigation/link"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Link</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link value={"/navigation/router"}>
-                                                <div className={"center-horizontal"}>
-                                                    <span>Router</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
+                                </div>
+                            </Page>
+                        </Pages>
+
                     </div>
                 </Drawer>
                 <Drawer.Content onClick={onLinkClick}>

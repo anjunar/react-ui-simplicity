@@ -1,25 +1,25 @@
 import {Dialog, Route, Window} from "react-ui-simplicity";
 import App from "./App";
 import HomePage from "./pages/home/HomePage";
-import FormsPage from "./pages/content/FormsPage";
-import InputPage from "./pages/content/input/InputPage";
-import EditorPage from "./pages/content/input/EditorPage";
-import SelectPage from "./pages/content/input/SelectPage";
-import LazySelectPage from "./pages/content/input/LazySelectPage";
-import ImagePage from "./pages/content/input/ImagePage";
-import LayoutPage from "./pages/content/LayoutPage";
-import DrawerPage from "./pages/content/layout/DrawerPage";
-import TabsPage from "./pages/content/layout/TabsPage";
-import ToolbarPage from "./pages/content/layout/ToolbarPage";
-import PagesPage from "./pages/content/layout/PagesPage";
-import ListPage from "./pages/content/lists/ListPage";
-import TablePage from "./pages/content/lists/TablePage";
-import SchemaFormPage from "./pages/content/meta/SchemaFormPage";
-import SchemaTablePage from "./pages/content/meta/SchemaTablePage";
-import WindowPage from "./pages/content/modal/WindowPage";
-import DialogPage from "./pages/content/modal/DialogPage";
-import LinkPage from "./pages/content/navigation/LinkPage";
-import RouterPage from "./pages/content/navigation/RouterPage";
+import FormsPage from "./pages/component/FormsPage";
+import InputPage from "./pages/component/input/InputPage";
+import EditorPage from "./pages/component/input/EditorPage";
+import SelectPage from "./pages/component/input/SelectPage";
+import LazySelectPage from "./pages/component/input/LazySelectPage";
+import ImagePage from "./pages/component/input/ImagePage";
+import LayoutPage from "./pages/component/LayoutPage";
+import DrawerPage from "./pages/component/layout/DrawerPage";
+import TabsPage from "./pages/component/layout/TabsPage";
+import ToolbarPage from "./pages/component/layout/ToolbarPage";
+import PagesPage from "./pages/component/layout/PagesPage";
+import ListPage from "./pages/component/lists/ListPage";
+import TablePage from "./pages/component/lists/TablePage";
+import SchemaFormPage from "./pages/component/meta/SchemaFormPage";
+import SchemaTablePage from "./pages/component/meta/SchemaTablePage";
+import WindowPage from "./pages/component/modal/WindowPage";
+import DialogPage from "./pages/component/modal/DialogPage";
+import LinkPage from "./pages/component/navigation/LinkPage";
+import RouterPage from "./pages/component/navigation/RouterPage";
 
 export const routes : Route[] = [
     {
