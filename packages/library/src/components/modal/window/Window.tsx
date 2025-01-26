@@ -399,7 +399,7 @@ namespace Window {
     }
 
     export function Content({ children }: {children : React.ReactNode}) {
-        return <div>{children}</div>
+        return <div style={{height : "100%"}}>{children}</div>
     }
 
     export function Footer({ children }: {children : React.ReactNode}) {

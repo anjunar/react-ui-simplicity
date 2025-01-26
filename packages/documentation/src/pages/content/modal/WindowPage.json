@@ -1,0 +1,85 @@
+{
+  "features": [
+    {
+      "name": "Draggable",
+      "description": "Allows the window to be moved by dragging the header."
+    },
+    {
+      "name": "Resizable",
+      "description": "Enables resizing the window from edges and corners."
+    },
+    {
+      "name": "Maximized State",
+      "description": "Supports a maximized state where resizing and dragging are disabled."
+    },
+    {
+      "name": "Centered Positioning",
+      "description": "Automatically centers the window upon rendering if specified."
+    },
+    {
+      "name": "Dynamic Registration",
+      "description": "Integrates with the system context to dynamically register the window."
+    },
+    {
+      "name": "Customizable Layout",
+      "description": "Supports custom layouts with dedicated Header, Content, and Footer components."
+    }
+  ],
+  "props": [
+    {
+      "name": "tag",
+      "type": "string",
+      "description": "An optional tag identifier for the window."
+    },
+    {
+      "name": "taskName",
+      "type": "string",
+      "description": "A unique name for the window to register in the system context."
+    },
+    {
+      "name": "children",
+      "type": "React.ReactNode",
+      "description": "The content of the window, including Header, Content, and Footer components."
+    },
+    {
+      "name": "className",
+      "type": "string",
+      "description": "Additional CSS classes to style the window."
+    },
+    {
+      "name": "maximized",
+      "type": "boolean",
+      "description": "Indicates if the window is maximized."
+    },
+    {
+      "name": "resizable",
+      "type": "boolean",
+      "description": "Determines if the window is resizable."
+    },
+    {
+      "name": "draggable",
+      "type": "boolean",
+      "description": "Determines if the window can be dragged."
+    },
+    {
+      "name": "centered",
+      "type": "boolean",
+      "description": "Specifies whether the window should be centered on render."
+    },
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "description": "Inline styles to apply to the window."
+    },
+    {
+      "name": "onMouseOver",
+      "type": "function",
+      "description": "Event handler for mouse-over events."
+    },
+    {
+      "name": "onClick",
+      "type": "function",
+      "description": "Event handler for click events."
+    }
+  ]
+}

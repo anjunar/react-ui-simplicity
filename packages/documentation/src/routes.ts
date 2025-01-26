@@ -1,4 +1,4 @@
-import {Route} from "react-ui-simplicity";
+import {Route, Window} from "react-ui-simplicity";
 import App from "./App";
 import HomePage from "./pages/home/HomePage";
 import FormsPage from "./pages/content/FormsPage";
@@ -16,6 +16,7 @@ import ListPage from "./pages/content/lists/ListPage";
 import TablePage from "./pages/content/lists/TablePage";
 import SchemaFormPage from "./pages/content/meta/SchemaFormPage";
 import SchemaTablePage from "./pages/content/meta/SchemaTablePage";
+import WindowPage from "./pages/content/modal/WindowPage";
 
 export const routes : Route[] = [
     {
@@ -100,6 +101,15 @@ export const routes : Route[] = [
                             {
                                 path : "/table",
                                 component : SchemaTablePage
+                            }
+                        ]
+                    },
+                    {
+                        path : "/modal",
+                        children : [
+                            {
+                                path: "/window",
+                                component : WindowPage
                             }
                         ]
                     }

@@ -4,7 +4,7 @@
     border: 1px solid var(--color-background-secondary);
     box-shadow: 3px 3px 10px 3px #1a1a1a;
 
-    &.header {
+    .header {
         display: flex;
         background-color : var(--color-background-secondary);
         cursor: move;
@@ -14,7 +14,7 @@
         width: 100%;
     }
 
-    &.nw {
+    .nw {
         position: absolute;
         cursor: nw-resize;
         left : -10px;
@@ -23,7 +23,7 @@
         height : 20px;
     }
 
-    &.ne {
+    .ne {
         position : absolute;
         right: -10px;
         top : -10px;
@@ -32,7 +32,7 @@
         cursor : ne-resize;
     }
 
-    &.se {
+    .se {
         position : absolute;
         right: -10px;
         bottom: -10px;
@@ -41,7 +41,7 @@
         cursor : se-resize;
     }
 
-    &.sw {
+    .sw {
         position: absolute;
         left : -10px;
         bottom : -10px;
@@ -50,7 +50,7 @@
         cursor: sw-resize;
     }
 
-    &.n {
+    .n {
         position : absolute;
         left : 10px;
         top: -10px;
@@ -59,7 +59,7 @@
         cursor : n-resize;
     }
 
-    &.s {
+    .s {
         position : absolute;
         left : 10px;
         bottom: -10px;
@@ -68,7 +68,7 @@
         cursor : s-resize;
     }
 
-    &.w {
+    .w {
         position: absolute;
         left: -10px;
         top : 10px;
@@ -77,7 +77,7 @@
         cursor: w-resize;
     }
 
-    &.e {
+    .e {
         position: absolute;
         right: -10px;
         top: 10px;
@@ -86,7 +86,7 @@
         cursor: e-resize;
     }
 
-    &.footer {
+    .footer {
         display: flex;
         background-color : var(--color-background-secondary);
         height: 24px;
