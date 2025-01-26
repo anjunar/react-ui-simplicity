@@ -1,0 +1,23 @@
+{
+  "features": [
+    {
+      "name": "Simple Structure",
+      "description": "Provides a lightweight wrapper for modal dialogs with minimal styling."
+    },
+    {
+      "name": "Custom Content",
+      "description": "Allows embedding custom child elements within the dialog."
+    },
+    {
+      "name": "Dynamic Props",
+      "description": "Supports passing additional HTML attributes via the `rest` parameter."
+    }
+  ],
+  "props": [
+    {
+      "name": "children",
+      "type": "React.ReactNode",
+      "description": "The content to be displayed inside the dialog."
+    }
+  ]
+}

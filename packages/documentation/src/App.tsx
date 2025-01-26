@@ -162,6 +162,13 @@ function App(properties: App.Attributes) {
                                     Modal
                                     <ul>
                                         <li>
+                                            <Link value={"/modal/dialog"}>
+                                                <div className={"center-horizontal"}>
+                                                    <span>Dialog</span>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                        <li>
                                             <Link value={"/modal/window"}>
                                                 <div className={"center-horizontal"}>
                                                     <span>Window</span>

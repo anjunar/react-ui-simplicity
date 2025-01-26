@@ -5,34 +5,6 @@ import RestLink from "../../../domain/container/LinkObject";
 import LinkContainerObject from "../../../domain/container/LinkContainerObject";
 import LinksObject from "../../../domain/container/LinksObject";
 
-export function onLink($links :LinkContainerObject, rel: string, callback: (link: RestLink) => React.ReactNode) {
-    if ($links) {
-        let link = $links[rel];
-
-        if (link) {
-            return callback(link)
-        }
-    }
-    return ""
-}
-
-export function renderLinksWithSymbol(container: LinksObject) {
-    return Object.values(container?.links || {}).map((link: any) => (
-        <Link key={link.rel} value={link.url}>
-            <i className={"material-icons"}>navigate_next</i>
-        </Link>
-    ));
-}
-
-export function renderLinksWithDescription(container: LinksObject) {
-    return Object.values(container?.links || {}).map((link: any) => (
-        <Link key={link.rel} value={link.url}>
-            {link.title}
-        </Link>
-    ));
-}
-
-
 function Link(properties : Link.Attributes) {
 
     const {data, value, children, ...rest} = properties
@@ -77,6 +49,33 @@ namespace Link {
         children: ReactNode
         style? : CSSProperties
         className? : string
+    }
+
+    export function onLink($links :LinkContainerObject, rel: string, callback: (link: RestLink) => React.ReactNode) {
+        if ($links) {
+            let link = $links[rel];
+
+            if (link) {
+                return callback(link)
+            }
+        }
+        return ""
+    }
+
+    export function renderWithSymbol(container: LinksObject) {
+        return Object.values(container?.links || {}).map((link: any) => (
+            <Link key={link.rel} value={link.url}>
+                <i className={"material-icons"}>navigate_next</i>
+            </Link>
+        ));
+    }
+
+    export function renderWithDescription(container: LinksObject) {
+        return Object.values(container?.links || {}).map((link: any) => (
+            <Link key={link.rel} value={link.url}>
+                {link.title}
+            </Link>
+        ));
     }
 
 }

@@ -1,4 +1,4 @@
-import {Route, Window} from "react-ui-simplicity";
+import {Dialog, Route, Window} from "react-ui-simplicity";
 import App from "./App";
 import HomePage from "./pages/home/HomePage";
 import FormsPage from "./pages/content/FormsPage";
@@ -17,6 +17,7 @@ import TablePage from "./pages/content/lists/TablePage";
 import SchemaFormPage from "./pages/content/meta/SchemaFormPage";
 import SchemaTablePage from "./pages/content/meta/SchemaTablePage";
 import WindowPage from "./pages/content/modal/WindowPage";
+import DialogPage from "./pages/content/modal/DialogPage";
 
 export const routes : Route[] = [
     {
@@ -110,7 +111,12 @@ export const routes : Route[] = [
                             {
                                 path: "/window",
                                 component : WindowPage
+                            },
+                            {
+                                path: "/dialog",
+                                component : DialogPage
                             }
+
                         ]
                     }
                 ]
