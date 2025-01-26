@@ -1,4 +1,4 @@
-import {Dialog, Route, Window} from "react-ui-simplicity";
+import {Dialog, mapForm, mapTable, Route, Window} from "react-ui-simplicity";
 import App from "./App";
 import HomePage from "./pages/home/HomePage";
 import FormsPage from "./pages/component/FormsPage";
@@ -100,7 +100,18 @@ export const routes : Route[] = [
                         children : [
                             {
                                 path: "/form",
-                                component : SchemaFormPage
+                                component : SchemaFormPage,
+                                loader: {
+                                    async user(path, query) {
+                                        const response = await fetch("/assets/person.json")
+
+                                        if (response.ok) {
+                                            return mapForm(await response.json())
+                                        }
+
+                                        throw new Error(response.status.toString())
+                                    }
+                                }
                             },
                             {
                                 path : "/table",
@@ -140,7 +151,18 @@ export const routes : Route[] = [
                         children : [
                             {
                                 path: "/use-array",
-                                component : UseArrayHookPage
+                                component : UseArrayHookPage,
+                                loader : {
+                                    async table(path, query) {
+                                        const response = await fetch("/assets/materials.json")
+
+                                        if (response.ok) {
+                                            return mapTable(await response.json())
+                                        }
+
+                                        throw new Error(response.status.toString())
+                                    }
+                                }
                             }
                         ]
                     }

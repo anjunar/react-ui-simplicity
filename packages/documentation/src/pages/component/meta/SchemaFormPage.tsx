@@ -4,113 +4,14 @@ import Section from "../../../layout/content/Section";
 import {FormSchemaFactory, HighLight, mapForm, Page, Pages, SchemaForm, SchemaFormArray, SchemaSubForm, SubForm, Tab, Tabs, useForm} from "react-ui-simplicity";
 import Features from "../../../layout/content/Features";
 import User from "../../../domain/control/User";
-import {v4} from "uuid";
 import Props from "../../../layout/content/Props";
 import PageLayout from "../../../layout/content/PageLayout";
 
-export default function SchemaFormPage() {
+export default function SchemaFormPage({user}: { user: User }) {
 
     const [page, setPage] = useState(0)
 
     const [console, setConsole] = useState("")
-
-    const user: User = mapForm({
-        $descriptors: {
-            $type: "ObjectDescriptor",
-            type: "User",
-            widget : "form",
-            properties: {
-                name: {
-                    $type: "NodeDescriptor",
-                    title: "Name",
-                    type: "String",
-                    widget: "text"
-                },
-                firstName: {
-                    $type: "NodeDescriptor",
-                    title: "First Name",
-                    type: "String",
-                    widget: "text",
-                    writeable: true
-                },
-                lastName: {
-                    $type: "NodeDescriptor",
-                    title: "Last Name",
-                    type: "String",
-                    widget: "text",
-                    writeable: true
-                },
-                address: {
-                    $type: "ObjectDescriptor",
-                    type: "Address",
-                    widget : "form",
-                    properties: {
-                        street: {
-                            $type: "NodeDescriptor",
-                            title: "Street",
-                            type: "String",
-                            widget: "text",
-                            writeable: true
-                        },
-                        number: {
-                            $type: "NodeDescriptor",
-                            title: "Number",
-                            type: "String",
-                            widget: "text",
-                            writeable: true
-                        },
-                        city: {
-                            $type: "NodeDescriptor",
-                            title: "City",
-                            type: "String",
-                            widget: "text",
-                            writeable: true
-                        },
-                        country: {
-                            $type: "NodeDescriptor",
-                            title: "Country",
-                            type: "String",
-                            widget: "text",
-                            writeable: true
-                        },
-                    }
-                },
-                emails: {
-                    $type: "CollectionDescriptor",
-                    widget : "form-array",
-                    items: {
-                        $type: "ObjectDescriptor",
-                        type: "Email",
-                        properties: {
-                            email: {
-                                $type: "NodeDescriptor",
-                                title: "Email",
-                                type: "String",
-                                widget: "email",
-                                writeable: true
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        $type: "User",
-        name: "Neo",
-        firstName: "Thomas",
-        lastName: "Anderson",
-        address: {
-            $type: "Address",
-            street: "Unknown",
-            number: "Unknown",
-            city: "Los Angeles",
-            country: "USA"
-        },
-        emails: [{
-            $type: "Email",
-            id: v4(),
-            email: "neo@matrix.com"
-        }]
-    })
 
     let form = useForm(user);
 
@@ -176,113 +77,14 @@ export default function SchemaFormPage() {
                         {
                             `
                             |import React, {useEffect, useState} from "react";
-                            |import {FormSchemaFactory, mapForm, SchemaForm, SchemaFormArray, SchemaSubForm, SubForm, useForm} from "react-ui-simplicity";
+                            |import {FormSchemaFactory, SchemaForm, useForm} from "react-ui-simplicity";
                             |import User from "../../../domain/control/User";
-                            |import {v4} from "uuid";
                             |
-                            |export default function SchemaFormPage() {
+                            |export default function SchemaFormPage({user}: { user: User }) {
                             |
                             |    const [page, setPage] = useState(0)
                             |
                             |    const [console, setConsole] = useState("")
-                            |
-                            |    const user: User = mapForm({
-                            |        $descriptors: {
-                            |            $type: "ObjectDescriptor", 
-                            |            type: "User",
-                            |            properties: {
-                            |                name: {
-                            |                    $type: "NodeDescriptor",
-                            |                    title: "Name",
-                            |                    type: "String",
-                            |                    widget: "text"
-                            |                },
-                            |                firstName: {
-                            |                    $type: "NodeDescriptor",
-                            |                    title: "First Name",
-                            |                    type: "String",
-                            |                    widget: "text",
-                            |                    writeable: true
-                            |                },
-                            |                lastName: {
-                            |                    $type: "NodeDescriptor",
-                            |                    title: "Last Name",
-                            |                    type: "String",
-                            |                    widget: "text",
-                            |                    writeable: true
-                            |                },
-                            |                address: {
-                            |                    $type: "ObjectDescriptor",
-                            |                    type: "Address",
-                            |                    widget : "form",   
-                            |                    properties: {
-                            |                        street: {
-                            |                            $type: "NodeDescriptor",
-                            |                            title: "Street",
-                            |                            type: "String",
-                            |                            widget: "text",
-                            |                            writeable: true
-                            |                        },
-                            |                        number: {
-                            |                            $type: "NodeDescriptor",
-                            |                            title: "Number",
-                            |                            type: "String",
-                            |                            widget: "text",
-                            |                            writeable: true
-                            |                        },
-                            |                        city: {
-                            |                            $type: "NodeDescriptor",
-                            |                            title: "City",
-                            |                            type: "String",
-                            |                            widget: "text",
-                            |                            writeable: true
-                            |                        },
-                            |                        country: {
-                            |                            $type: "NodeDescriptor",
-                            |                            title: "Country",
-                            |                            type: "String",
-                            |                            widget: "text",
-                            |                            writeable: true
-                            |                        },
-                            |                    }
-                            |                },
-                            |                emails: {
-                            |                    $type: "CollectionDescriptor",
-                            |                    widget : "form-array",   
-                            |                    items: {
-                            |                        $type: "ObjectDescriptor",
-                            |                        type: "Email",
-                            |                        widget : "form",
-                            |                        properties: {
-                            |                            email: {
-                            |                                $type: "NodeDescriptor",
-                            |                                title: "Email",
-                            |                                type: "String",
-                            |                                widget: "email",
-                            |                                writeable: true
-                            |                            }
-                            |                        }
-                            |                    }
-                            |                }
-                            |            }
-                            |        },
-                            |        $type: "User",
-                            |        name: "Neo",
-                            |        firstName: "Thomas",
-                            |        lastName: "Anderson",
-                            |        address: {
-                            |            $type: "Address",
-                            |            street: "Unknown",
-                            |            number: "Unknown",
-                            |            city: "Los Angeles",
-                            |            country: "USA"
-                            |        },
-                            |        emails: [{
-                            |            $type: "Email",
-                            |            id: v4(),
-                            |            email: "neo@matrix.com"
-                            |        }]
-                            |    })
                             |
                             |    let form = useForm(user);
                             |

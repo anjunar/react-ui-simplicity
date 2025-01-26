@@ -1,15 +1,14 @@
 import React, {useState} from "react";
 import PageLayout from "../../../layout/content/PageLayout";
 import Section from "../../../layout/content/Section";
-import Materials from "./UserArrayHookPage.json"
-import {HighLight, Input, mapTable, useArray} from "react-ui-simplicity";
+import {HighLight, Input, LinkContainerObject, mapTable, ObjectDescriptor, useArray} from "react-ui-simplicity";
 import Material from "../../../domain/control/Material";
 
-export default function UseArrayHookPage() {
+export default function UseArrayHookPage({table}: { table: [Material[], number, LinkContainerObject, ObjectDescriptor] }) {
 
     const [console, setConsole] = useState("")
 
-    const [materials, size, links, descriptor] = useArray<Material>([...mapTable<Material>(Materials), (path: string[], value : any) => {
+    const [materials, size, links, descriptor] = useArray([...table, (path: string[], value: any) => {
         setConsole(`[property:${path}] [value:${value}]`)
     }])
 
@@ -36,8 +35,8 @@ export default function UseArrayHookPage() {
                         </thead>
                         <tbody>
                         {
-                            materials.map(material => (
-                                <tr key={material.position}>
+                            materials.slice(0, 5).map(material => (
+                                <tr key={material.name}>
                                     <td>
                                         <Input type={"number"} standalone={true}
                                                value={material.position}
@@ -70,19 +69,18 @@ export default function UseArrayHookPage() {
                         {
                             `
                             |import React, {useState} from "react";
-                            |import Materials from "./UserArrayHookPage.json"
                             |import {Input, mapTable, useArray} from "react-ui-simplicity";
                             |import Material from "../../../domain/control/Material";
                             |
-                            |export default function UseArrayHookPage() {
-                            |
-                            |    const [console, setConsole] = useState("")
-                            |
-                            |    const [materials, size, links, descriptor] = useArray<Material>([...mapTable<Material>(Materials), (path: string[], value : any) => {
-                            |        setConsole(\`[property:\${path}] [value:\${value}]\`)
-                            |    }])
-                            |
-                            |    return (
+                            |export default function UseArrayHookPage({table}: { table: [Material[], number, LinkContainerObject, ObjectDescriptor] }) {
+                            |    
+                            |   const [console, setConsole] = useState("")
+                            |    
+                            |   const [materials, size, links, descriptor] = useArray([...table, (path: string[], value: any) => {
+                            |       setConsole(\`[property:\${path}] [value:\${value}]\`)
+                            |   }])
+                            |    
+                            |   return (
                             |        <table className={"table"}>
                             |            <thead>
                             |            <tr>
@@ -94,8 +92,8 @@ export default function UseArrayHookPage() {
                             |            </thead>
                             |            <tbody>
                             |            {
-                            |                materials.map(material => (
-                            |                    <tr key={material.position}>
+                            |                materials.slice(0,5).map(material => (
+                            |                    <tr key={material.name}>
                             |                        <td>
                             |                            <Input type={"number"} standalone={true}
                             |                                   value={material.position}

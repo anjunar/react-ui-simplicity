@@ -210,11 +210,16 @@ function App(properties: App.Attributes) {
                                 <div>
                                     <ul>
                                         <li>
-                                            <Link value={"/hooks/use-array"}>
-                                                <div>
-                                                    <span>Hooks</span>
-                                                </div>
-                                            </Link>
+                                            Hooks
+                                            <ul>
+                                                <li>
+                                                    <Link value={"/hooks/use-array"}>
+                                                        <div>
+                                                            <span>useArray</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                            </ul>
                                         </li>
                                     </ul>
                                 </div>
