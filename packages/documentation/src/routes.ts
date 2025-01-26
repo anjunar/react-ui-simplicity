@@ -21,6 +21,7 @@ import DialogPage from "./pages/component/modal/DialogPage";
 import LinkPage from "./pages/component/navigation/LinkPage";
 import RouterPage from "./pages/component/navigation/RouterPage";
 import UseArrayHookPage from "./pages/platform/hooks/UseArrayHookPage";
+import UseFormHookPage from "./pages/platform/hooks/UseFormHookPage";
 
 export const routes : Route[] = [
     {
@@ -158,6 +159,21 @@ export const routes : Route[] = [
 
                                         if (response.ok) {
                                             return mapTable(await response.json())
+                                        }
+
+                                        throw new Error(response.status.toString())
+                                    }
+                                }
+                            },
+                            {
+                                path: "/use-form",
+                                component : UseFormHookPage,
+                                loader: {
+                                    async user(path, query) {
+                                        const response = await fetch("/assets/person.json")
+
+                                        if (response.ok) {
+                                            return mapForm(await response.json())
                                         }
 
                                         throw new Error(response.status.toString())
