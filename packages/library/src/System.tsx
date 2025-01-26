@@ -2,7 +2,7 @@ import "./System.css"
 import React, {createContext, Dispatch, SetStateAction, useLayoutEffect, useState} from "react";
 import {init} from "./domain/Persistence";
 import {Route} from "./domain/components/navigation/router/Route";
-import Router, {navigate} from "./components/navigation/router/Router";
+import Router from "./components/navigation/router/Router";
 import Input from "./components/inputs/input/Input";
 import Link from "./components/navigation/link/Link";
 import ToolBar from "./components/layout/toolbar/ToolBar";
@@ -96,7 +96,7 @@ function System(properties : System.Attributes) {
                     .catch((response: any) => {
                         if (response.name === "TimeoutError") {
                             setLoading([])
-                            navigate("/errors/timeout")
+                            Router.navigate("/errors/timeout")
                         }
                     })
 

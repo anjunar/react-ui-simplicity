@@ -1,0 +1,31 @@
+{
+  "features": [
+    {
+      "name": "Dynamic Route Matching",
+      "description": "The router dynamically matches the current URL to the predefined routes, handling path parameters and query parameters (e.g., '/user/{id}' matching '/user/123')."
+    },
+    {
+      "name": "Component Loading",
+      "description": "When a route is matched, the corresponding component is loaded. Additionally, the component can load data using a 'loader' function before rendering."
+    },
+    {
+      "name": "State Preservation on Navigation",
+      "description": "The router preserves the scroll position across different routes. It stores the scroll position of the current route and restores it when navigating back to it."
+    },
+    {
+      "name": "Programmatic Navigation",
+      "description": "The router supports programmatic navigation via the 'navigate' function, which allows navigation to a different URL without reloading the page."
+    },
+    {
+      "name": "Context Management",
+      "description": "The router utilizes the `SystemContext` to manage routing-related state and context, providing it to child components within the route."
+    }
+  ],
+  "props": [
+    {
+      "name": "onRoute",
+      "type": "(loading: boolean) => void",
+      "description": "An optional callback function that is triggered when the route is changing. It receives a boolean indicating whether the route is loading (true) or not (false). This can be used to show a loading indicator or handle state transitions."
+    }
+  ]
+}

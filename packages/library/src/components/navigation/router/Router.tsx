@@ -8,19 +8,6 @@ import {v4} from "uuid";
 
 const scrollAreaCache = new Map<string, number>()
 
-export function navigate(url: string, data?: any) {
-    window.history.pushState(data, "", url)
-    window.dispatchEvent(new PopStateEvent("popstate", {state : data}))
-}
-
-export function process(response: Response) {
-    if (response.status === 403) {
-        if (location.search.indexOf("redirect") === -1) {
-            navigate(`/security/login?redirect=${location.pathname}`)
-        }
-    }
-}
-
 function Router(properties: Router.Attributes) {
 
     const {onRoute, ...rest} = properties
@@ -230,6 +217,12 @@ namespace Router {
     export interface Attributes {
         onRoute?: (loading: boolean) => void
     }
+
+    export function navigate(url: string, data?: any) {
+        window.history.pushState(data, "", url)
+        window.dispatchEvent(new PopStateEvent("popstate", {state : data}))
+    }
+
 }
 
 export default Router

@@ -1,9 +1,9 @@
 import "./Link.css"
 import React, {CSSProperties, ReactNode, useLayoutEffect, useState} from "react"
-import {navigate} from "../router/Router";
 import RestLink from "../../../domain/container/LinkObject";
 import LinkContainerObject from "../../../domain/container/LinkContainerObject";
 import LinksObject from "../../../domain/container/LinksObject";
+import Router from "../router/Router";
 
 function Link(properties : Link.Attributes) {
 
@@ -13,7 +13,7 @@ function Link(properties : Link.Attributes) {
 
     const onClick: React.MouseEventHandler<HTMLAnchorElement> = event => {
         event.preventDefault()
-        navigate(value)
+        Router.navigate(value)
     }
 
     useLayoutEffect(() => {

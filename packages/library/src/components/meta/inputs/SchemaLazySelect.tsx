@@ -7,7 +7,6 @@ import NotBlankValidator from "../../../domain/descriptors/validators/NotBlankVa
 import SizeValidator from "../../../domain/descriptors/validators/SizeValidator";
 import {Validator} from "../../shared/Model";
 import {mapTable} from "../../../mapper/JSONMapper";
-import {process} from "../../navigation/router/Router";
 import NodeDescriptor from "../../../domain/descriptors/NodeDescriptor";
 import ObjectDescriptor from "../../../domain/descriptors/ObjectDescriptor";
 import CollectionDescriptor from "../../../domain/descriptors/CollectionDescriptor";
@@ -37,8 +36,6 @@ function SchemaLazySelect(properties: SchemaLazySelect.Attributes) {
                     const [table, size] = mapTable(await response.json())
 
                     return callback(table, size)
-                } else {
-                    process(response)
                 }
             }
         }

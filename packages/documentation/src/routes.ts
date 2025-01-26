@@ -19,6 +19,7 @@ import SchemaTablePage from "./pages/content/meta/SchemaTablePage";
 import WindowPage from "./pages/content/modal/WindowPage";
 import DialogPage from "./pages/content/modal/DialogPage";
 import LinkPage from "./pages/content/navigation/LinkPage";
+import RouterPage from "./pages/content/navigation/RouterPage";
 
 export const routes : Route[] = [
     {
@@ -126,6 +127,10 @@ export const routes : Route[] = [
                             {
                                 path: "/link",
                                 component : LinkPage
+                            },
+                            {
+                                path: "/router",
+                                component : RouterPage
                             }
                         ]
                     }

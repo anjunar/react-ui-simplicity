@@ -187,6 +187,13 @@ function App(properties: App.Attributes) {
                                                 </div>
                                             </Link>
                                         </li>
+                                        <li>
+                                            <Link value={"/navigation/router"}>
+                                                <div className={"center-horizontal"}>
+                                                    <span>Router</span>
+                                                </div>
+                                            </Link>
+                                        </li>
                                     </ul>
                                 </li>
                             </ul>
