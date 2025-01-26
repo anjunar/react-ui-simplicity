@@ -237,7 +237,7 @@ function Input(properties: Input.Attributes) {
             onChange={onInputHandler}
             onFocus={onFocus}
             ref={input}
-            style={{width: "100%"}}
+            style={style}
             type={subType || type}
             value={formatValue()}
             {...rest}

@@ -127,7 +127,6 @@ function System(properties : System.Attributes) {
                     </div>
                     <div slot={"right"}>
                         <div style={{display : "flex", alignItems : "center", gap : "5px", justifyContent : "flex-end"}}>
-                            <Link value={"/imprint"}>Impressum</Link>
                             <Input type={"checkbox"} value={darkMode} onChange={(value: any) => setDarkMode(value)}/>
                         </div>
                     </div>
