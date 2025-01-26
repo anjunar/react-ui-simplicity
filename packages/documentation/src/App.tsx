@@ -226,6 +226,14 @@ function App(properties: App.Attributes) {
                                                         </div>
                                                     </Link>
                                                 </li>
+                                                <li>
+                                                    <Link value={"/hooks/use-input"}>
+                                                        <div>
+                                                            <span>useInput</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+
                                             </ul>
                                         </li>
                                     </ul>

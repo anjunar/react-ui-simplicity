@@ -22,6 +22,7 @@ import LinkPage from "./pages/component/navigation/LinkPage";
 import RouterPage from "./pages/component/navigation/RouterPage";
 import UseArrayHookPage from "./pages/platform/hooks/UseArrayHookPage";
 import UseFormHookPage from "./pages/platform/hooks/UseFormHookPage";
+import UseInputHookPage from "./pages/platform/hooks/UseInputHookPage";
 
 export const routes : Route[] = [
     {
@@ -179,6 +180,10 @@ export const routes : Route[] = [
                                         throw new Error(response.status.toString())
                                     }
                                 }
+                            },
+                            {
+                                path: "/use-input",
+                                component : UseInputHookPage
                             }
                         ]
                     }

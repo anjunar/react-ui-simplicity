@@ -1,0 +1,24 @@
+{
+  "features": [
+    {
+      "name": "Dynamic Form Integration",
+      "description": "Synchronizes input state with the global form state when used within a FormContext, or manages its own state when standalone."
+    },
+    {
+      "name": "State Management",
+      "description": "Tracks the current value of the input field and provides a setter function to update the value. Triggers validation and callback functions on state changes."
+    },
+    {
+      "name": "Model Creation",
+      "description": "Creates a reusable Model object encapsulating input field metadata, value, type, and validation logic."
+    },
+    {
+      "name": "Lifecycle Management",
+      "description": "Automatically registers the input field with the FormContext when mounted and unregisters it upon unmounting, ensuring proper cleanup."
+    },
+    {
+      "name": "Standalone or Context-Based Usage",
+      "description": "Supports both standalone usage and integration with a FormContext, making it flexible for different scenarios."
+    }
+  ]
+}
