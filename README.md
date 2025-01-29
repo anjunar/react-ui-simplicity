@@ -37,7 +37,7 @@ function FormsPage() {
     const [console, setConsole] = useState("")
 
     function onSubmit(name: string, form: FormModel) {
-        setOpen(true)
+        console.log("Submitted")
     }
 
     const user: ActiveObject & any = useForm({

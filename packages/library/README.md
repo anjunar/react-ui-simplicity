@@ -32,12 +32,10 @@ import {ActiveObject, Button, Form, FormModel, Input, InputContainer, SubForm, u
 
 function FormsPage() {
 
-    const [open, setOpen] = useState(false)
-
     const [console, setConsole] = useState("")
 
     function onSubmit(name: string, form: FormModel) {
-        setOpen(true)
+        console.log("Submitted")
     }
 
     const user: ActiveObject & any = useForm({
