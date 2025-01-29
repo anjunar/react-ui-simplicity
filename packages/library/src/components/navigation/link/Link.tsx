@@ -30,9 +30,11 @@ function Link(properties : Link.Attributes) {
         }
     }, [])
 
+    let baseUrl = process.env.PUBLIC_URL
+
     return (
         <a
-            href={value}
+            href={baseUrl + value}
             onClick={onClick}
             {...rest}
             className={activeState ? "active" : ""}>

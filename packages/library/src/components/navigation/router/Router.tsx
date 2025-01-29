@@ -94,7 +94,6 @@ function Router(properties: Router.Attributes) {
 
         const loadComponent = (state? : any) => {
 
-            // @ts-ignore
             let baseUrl = process.env.PUBLIC_URL
 
             let pathname = window.location.pathname.replace(baseUrl, "/").replace("//", "/");
