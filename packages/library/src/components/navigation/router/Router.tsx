@@ -95,9 +95,14 @@ function Router(properties: Router.Attributes) {
         const loadComponent = (state? : any) => {
 
             // @ts-ignore
-            let baseUrl = window.__webpack_public_path__
+            let baseUrl = process.env.PUBLIC_URL
 
-            const pathname = window.location.pathname.replace(baseUrl, "");
+            let pathname = ""
+            if (baseUrl === "/") {
+                pathname = window.location.pathname
+            } else {
+                pathname = window.location.pathname.replace(baseUrl, "");
+            }
             const search = window.location.search;
 
             const option = regexRoutes.find(([regex, route]) => regex.test(pathname));
