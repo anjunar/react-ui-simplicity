@@ -107,7 +107,7 @@ export const routes : Route[] = [
                                 component : SchemaFormPage,
                                 loader: {
                                     async user(path, query) {
-                                        const response = await fetch("/assets/person.json")
+                                        const response = await fetch("./assets/person.json")
 
                                         if (response.ok) {
                                             return mapForm(await response.json())
@@ -158,7 +158,7 @@ export const routes : Route[] = [
                                 component : UseArrayHookPage,
                                 loader : {
                                     async table(path, query) {
-                                        const response = await fetch("/assets/materials.json")
+                                        const response = await fetch("./assets/materials.json")
 
                                         if (response.ok) {
                                             return mapTable(await response.json())
@@ -173,7 +173,7 @@ export const routes : Route[] = [
                                 component : UseFormHookPage,
                                 loader: {
                                     async user(path, query) {
-                                        const response = await fetch("/assets/person.json")
+                                        const response = await fetch("./assets/person.json")
 
                                         if (response.ok) {
                                             return mapForm(await response.json())
@@ -198,7 +198,7 @@ export const routes : Route[] = [
                         component : JSONMapperPage,
                         loader: {
                             async user(path, query) {
-                                const response = await fetch("/assets/person.json")
+                                const response = await fetch("./assets/person.json")
 
                                 if (response.ok) {
                                     return mapForm(await response.json())
