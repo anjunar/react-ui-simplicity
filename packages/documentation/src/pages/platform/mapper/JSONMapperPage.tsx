@@ -96,7 +96,7 @@ export default function JSONMapperPage({user}: { user: User }) {
                                     |    component : JSONMapperPage,
                                     |    loader: {
                                     |        async user(path, query) {
-                                    |            const response = await fetch("/assets/person.json")
+                                    |            const response = await fetch("./assets/person.json")
                                     | 
                                     |            if (response.ok) {
                                     |                return mapForm(await response.json())

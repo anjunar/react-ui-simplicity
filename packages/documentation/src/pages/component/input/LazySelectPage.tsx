@@ -15,7 +15,7 @@ export default function LazySelectPage() {
     const loader = new class extends Pageable.Loader {
         async onLoad(query: Pageable.Query, callback: Pageable.Callback) {
 
-            const response = await fetch("/assets/materials.json")
+            const response = await fetch("./assets/materials.json")
 
             if (response.ok) {
                 let table : any = await response.json();
@@ -86,7 +86,7 @@ export default function LazySelectPage() {
                             |    const loader = new class extends Pageable.Loader {
                             |        async onLoad(query: Pageable.Query, callback: Pageable.Callback) {
                             |
-                            |            const response = await fetch("/assets/materials.json")
+                            |            const response = await fetch("./assets/materials.json")
                             |
                             |            if (response.ok) {
                             |                let rows : any[] = await response.json();

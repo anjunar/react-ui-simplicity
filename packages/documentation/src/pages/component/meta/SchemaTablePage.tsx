@@ -11,7 +11,7 @@ export default function SchemaTablePage() {
     const loader = new class extends SchemaTable.Loader {
         async onLoad(query: SchemaTable.Query, callback: SchemaTable.Callback) {
 
-            const response = await fetch("/assets/materials.json")
+            const response = await fetch("./assets/materials.json")
 
             if (response.ok) {
                 let table : any = await response.json();
@@ -51,7 +51,7 @@ export default function SchemaTablePage() {
                             |    const loader = new class extends SchemaTable.Loader {
                             |        async onLoad(query: SchemaTable.Query, callback: SchemaTable.Callback) {
                             | 
-                            |            const response = await fetch("/assets/materials.json")
+                            |            const response = await fetch("./assets/materials.json")
                             |
                             |            if (response.ok) {
                             |                let table : any = await response.json();
