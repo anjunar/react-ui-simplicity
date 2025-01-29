@@ -94,12 +94,9 @@ function Router(properties: Router.Attributes) {
 
         const loadComponent = (state? : any) => {
 
-            let baseUrl = process.env.PUBLIC_URL
+            const baseUrl = process.env.PUBLIC_URL
 
-            let pathname = window.location.pathname.replace(baseUrl, "/").replace("//", "/");
-
-            console.log(pathname)
-
+            const pathname = window.location.pathname.replace(baseUrl, "/").replace("//", "/");
             const search = window.location.search;
 
             const option = regexRoutes.find(([regex, route]) => regex.test(pathname));

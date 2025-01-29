@@ -30,7 +30,7 @@ function Link(properties : Link.Attributes) {
         }
     }, [])
 
-    let baseUrl = process.env.PUBLIC_URL
+    const baseUrl = process.env.PUBLIC_URL
 
     return (
         <a
