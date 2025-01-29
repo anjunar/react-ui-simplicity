@@ -97,12 +97,10 @@ function Router(properties: Router.Attributes) {
             // @ts-ignore
             let baseUrl = process.env.PUBLIC_URL
 
-            let pathname = ""
-            if (baseUrl === "/") {
-                pathname = window.location.pathname
-            } else {
-                pathname = window.location.pathname.replace(baseUrl, "");
-            }
+            let pathname = window.location.pathname.replace(baseUrl, "/").replace("//", "/");
+
+            console.log(pathname)
+
             const search = window.location.search;
 
             const option = regexRoutes.find(([regex, route]) => regex.test(pathname));
