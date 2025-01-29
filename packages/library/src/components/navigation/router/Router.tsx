@@ -101,7 +101,7 @@ function Router(properties: Router.Attributes) {
             if (baseUrl === "/") {
                 pathname = window.location.pathname
             } else {
-                pathname = "/" + window.location.pathname.replace(baseUrl, "");
+                pathname = window.location.pathname.replace(baseUrl, "");
             }
             const search = window.location.search;
 
