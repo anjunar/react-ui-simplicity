@@ -4,15 +4,14 @@ const HtmlPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
-let publicPath = "/react-ui-simplicity";
-
-module.exports = {
+module.exports = (env) => {
+    return {
     entry: './src/index.tsx',
     output: {
         filename: '[name].[contenthash].js',
         path: path.resolve(__dirname, '../../docs'),
         clean : true,
-        publicPath: publicPath
+        publicPath: env.publicPath
     },
     module: {
         rules: [
@@ -67,7 +66,7 @@ module.exports = {
             ],
         }),
         new webpack.DefinePlugin({
-            "process.env.PUBLIC_URL": JSON.stringify(publicPath),
+            "process.env.PUBLIC_URL": JSON.stringify(env.publicPath),
         })
     ]
-}
+}}
