@@ -36,7 +36,7 @@ function Link(properties : Link.Attributes) {
 
     return (
         <a
-            href={baseUrl + value}
+            href={(baseUrl + value).replace("//", "/")}
             onClick={onClick}
             {...rest}
             className={activeState ? "active" : ""}>
