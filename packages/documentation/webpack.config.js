@@ -54,7 +54,8 @@ module.exports = {
     plugins: [
         new HtmlPlugin({
             template: 'public/index.html',
-            filename: 'index.html'
+            filename: 'index.html',
+            base: "/react-ui-simplicity"
         }),
         new ReactRefreshWebpackPlugin({
             overlay: false
