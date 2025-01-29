@@ -55,7 +55,8 @@ module.exports = (env) => {
     plugins: [
         new HtmlPlugin({
             template: 'public/index.html',
-            filename: 'index.html'
+            filename: 'index.html',
+            base: env.publicPath
         }),
         new ReactRefreshWebpackPlugin({
             overlay: false
