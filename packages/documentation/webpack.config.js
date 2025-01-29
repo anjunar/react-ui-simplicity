@@ -10,7 +10,7 @@ module.exports = {
         filename: '[name].[contenthash].js',
         path: path.resolve(__dirname, '../../docs'),
         clean : true,
-        publicPath: '/'
+        publicPath: "/react-ui-simplicity/"
     },
     module: {
         rules: [
@@ -54,8 +54,7 @@ module.exports = {
     plugins: [
         new HtmlPlugin({
             template: 'public/index.html',
-            filename: 'index.html',
-            base: "/react-ui-simplicity/"
+            filename: 'index.html'
         }),
         new ReactRefreshWebpackPlugin({
             overlay: false
