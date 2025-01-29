@@ -1,8 +1,10 @@
 import React, {useState} from "react";
 import PageLayout from "../../../layout/content/PageLayout";
 import Section from "../../../layout/content/Section";
-import {HighLight, Input, LinkContainerObject, mapTable, ObjectDescriptor, useArray} from "react-ui-simplicity";
+import {HighLight, Input, LinkContainerObject, ObjectDescriptor, useArray} from "react-ui-simplicity";
 import Material from "../../../domain/control/Material";
+import info from "./UseArrayHookPage.json"
+import Features from "../../../layout/content/Features";
 
 export default function UseArrayHookPage({table}: { table: [Material[], number, LinkContainerObject, ObjectDescriptor] }) {
 
@@ -22,6 +24,7 @@ export default function UseArrayHookPage({table}: { table: [Material[], number, 
                     cases such as managing collections in dynamic user interfaces.
                     <br/>
                     <br/>
+                    <Features value={info.features}/>
                 </Section>
                 <Section text={"Example"}>
                     <table className={"table"}>
@@ -36,7 +39,7 @@ export default function UseArrayHookPage({table}: { table: [Material[], number, 
                         <tbody>
                         {
                             materials.slice(0, 5).map(material => (
-                                <tr key={material.name}>
+                                <tr key={material.id}>
                                     <td>
                                         <Input type={"number"} standalone={true}
                                                value={material.position}

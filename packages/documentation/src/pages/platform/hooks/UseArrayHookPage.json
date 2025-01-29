@@ -1,0 +1,24 @@
+{
+  "features": [
+    {
+      "name": "Reactivity",
+      "description": "Tracks and manages updates to an array of ActiveObject instances."
+    },
+    {
+      "name": "Debouncing",
+      "description": "Minimizes frequent updates to the state by debouncing calls, improving performance."
+    },
+    {
+      "name": "Membrane Integration",
+      "description": "Uses the `arrayMembrane` function to wrap and manage reactivity for the array entities."
+    },
+    {
+      "name": "State Management",
+      "description": "Leverages React's useState hook to maintain the reactive state of the array."
+    },
+    {
+      "name": "Callbacks Support",
+      "description": "Allows updates to array values using callback functions, ensuring external changes are managed."
+    }
+  ]
+}

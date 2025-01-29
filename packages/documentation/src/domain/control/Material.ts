@@ -1,7 +1,7 @@
-import {ActiveObject, Basic, Entity} from "react-ui-simplicity";
+import {AbstractEntity, Basic, Entity} from "react-ui-simplicity";
 
 @Entity("Material")
-export default class Material extends ActiveObject {
+export default class Material extends AbstractEntity {
 
     @Basic()
     position : number

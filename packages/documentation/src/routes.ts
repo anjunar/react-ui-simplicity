@@ -24,6 +24,7 @@ import UseArrayHookPage from "./pages/platform/hooks/UseArrayHookPage";
 import UseFormHookPage from "./pages/platform/hooks/UseFormHookPage";
 import UseInputHookPage from "./pages/platform/hooks/UseInputHookPage";
 import UseMatchMediaHookPage from "./pages/platform/hooks/UseMatchMediaHookPage";
+import JSONMapperPage from "./pages/platform/mapper/JSONMapperPage";
 
 export const routes : Route[] = [
     {
@@ -191,6 +192,21 @@ export const routes : Route[] = [
                                 component : UseMatchMediaHookPage
                             }
                         ]
+                    },
+                    {
+                        path : "/mapper",
+                        component : JSONMapperPage,
+                        loader: {
+                            async user(path, query) {
+                                const response = await fetch("/assets/person.json")
+
+                                if (response.ok) {
+                                    return mapForm(await response.json())
+                                }
+
+                                throw new Error(response.status.toString())
+                            }
+                        }
                     }
                 ]
             }

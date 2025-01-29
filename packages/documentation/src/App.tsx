@@ -242,11 +242,17 @@ function App(properties: App.Attributes) {
                                                 </li>
                                             </ul>
                                         </li>
+                                        <li>
+                                            <Link value={"/mapper"}>
+                                                <div>
+                                                    <span>JSON Mapper</span>
+                                                </div>
+                                            </Link>
+                                        </li>
                                     </ul>
                                 </div>
                             </Page>
                         </Pages>
-
                     </div>
                 </Drawer>
                 <Drawer.Content onClick={onLinkClick}>

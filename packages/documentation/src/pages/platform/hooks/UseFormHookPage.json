@@ -1,0 +1,20 @@
+{
+  "features": [
+    {
+      "name": "Reactivity",
+      "description": "Manages the state of an object reactively by using the objectMembrane for change detection."
+    },
+    {
+      "name": "State Management",
+      "description": "Uses React's useState to maintain and update the state of the object."
+    },
+    {
+      "name": "Debouncing",
+      "description": "Prevents frequent state updates by debouncing calls, improving performance."
+    },
+    {
+      "name": "Membrane Integration",
+      "description": "Integrates with the objectMembrane to wrap the object and make it reactive."
+    }
+  ]
+}

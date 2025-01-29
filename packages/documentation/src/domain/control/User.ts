@@ -1,24 +1,24 @@
-import {AbstractEntity, Basic, Entity} from "react-ui-simplicity";
-import Address from "./Address";
-import Email from "./Email";
+    import {AbstractEntity, Basic, Entity} from "react-ui-simplicity";
+    import Address from "./Address";
+    import Email from "./Email";
 
-@Entity("User")
-export default class User extends AbstractEntity {
+    @Entity("User")
+    export default class User extends AbstractEntity {
 
-    $type = "User"
+        $type = "User"
 
-    @Basic()
-    name: string
+        @Basic()
+        name: string
 
-    @Basic()
-    firstName: string
+        @Basic()
+        firstName: string
 
-    @Basic()
-    lastName: string
+        @Basic()
+        lastName: string
 
-    @Basic()
-    address : Address
+        @Basic()
+        address : Address
 
-    @Basic()
-    emails : Email[]
-}
+        @Basic()
+        emails : Email[]
+    }

@@ -1,0 +1,105 @@
+{
+  "features": [
+    {
+      "name": "Object Graph Traversal",
+      "description": "Recursively traverses an object graph to process and deserialize properties, maintaining the schema structure."
+    },
+    {
+      "name": "Schema-Driven Deserialization",
+      "description": "Uses the provided schema (`ObjectDescriptor`) to determine how each property in the object should be deserialized."
+    },
+    {
+      "name": "Dynamic Metadata Access",
+      "description": "Adds a `$meta` method to the object for accessing property metadata from the schema."
+    },
+    {
+      "name": "Pattern Matching for Properties",
+      "description": "Uses pattern matching to handle different property types, such as collections or nested objects."
+    },
+    {
+      "name": "Form Mapping",
+      "description": "Provides the `mapForm` function to deserialize and traverse object graphs tailored for form handling."
+    },
+    {
+      "name": "Table Mapping",
+      "description": "Provides the `mapTable` function to deserialize and traverse data structures for tables, supporting rows, size, and links."
+    }
+  ],
+  "props": {
+    "object": {
+      "type": "any",
+      "description": "The object to be traversed, deserialized, or mapped."
+    },
+    "schema": {
+      "type": "ObjectDescriptor",
+      "description": "The schema descriptor that defines the structure and metadata for the object graph."
+    },
+    "buildObjectGraph": {
+      "type": "boolean",
+      "description": "Flag to control whether nested object graphs should be built during traversal and mapping."
+    }
+  },
+  "methods": {
+    "traverseObjectGraph": {
+      "description": "Recursively traverses an object graph and processes its properties based on the schema descriptor.",
+      "parameters": [
+        {
+          "name": "object",
+          "type": "any",
+          "description": "The root object to start traversal."
+        },
+        {
+          "name": "schema",
+          "type": "ObjectDescriptor",
+          "description": "The schema describing the structure of the object graph."
+        },
+        {
+          "name": "buildObjectGraph",
+          "type": "boolean",
+          "default": true,
+          "description": "Determines whether to build nested object graphs during traversal."
+        }
+      ]
+    },
+    "mapForm": {
+      "description": "Deserializes a form object and traverses its graph using the associated schema, returning a reactive entity.",
+      "parameters": [
+        {
+          "name": "object",
+          "type": "any",
+          "description": "The form object to be deserialized and traversed."
+        },
+        {
+          "name": "buildObjectGraph",
+          "type": "boolean",
+          "default": false,
+          "description": "Flag to enable or disable building nested object graphs."
+        }
+      ],
+      "returns": {
+        "type": "T",
+        "description": "The deserialized and processed form entity."
+      }
+    },
+    "mapTable": {
+      "description": "Deserializes a table object and traverses its graph using the associated schema, returning the table's structure.",
+      "parameters": [
+        {
+          "name": "object",
+          "type": "any",
+          "description": "The table object to be deserialized and traversed."
+        },
+        {
+          "name": "buildObjectGraph",
+          "type": "boolean",
+          "default": false,
+          "description": "Flag to enable or disable building nested object graphs."
+        }
+      ],
+      "returns": {
+        "type": "[T[], number, LinkContainerObject, ObjectDescriptor]",
+        "description": "An array containing the table rows, size, link container, and schema descriptor."
+      }
+    }
+  }
+}
