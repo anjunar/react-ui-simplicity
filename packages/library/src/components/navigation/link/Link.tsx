@@ -32,6 +32,8 @@ function Link(properties : Link.Attributes) {
 
     const baseUrl = process.env.PUBLIC_URL
 
+    console.log(baseUrl)
+
     return (
         <a
             href={baseUrl + value}

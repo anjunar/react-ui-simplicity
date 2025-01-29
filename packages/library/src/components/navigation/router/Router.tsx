@@ -96,6 +96,8 @@ function Router(properties: Router.Attributes) {
 
             const baseUrl = process.env.PUBLIC_URL
 
+            console.log(baseUrl)
+
             const pathname = window.location.pathname.replace(baseUrl, "/").replace("//", "/");
             const search = window.location.search;
 
