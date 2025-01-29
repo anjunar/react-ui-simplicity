@@ -4,7 +4,7 @@ const HtmlPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
-let publicPath = "/";
+let publicPath = "/react-ui-simplicity";
 
 module.exports = {
     entry: './src/index.tsx',
