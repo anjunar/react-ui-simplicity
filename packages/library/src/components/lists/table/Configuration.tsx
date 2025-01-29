@@ -1,14 +1,14 @@
 import React, {useLayoutEffect} from "react"
 import Table from "./Table"
-import {Callback, Loader, Query} from "../../shared/Pageable";
+import Pageable from "../../shared/Pageable";
 import Input from "../../inputs/input/Input";
 
 function Configuration(properties : Configuration.Attributes) {
 
     const {columns, onSearch , filters,filterData, setColumns} = properties
 
-    const loader = new (class extends Loader {
-        onLoad(query : Query, callback : Callback) {
+    const loader = new (class extends Pageable.Loader {
+        onLoad(query : Pageable.Query, callback : Pageable.Callback) {
             let rows = columns.slice(query.index, query.index + query.limit)
             callback(rows, columns.length)
         }
