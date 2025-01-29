@@ -9,16 +9,19 @@ function Link(properties : Link.Attributes) {
 
     const {data, value, children, ...rest} = properties
 
+    const baseUrl = process.env.PUBLIC_URL
+    let href = (baseUrl + value).replace("//", "/");
+
     const [activeState, setActiveState] = useState(false)
 
     const onClick: React.MouseEventHandler<HTMLAnchorElement> = event => {
         event.preventDefault()
-        Router.navigate(value)
+        Router.navigate(href)
     }
 
     useLayoutEffect(() => {
         let listener = () => {
-            setActiveState(window.location.pathname === value)
+            setActiveState(window.location.pathname === href)
         }
 
         listener()
@@ -30,13 +33,9 @@ function Link(properties : Link.Attributes) {
         }
     }, [])
 
-    const baseUrl = process.env.PUBLIC_URL
-
-    console.log(baseUrl)
-
     return (
         <a
-            href={(baseUrl + value).replace("//", "/")}
+            href={href}
             onClick={onClick}
             {...rest}
             className={activeState ? "active" : ""}>
