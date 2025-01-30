@@ -6,7 +6,6 @@ export default {
     entry: './index.ts',
     mode: "development",
     devtool: "source-map",
-    target: 'node',
     output: {
         filename: 'index.js',
         path: path.resolve('build'),
@@ -40,6 +39,7 @@ export default {
         extensions: ['.tsx', '.ts', '.js']
     },
     externals: [nodeExternals({
-        modulesDir: path.resolve("../../node_modules")
+        modulesDir: path.resolve("../../node_modules"),
+        importType : "module"
     })]
 }
