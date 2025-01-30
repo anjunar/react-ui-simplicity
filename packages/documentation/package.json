@@ -16,7 +16,8 @@
     "highlightjs": "^9.16.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-ui-simplicity": "^1.1.1",
+    "react-ui-simplicity": "^1.1.4",
+    "url": "^0.11.4",
     "uuid": "^11.0.5"
   },
   "devDependencies": {

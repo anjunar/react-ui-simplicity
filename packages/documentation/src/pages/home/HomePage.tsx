@@ -5,7 +5,7 @@ function HomePage(properties : Home.Attributes) {
         <div className={"center"}>
             <div style={{fontSize : "9vw"}}>
                 <h1 style={{fontSize : "1em"}}>React UI Simplicity</h1>
-                <h1 style={{fontSize : "0.5em"}}>Component Framework v1.1.3</h1>
+                <h1 style={{fontSize : "0.5em"}}>Component Framework v1.1.4</h1>
             </div>
         </div>
     )
