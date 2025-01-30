@@ -1,15 +1,15 @@
-const webpack = require('webpack');
-const path = require('path');
-const nodeExternals = require('webpack-node-externals');
+import webpack from 'webpack';
+import path from 'path';
+import nodeExternals from 'webpack-node-externals';
 
-module.exports = {
+export default {
     entry: './index.ts',
     mode: "development",
     devtool: "source-map",
     target: 'node',
     output: {
         filename: 'index.js',
-        path: path.resolve(__dirname, 'build'),
+        path: path.resolve('build'),
         clean : true,
         library: {
             type: "module"
@@ -40,6 +40,6 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js']
     },
     externals: [nodeExternals({
-        modulesDir: path.resolve(__dirname, "../../node_modules")
+        modulesDir: path.resolve("../../node_modules")
     })]
 }
