@@ -12,10 +12,12 @@ module.exports = {
         path: path.resolve(__dirname, 'build'),
         clean : true,
         library: {
-            name : "react-ui-simplicity",
-            type: "umd"
+            type: "module"
         },
         globalObject: "this"
+    },
+    experiments: {
+        outputModule: true,
     },
     module: {
         rules: [
