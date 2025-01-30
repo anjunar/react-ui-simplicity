@@ -1,10 +1,10 @@
 import "./Router.css"
-import React, {Dispatch, SetStateAction, useContext, useEffect, useLayoutEffect, useRef, useState} from "react"
-import {Route} from "../../../domain/components/navigation/router/Route";
-import PathParams from "../../../domain/components/navigation/router/PathParams";
-import QueryParams from "../../../domain/components/navigation/router/QueryParams";
+import React, {Dispatch, FunctionComponent, SetStateAction, useContext, useEffect, useLayoutEffect, useRef, useState} from "react"
 import {SystemContext, SystemContextHolder, WindowRef} from "../../../System";
 import {v4} from "uuid";
+import Route = Router.Route;
+import QueryParams = Router.QueryParams;
+import PathParams = Router.PathParams;
 
 const scrollAreaCache = new Map<string, number>()
 
@@ -223,6 +223,26 @@ namespace Router {
     export function navigate(url: string, data?: any) {
         window.history.pushState(data, "", url)
         window.dispatchEvent(new PopStateEvent("popstate", {state : data}))
+    }
+
+    export interface PathParams {
+        [key : string] : string
+    }
+
+    export interface QueryParams {
+        [key : string] : string
+    }
+
+    export interface Loader {
+        [key : string] : (path : PathParams, query : QueryParams) => Promise<any>
+    }
+
+    export interface Route {
+        path  : string
+        subRouter? : boolean
+        component? : FunctionComponent<any>
+        children? : Route[]
+        loader? : Loader
     }
 
 }

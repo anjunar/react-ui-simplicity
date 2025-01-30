@@ -1,4 +1,4 @@
-import {Dialog, mapForm, mapTable, Route, Window} from "react-ui-simplicity";
+import {Dialog, mapForm, mapTable, Router, Window} from "react-ui-simplicity";
 import App from "./App";
 import HomePage from "./pages/home/HomePage";
 import FormsPage from "./pages/component/FormsPage";
@@ -26,7 +26,7 @@ import UseInputHookPage from "./pages/platform/hooks/UseInputHookPage";
 import UseMatchMediaHookPage from "./pages/platform/hooks/UseMatchMediaHookPage";
 import JSONMapperPage from "./pages/platform/mapper/JSONMapperPage";
 
-export const routes : Route[] = [
+export const routes : Router.Route[] = [
     {
         path : "/",
         subRouter : true,

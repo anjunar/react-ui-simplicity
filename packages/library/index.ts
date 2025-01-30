@@ -76,11 +76,6 @@ export {default as EditorModel} from "./src/domain/components/input/editor/Edito
 export {default as Media} from "./src/domain/components/input/image/Media"
 export {default as Thumbnail} from "./src/domain/components/input/image/Thumbnail"
 
-export * from "./src/domain/components/navigation/router/Loader"
-export * from "./src/domain/components/navigation/router/Route"
-export * from "./src/domain/components/navigation/router/PathParams"
-export * from "./src/domain/components/navigation/router/QueryParams"
-
 export {default as CollectionDescriptor} from "./src/domain/descriptors/CollectionDescriptor"
 export {default as EnumDescriptor} from "./src/domain/descriptors/EnumDescriptor"
 export {default as NodeDescriptor} from "./src/domain/descriptors/NodeDescriptor"

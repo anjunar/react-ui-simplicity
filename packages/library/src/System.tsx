@@ -1,7 +1,6 @@
 import "./System.css"
 import React, {createContext, Dispatch, SetStateAction, useLayoutEffect, useState} from "react";
 import {init} from "./domain/Persistence";
-import {Route} from "./domain/components/navigation/router/Route";
 import Router from "./components/navigation/router/Router";
 import Input from "./components/inputs/input/Input";
 import Link from "./components/navigation/link/Link";
@@ -31,11 +30,11 @@ export class WindowRef {
 
 export class SystemContextHolder {
 
-    routes: Route[]
+    routes: Router.Route[]
 
     windows: [WindowRef[], Dispatch<SetStateAction<WindowRef[]>>]
 
-    constructor(routes: Route[], windows: [WindowRef[], Dispatch<SetStateAction<WindowRef[]>>]) {
+    constructor(routes: Router.Route[], windows: [WindowRef[], Dispatch<SetStateAction<WindowRef[]>>]) {
         this.routes = routes
         this.windows = windows
     }
@@ -139,7 +138,7 @@ function System(properties : System.Attributes) {
 namespace System {
     export interface Attributes {
 
-        routes : Route[]
+        routes : Router.Route[]
 
     }
 }
