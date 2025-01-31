@@ -14,10 +14,10 @@
   "dependencies": {
     "@js-joda/core": "^5.6.4",
     "@js-joda/locale_de": "^4.15.1",
-    "highlightjs": "^9.16.2",
+    "highlight.js": "^11.11.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-ui-simplicity": "^1.1.8",
+    "react-ui-simplicity": "^1.2.5",
     "url": "^0.11.4",
     "uuid": "^11.0.5"
   },
@@ -26,6 +26,7 @@
     "@types/react-highlight": "^0.12.8",
     "copy-webpack-plugin": "^12.0.2",
     "html-webpack-plugin": "^5.6.3",
+    "postcss-loader": "^8.1.1",
     "source-map-loader": "^5.0.0",
     "webpack-dev-server": "^5.2.0"
   }

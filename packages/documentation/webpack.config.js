@@ -20,13 +20,10 @@ export default (env) => {
                     use: 'ts-loader',
                     exclude: /node_modules/,
                 },
-                /*
-                            {
-                                test: /\.(tsx|ts|js|jsx|css)$/,
-                                use: ['source-map-loader'],
-                                enforce: 'pre',
-                            },
-                */
+                {
+                    test: /\.(tsx|ts|js|jsx|css)$/,
+                    use: ['source-map-loader']
+                },
                 {
                     test: /\.css$/i,
                     use: ["style-loader", "css-loader"]
