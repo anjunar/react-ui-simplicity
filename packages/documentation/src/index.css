@@ -21,3 +21,9 @@
     -webkit-font-smoothing: antialiased;
     background-color: inherit;
 }
+
+button.active {
+
+    color : var(--color-selected)
+
+}

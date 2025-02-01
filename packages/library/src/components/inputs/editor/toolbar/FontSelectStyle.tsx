@@ -1,4 +1,4 @@
-import React, {CSSProperties, useEffect, useState} from "react"
+import React, {CSSProperties, useEffect, useLayoutEffect, useState} from "react"
 
 function FontSelectStyle(properties: FontSelectStyle.Attributes) {
 
@@ -18,9 +18,14 @@ function FontSelectStyle(properties: FontSelectStyle.Attributes) {
         setValue(callback(computedStyle, element))
     }
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (editableContent.current) {
             editableContent.current.addEventListener("click", handler)
+        }
+        return () => {
+            if (editableContent.current) {
+                editableContent.current.removeEventListener("click", handler)
+            }
         }
     }, [])
 
@@ -34,7 +39,7 @@ function FontSelectStyle(properties: FontSelectStyle.Attributes) {
 namespace FontSelectStyle {
     export interface Attributes {
         children: React.ReactNode
-        editableContent: any
+        editableContent: React.RefObject<HTMLDivElement>
         command: any
         style?: CSSProperties
         callback: (css: CSSStyleDeclaration, element: any) => string

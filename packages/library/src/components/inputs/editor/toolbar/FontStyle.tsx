@@ -15,7 +15,13 @@ function FontStyle(properties: FontStyle.Attributes) {
             if (anchorNode?.parentElement) {
                 if (callback) {
                     let computedStyle = window.getComputedStyle(anchorNode.parentElement)
-                    setSelected(callback(computedStyle))
+                    let selected = callback(computedStyle);
+                    if (selected) {
+                        anchorNode.parentElement.style.textAlign = ""
+                        setSelected(false)
+                    } else {
+                        setSelected(selected)
+                    }
                 }
             }
         }
@@ -31,6 +37,12 @@ function FontStyle(properties: FontStyle.Attributes) {
     useEffect(() => {
         if (editableContent.current) {
             editableContent.current.addEventListener("click", handler)
+        }
+        return () => {
+            if (editableContent.current) {
+                editableContent.current.removeEventListener("click", handler)
+            }
+
         }
     }, [])
 
@@ -48,7 +60,7 @@ function FontStyle(properties: FontStyle.Attributes) {
 namespace FontStyle {
     export interface Attributes {
         children: React.ReactNode
-        editableContent: any
+        editableContent: React.RefObject<HTMLDivElement>
         command: any
         callback?: (css : CSSStyleDeclaration) => boolean
     }

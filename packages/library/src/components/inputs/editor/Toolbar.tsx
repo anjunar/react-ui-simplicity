@@ -116,9 +116,8 @@ function Toolbar(properties: Toolbar.Attributes) {
                         >
                             <option value="Georgia, serif">Georgia</option>
                             <option value="Palatino Linotype, serif">Palatino</option>
-                            <option value="Times New Roman, serif">Times new Roman</option>
                             <option value="Arial, serif">Arial</option>
-                            <option value="Comic Sans MS, serif">Comic Sans MS</option>
+                            <option value="Comic Sans MS, serif">Comic Sans</option>
                             <option value="Helvetica, serif">Helvetica</option>
                             <option value="Impact, serif">Impact</option>
                             <option value="Lucida, serif">Lucida</option>
@@ -133,6 +132,7 @@ function Toolbar(properties: Toolbar.Attributes) {
                 <Page>
                     <div className={"toolbox"}>
                         <FontSelectStyle
+                            key={"fontSize"}
                             editableContent={editableContent}
                             command={"fontSize"}
                             callback={value => fontSizeTranslate(value)}
@@ -146,8 +146,11 @@ function Toolbar(properties: Toolbar.Attributes) {
                             <option value="6">xx-large</option>
                         </FontSelectStyle>
 
-                        <FontSelectStyle editableContent={editableContent} command={"formatBlock"}
-                                         callback={(value, element) => element.localName}>
+                        <FontSelectStyle
+                            key={"formatBlock"}
+                            editableContent={editableContent}
+                            command={"formatBlock"}
+                            callback={(value, element) => element.localName}>
                             <option value="div">Format</option>
                             <option value="h1">H1</option>
                             <option value="h2">H2</option>
@@ -267,7 +270,7 @@ function Toolbar(properties: Toolbar.Attributes) {
 
 namespace Toolbar {
     export interface Attributes {
-        editableContent: React.MutableRefObject<HTMLDivElement>
+        editableContent: React.RefObject<HTMLDivElement>
         style: CSSProperties,
         page: number
     }

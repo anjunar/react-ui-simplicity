@@ -34,7 +34,11 @@ function FontInputStyle(properties: FontInputStyle.Attributes) {
         if (editableContent.current) {
             editableContent.current.addEventListener("click", handler)
         }
-
+        return () => {
+            if (editableContent.current) {
+                editableContent.current.removeEventListener("click", handler)
+            }
+        }
     }, [])
 
     return (
@@ -47,7 +51,7 @@ function FontInputStyle(properties: FontInputStyle.Attributes) {
 
 namespace FontInputStyle {
     export interface Attributes {
-        editableContent: any
+        editableContent: React.RefObject<HTMLDivElement>
         command: any
         style?: CSSProperties
         placeholder: string

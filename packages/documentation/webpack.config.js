@@ -55,9 +55,11 @@ export default (env) => {
                 filename: 'index.html',
                 base: env.publicPath
             }),
+/*
             new ReactRefreshWebpackPlugin({
                 overlay: false
             }),
+*/
             new CopyWebpackPlugin({
                 patterns: [
                     {from: 'public/assets', to: 'assets'},
