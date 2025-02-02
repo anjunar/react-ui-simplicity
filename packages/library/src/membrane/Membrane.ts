@@ -140,6 +140,14 @@ export function arrayMembrane(array : any[], callbacks : ((name : string[], valu
         },
         get(target: any[], p: string, receiver: any) {
 
+            if (p === "$callbacks") {
+                return callbacks
+            }
+
+            if (p === "$path") {
+                return path
+            }
+
             let object = Reflect.get(target, p, receiver);
 
             let newPath = Array.from(path)

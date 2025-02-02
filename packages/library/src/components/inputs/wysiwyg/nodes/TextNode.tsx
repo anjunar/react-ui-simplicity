@@ -24,27 +24,6 @@ export default function TextNode({ast}: { ast: TextNodeModel[] }) {
         }
     }
 
-    const onKeyDown = (event: KeyboardEvent) => {
-
-        let cursorPosition = getCursorPosition()
-
-        switch (event.key) {
-            case "Backspace" : {
-                ast.splice(cursorPosition, 1)
-                ast[cursorPosition - 1].cursor = true
-            } break
-            case "ArrowLeft" : {
-                ast[cursorPosition].cursor = false
-                ast[cursorPosition - 1].cursor = true
-            } break
-            case "ArrowRight" : {
-                ast[cursorPosition].cursor = false
-                ast[cursorPosition + 1].cursor = true
-            } break
-        }
-    }
-
-
     useLayoutEffect(() => {
         const selection = window.getSelection();
         if (selection?.rangeCount) {
@@ -65,15 +44,13 @@ export default function TextNode({ast}: { ast: TextNodeModel[] }) {
         }
 
         document.addEventListener("click", onClick)
-        document.addEventListener("keydown", onKeyDown)
         return () => {
             document.removeEventListener("click", onClick)
-            document.removeEventListener("keydown", onKeyDown)
         }
     }, [ast])
 
     return (
-        <span ref={span} style={{fontWeight: ast[0].bold ? "bold" : ""}}>
+        <span ref={span} style={{fontWeight: ast[0]?.bold ? "bold" : "", fontStyle: ast[0]?.italic ? "italic" : ""}}>
             {ast.map(segment => segment.text).join("")}
         </span>
     )
