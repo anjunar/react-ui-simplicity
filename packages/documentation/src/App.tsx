@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react"
 import {Drawer, Link, Page, Pages, Router, Tab, Tabs, ToolBar, useMatchMedia, Viewport} from "react-ui-simplicity";
 import {init} from "./domain/Persistence";
 import Header from "./layout/Header";
+import WysiwygPage from "./pages/component/input/WysiwygPage";
 
 init()
 
@@ -85,6 +86,13 @@ function App(properties: App.Attributes) {
                                                     <Link value={"/forms/image"}>
                                                         <div>
                                                             <span>Image Upload</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link value={"/forms/wysiwyg"}>
+                                                        <div>
+                                                            <span>Wysiwyg</span>
                                                         </div>
                                                     </Link>
                                                 </li>
