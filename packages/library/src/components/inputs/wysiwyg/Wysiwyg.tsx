@@ -30,11 +30,22 @@ export class TextNodeModel extends NodeModel {
 
 function Wysiwyg(properties: Wysiwyg.Attributes) {
 
-    const state = useForm<{ast : NodeModel[]}>({
-        ast : []
-    })
+    const state = useForm<{ast : NodeModel[]}>(() => {
+        let pm1 = new ParagraphModel();
+        let tm1 = new TextNodeModel();
+        tm1.text = "t"
+        tm1.cursor = true
+        pm1.children.push(tm1)
 
-    let active = state.ast as any
+        let pm2 = new ParagraphModel();
+        let tm2 = new TextNodeModel();
+        tm2.text = "a"
+        pm2.children.push(tm2)
+
+        return {
+            ast : [pm1, pm2]
+        }
+    })
 
     const traverseAST = (ast : NodeModel[], callback : (value : NodeModel, ast : NodeModel[]) => any) => {
         for (const node of ast) {
@@ -76,67 +87,6 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     }
 
-    const getCursorPosition = (ast : NodeModel[]) => {
-        return traverseAST(ast, (node, ast) => {
-            if (node instanceof TextNodeModel) {
-                if (node.cursor) {
-                    return ast.findIndex((node : any) => node.cursor)
-                }
-            }
-        })
-    }
-
-    const handler = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        event.preventDefault();
-
-        let cursorPosition = getCursorPosition(state.ast) | 0;
-
-        if (event.key.length === 1) {
-            traverseAST(state.ast, (value) => {
-                if (value instanceof TextNodeModel) {
-                    value.cursor = false
-                }
-            })
-
-            let model = new TextNodeModel()
-            model.text = event.key
-            model.cursor = true
-
-            state.ast.splice(cursorPosition + 1, 0, model)
-        }
-
-        switch (event.key) {
-            case "Backspace" : {
-                state.ast.splice(cursorPosition, 1)
-                let model = state.ast[cursorPosition - 1];
-                if (model instanceof TextNodeModel) {
-                    model.cursor = true
-                }
-            } break
-            case "ArrowLeft" : {
-                let oldModel = state.ast[cursorPosition];
-                if (oldModel instanceof TextNodeModel) {
-                    oldModel.cursor = false
-                }
-                let newModel = state.ast[cursorPosition - 1];
-                if (newModel instanceof TextNodeModel) {
-                    newModel.cursor = true
-                }
-            } break
-            case "ArrowRight" : {
-                let oldModel = state.ast[cursorPosition];
-                if (oldModel instanceof TextNodeModel) {
-                    oldModel.cursor = false
-                }
-                let newModel = state.ast[cursorPosition + 1];
-                if (newModel instanceof TextNodeModel) {
-                    newModel.cursor = true
-                }
-            } break
-        }
-
-    };
-
     useLayoutEffect(() => {
         let selectionListener = () => {
             traverseAST(state.ast, (value) => {
@@ -148,22 +98,34 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             if (selection?.rangeCount && ! selection.isCollapsed) {
                 let rangeAt = selection.getRangeAt(0);
 
-                const [startNode, startIndex] = traverseAST(state.ast, (node, ast) => {
+                const startNode= traverseAST(state.ast, (node, ast) => {
                     if (node.$resolve.node === rangeAt.startContainer) {
-                        return [node, ast.findIndex(elem => node.id === elem.id) + rangeAt.startOffset]
+                        let index = ast.findIndex(elem => node.id === elem.id) + rangeAt.startOffset;
+                        return ast[index]
                     }
                 })
 
-                const [endNode, endIndex] = traverseAST(state.ast, (node, ast) => {
+                const endNode = traverseAST(state.ast, (node, ast) => {
                     if (node.$resolve.node === rangeAt.endContainer) {
-                        return [node, ast.findIndex(elem => node.id === elem.id) + rangeAt.endOffset]
+                        let index = ast.findIndex(elem => node.id === elem.id) + rangeAt.endOffset;
+                        return ast[index]
                     }
                 })
 
-                for (let i = startIndex; i < endIndex; i++) {
-                    // @ts-ignore
-                    state.ast[i].selected = true
-                }
+                let selectionEnabler = false
+                traverseAST(state.ast, (value, ast) => {
+                    if (value.id === startNode.id) {
+                        selectionEnabler = true
+                    }
+                    if (value.id === endNode?.id) {
+                        selectionEnabler = false
+                    }
+                    if (selectionEnabler) {
+                        if (value instanceof TextNodeModel) {
+                            value.selected = true
+                        }
+                    }
+                })
             }
 
         }
@@ -186,12 +148,13 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     return (
         <div>
-            <div contentEditable={true} suppressContentEditableWarning={true} onKeyDown={handler}>
+            <div contentEditable={true} suppressContentEditableWarning={true} style={{height : 300}}>
                 { NodeFactory(state.ast) }
             </div>
             <button onClick={() => onBoldClick(state.ast)}>Bold</button>
             <button onClick={() => onItalicClick(state.ast)}>Italic</button>
         </div>
+
     )
 }
 

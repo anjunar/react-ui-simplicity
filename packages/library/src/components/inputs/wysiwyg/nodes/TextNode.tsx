@@ -12,29 +12,34 @@ export default function TextNode({ast}: { ast: TextNodeModel[] }) {
         return range.startOffset - 1
     }
 
-    const onClick = () => {
-        const selection = window.getSelection();
-        const range = selection.getRangeAt(0)
-        if (range.startContainer === span.current.firstChild) {
-            let cursorPosition = getCursorPosition();
-            let model = ast[cursorPosition];
-            if (model) {
-                model.cursor = true
+    const onClick = (event : any) => {
+        setTimeout(() => {
+            const selection = window.getSelection();
+            const range = selection.getRangeAt(0)
+            if (range.startContainer === span.current.firstChild) {
+                let cursorPosition = getCursorPosition();
+                let model = ast[cursorPosition];
+                if (model) {
+                    model.cursor = true
+                }
             }
-        }
+        }, 100)
     }
 
     useLayoutEffect(() => {
-        const selection = window.getSelection();
-        if (selection?.rangeCount) {
-            if (selection.isCollapsed) {
-                const range = selection.getRangeAt(0);
-                const offset = ast.findIndex(segment => segment.cursor)
-                if (offset > -1) {
-                    range.setStart(span.current.firstChild, offset + 1);
-                    range.collapse(true)
-                    selection.removeAllRanges();
-                    selection.addRange(range);
+        let position = getCursorPosition();
+        if (position > -1) {
+            const selection = window.getSelection();
+            if (selection?.rangeCount) {
+                if (selection.isCollapsed) {
+                    const range = selection.getRangeAt(0);
+                    const offset = ast.findIndex(segment => segment.cursor)
+                    if (offset > -1) {
+                        range.setStart(span.current.firstChild, offset + 1);
+                        range.collapse(true)
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
                 }
             }
         }
@@ -43,10 +48,12 @@ export default function TextNode({ast}: { ast: TextNodeModel[] }) {
             element.node = span.current.firstChild
         }
 
-        document.addEventListener("click", onClick)
+        span.current.parentElement.addEventListener("click", onClick)
+
         return () => {
-            document.removeEventListener("click", onClick)
+            span.current.parentElement.removeEventListener("click", onClick)
         }
+
     }, [ast])
 
     return (

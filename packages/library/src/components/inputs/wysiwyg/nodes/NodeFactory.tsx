@@ -1,4 +1,4 @@
-import {NodeModel, TextNodeModel} from "../Wysiwyg";
+import {NodeModel, ParagraphModel, TextNodeModel} from "../Wysiwyg";
 import {findKeyByValue, groupByConsecutiveMulti} from "../Util";
 import TextNode from "./TextNode";
 import React from "react";
@@ -27,7 +27,7 @@ export function NodeFactory(nodes: NodeModel[]) {
                         return (<TextNode key={segments[0].id} ast={membrane}/>);
                     })
             case "p" :
-                return <ParagraphNode ast={group}/>
+                return group.map(model => <ParagraphNode key={model.id} ast={model as ParagraphModel}/>)
         }
     }
 
