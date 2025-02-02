@@ -2,7 +2,9 @@ import React, {useLayoutEffect} from "react";
 import {NodeModel, ParagraphModel, TextNodeModel} from "../Wysiwyg";
 import {NodeFactory} from "./NodeFactory";
 
-export default function ParagraphNode({ast}: { ast: ParagraphModel }) {
+function ParagraphNode(properties : ParagraphNode.Attributes) {
+
+    const {ast, textClickCallback} = properties
 
     const traverseAST = (ast : NodeModel[], callback : (value : NodeModel, ast : NodeModel[]) => any) => {
         for (const node of ast) {
@@ -41,56 +43,53 @@ export default function ParagraphNode({ast}: { ast: ParagraphModel }) {
     const handler = (event: KeyboardEvent) => {
         event.preventDefault();
 
-        setTimeout(() => {
-            let cursorPosition = getCursorPosition(ast.children);
+        let cursorPosition = getCursorPosition(ast.children);
 
-            if (cursorPosition > -1) {
-                if (event.key.length === 1) {
-                    traverseAST(ast.children, (value) => {
-                        if (value instanceof TextNodeModel) {
-                            value.cursor = false
-                        }
-                    })
+        if (cursorPosition > -1) {
+            if (event.key.length === 1) {
+                traverseAST(ast.children, (value) => {
+                    if (value instanceof TextNodeModel) {
+                        value.cursor = false
+                    }
+                })
 
-                    let model = new TextNodeModel()
-                    model.text = event.key
-                    model.cursor = true
+                let model = new TextNodeModel()
+                model.text = event.key
+                model.cursor = true
 
-                    ast.children.splice(cursorPosition + 1, 0, model)
-                }
-
-                switch (event.key) {
-                    case "Backspace" : {
-                        ast.children.splice(cursorPosition, 1)
-                        let model = ast.children[cursorPosition - 1];
-                        if (model instanceof TextNodeModel) {
-                            model.cursor = true
-                        }
-                    } break
-                    case "ArrowLeft" : {
-                        let oldModel = ast.children[cursorPosition];
-                        if (oldModel instanceof TextNodeModel) {
-                            oldModel.cursor = false
-                        }
-                        let newModel = ast.children[cursorPosition - 1];
-                        if (newModel instanceof TextNodeModel) {
-                            newModel.cursor = true
-                        }
-                    } break
-                    case "ArrowRight" : {
-                        let oldModel = ast.children[cursorPosition];
-                        if (oldModel instanceof TextNodeModel) {
-                            oldModel.cursor = false
-                        }
-                        let newModel = ast.children[cursorPosition + 1];
-                        if (newModel instanceof TextNodeModel) {
-                            newModel.cursor = true
-                        }
-                    } break
-                }
+                ast.children.splice(cursorPosition + 1, 0, model)
             }
 
-        }, 200)
+            switch (event.key) {
+                case "Backspace" : {
+                    ast.children.splice(cursorPosition, 1)
+                    let model = ast.children[cursorPosition - 1];
+                    if (model instanceof TextNodeModel) {
+                        model.cursor = true
+                    }
+                } break
+                case "ArrowLeft" : {
+                    let oldModel = ast.children[cursorPosition];
+                    if (oldModel instanceof TextNodeModel) {
+                        oldModel.cursor = false
+                    }
+                    let newModel = ast.children[cursorPosition - 1];
+                    if (newModel instanceof TextNodeModel) {
+                        newModel.cursor = true
+                    }
+                } break
+                case "ArrowRight" : {
+                    let oldModel = ast.children[cursorPosition];
+                    if (oldModel instanceof TextNodeModel) {
+                        oldModel.cursor = false
+                    }
+                    let newModel = ast.children[cursorPosition + 1];
+                    if (newModel instanceof TextNodeModel) {
+                        newModel.cursor = true
+                    }
+                } break
+            }
+        }
 
     };
 
@@ -104,7 +103,16 @@ export default function ParagraphNode({ast}: { ast: ParagraphModel }) {
 
     return (
         <p>
-            {NodeFactory(ast.children)}
+            {NodeFactory(ast.children, textClickCallback)}
         </p>
     )
 }
+
+namespace ParagraphNode {
+    export interface Attributes {
+        ast: ParagraphModel
+        textClickCallback : (node : TextNodeModel) => void
+    }
+}
+
+export default ParagraphNode

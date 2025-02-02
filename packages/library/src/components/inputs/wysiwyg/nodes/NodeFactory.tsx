@@ -5,7 +5,7 @@ import React from "react";
 import ParagraphNode from "./ParagraphNode";
 import {arrayMembrane} from "../../../../membrane/Membrane";
 
-export function NodeFactory(nodes: NodeModel[]) {
+export function NodeFactory(nodes: NodeModel[], textClickCallback : (node : TextNodeModel) => void) {
 
     let activeObject = nodes as any
 
@@ -24,10 +24,10 @@ export function NodeFactory(nodes: NodeModel[]) {
                             nodes.splice(index, 1)
                         }
                         let membrane = arrayMembrane(segments, [...activeObject.$callbacks, callback], activeObject.$path);
-                        return (<TextNode key={segments[0].id} ast={membrane}/>);
+                        return (<TextNode key={segments[0].id} ast={membrane} onClickCallback={textClickCallback}/>);
                     })
             case "p" :
-                return group.map(model => <ParagraphNode key={model.id} ast={model as ParagraphModel}/>)
+                return group.map(model => <ParagraphNode key={model.id} ast={model as ParagraphModel} textClickCallback={textClickCallback}/>)
         }
     }
 

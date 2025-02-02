@@ -1,7 +1,9 @@
 import React, {useLayoutEffect, useRef} from "react";
 import {TextNodeModel} from "../Wysiwyg";
 
-export default function TextNode({ast}: { ast: TextNodeModel[] }) {
+function TextNode(properties : TextNode.Attributes) {
+
+    const {ast, onClickCallback} = properties
 
     const span = useRef<HTMLSpanElement>(null);
 
@@ -13,33 +15,28 @@ export default function TextNode({ast}: { ast: TextNodeModel[] }) {
     }
 
     const onClick = (event : any) => {
-        setTimeout(() => {
-            const selection = window.getSelection();
-            const range = selection.getRangeAt(0)
-            if (range.startContainer === span.current.firstChild) {
-                let cursorPosition = getCursorPosition();
-                let model = ast[cursorPosition];
-                if (model) {
-                    model.cursor = true
-                }
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0)
+        if (range.startContainer === span.current.firstChild) {
+            let cursorPosition = getCursorPosition();
+            let model = ast[cursorPosition];
+            if (model) {
+                onClickCallback(model)
             }
-        }, 100)
+        }
     }
 
     useLayoutEffect(() => {
-        let position = getCursorPosition();
-        if (position > -1) {
-            const selection = window.getSelection();
-            if (selection?.rangeCount) {
-                if (selection.isCollapsed) {
-                    const range = selection.getRangeAt(0);
-                    const offset = ast.findIndex(segment => segment.cursor)
-                    if (offset > -1) {
-                        range.setStart(span.current.firstChild, offset + 1);
-                        range.collapse(true)
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                    }
+        const selection = window.getSelection();
+        if (selection?.rangeCount) {
+            if (selection.isCollapsed) {
+                const range = selection.getRangeAt(0);
+                const offset = ast.findIndex(segment => segment.cursor)
+                if (offset > -1) {
+                    range.setStart(span.current.firstChild, offset + 1);
+                    range.collapse(true)
+                    selection.removeAllRanges();
+                    selection.addRange(range);
                 }
             }
         }
@@ -62,3 +59,13 @@ export default function TextNode({ast}: { ast: TextNodeModel[] }) {
         </span>
     )
 }
+
+namespace TextNode {
+    export interface Attributes {
+        ast: TextNodeModel[]
+        onClickCallback : (node : TextNodeModel) => void
+
+    }
+}
+
+export default TextNode

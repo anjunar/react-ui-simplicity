@@ -48,6 +48,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     })
 
     const traverseAST = (ast : NodeModel[], callback : (value : NodeModel, ast : NodeModel[]) => any) => {
+        let result = null
         for (const node of ast) {
             if (node instanceof TextNodeModel) {
                 let result = callback(node, ast);
@@ -56,11 +57,11 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 }
             } else {
                 if (node instanceof ParagraphModel) {
-                    return traverseAST(node.children, callback)
+                    result = traverseAST(node.children, callback)
                 }
             }
         }
-        return []
+        return result
     }
 
     const onBoldClick = (ast : NodeModel[]) => {
@@ -130,17 +131,8 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
         }
 
-        let clickListener = () => {
-            traverseAST(state.ast, (value) => {
-                if (value instanceof TextNodeModel) {
-                    value.cursor = false
-                }
-            })
-        };
-        document.addEventListener("click", clickListener)
         document.addEventListener("selectionchange", selectionListener)
         return () => {
-            document.removeEventListener("click", clickListener)
             document.removeEventListener("selectionchange", selectionListener)
         }
     }, []);
@@ -149,7 +141,14 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     return (
         <div>
             <div contentEditable={true} suppressContentEditableWarning={true} style={{height : 300}}>
-                { NodeFactory(state.ast) }
+                { NodeFactory(state.ast, (node : TextNodeModel) => {
+                    traverseAST(state.ast, (value) => {
+                        if (value instanceof TextNodeModel) {
+                            value.$resolve.cursor = false
+                        }
+                    })
+                    node.cursor = true
+                }) }
             </div>
             <button onClick={() => onBoldClick(state.ast)}>Bold</button>
             <button onClick={() => onItalicClick(state.ast)}>Italic</button>
