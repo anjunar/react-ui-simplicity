@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useMemo} from "react"
+import React, {useLayoutEffect, useMemo, useState} from "react"
 import {v4} from "uuid";
 import {useForm} from "../../../hooks/UseFormHook";
 import {NodeFactory} from "./nodes/NodeFactory";
@@ -33,20 +33,8 @@ export class TextNodeModel extends NodeModel {
 
 function Wysiwyg(properties: Wysiwyg.Attributes) {
 
-    const state = useForm<{ ast: NodeModel[] }>(() => {
-        let pm1 = new ParagraphModel();
-        let tm1 = new TextNodeModel();
-        tm1.text = "t"
-        pm1.children.push(tm1)
-
-        let pm2 = new ParagraphModel();
-        let tm2 = new TextNodeModel();
-        tm2.text = "a"
-        pm2.children.push(tm2)
-
-        return {
-            ast: [pm1, pm2]
-        }
+    const [state, setState] = useState<NodeModel[]>(() => {
+        return []
     })
 
     const traverseAST = (ast: NodeModel[], callback: (value: NodeModel, index : number, ast: NodeModel[]) => any, result? : any) => {
@@ -86,6 +74,8 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             }
         })
 
+        setState([...ast])
+
     }
 
     const onItalicClick = (ast: NodeModel[]) => {
@@ -98,13 +88,14 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             }
         })
 
+        setState([...ast])
     }
 
     const key = useMemo(() => {
         let inputQueue = []
         let isProcessing = false
 
-        const processQueue = debounce(() => {
+        const processQueue = () => {
             if (inputQueue.length === 0) {
                 isProcessing = false;
                 return;
@@ -118,7 +109,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             });
 
             requestAnimationFrame(processQueue)
-        }, 200);
+        };
 
         const handler = (event: KeyboardEvent) => {
             if (event.key.length === 1 || event.key === "Backspace") {
@@ -136,20 +127,20 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         };
 
         const handleKeyPress = (event: KeyboardEvent) => {
-            let {index, ast} = traverseAST(state.ast, (value, index, ast) => {
+            let {index, ast} = traverseAST(state, (value, index, ast) => {
                 if (value instanceof TextNodeModel) {
                     if (value.cursor) {
                         return {index : index, ast : ast}
                     }
                 }
-            }, {index : 0, ast : state.ast})
+            }, {index : 0, ast : state})
 
             if (ast) {
                 let cursorPosition = index
 
                 if (event.key.length === 1) {
                     event.preventDefault()
-                    traverseAST(state.ast, (value) => {
+                    traverseAST(state, (value) => {
                         if (value instanceof TextNodeModel) {
                             value.cursor = false
                         }
@@ -159,7 +150,8 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     model.text = event.key
                     model.cursor = true
 
-                    ast.splice(cursorPosition + 1, 0, model)
+                    ast.splice(cursorPosition + 1, 0, model);
+                    setState([...ast])
                 }
 
                 switch (event.key) {
@@ -183,7 +175,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     useLayoutEffect(() => {
         let selectionListener = () => {
-            traverseAST(state.ast, (value) => {
+            traverseAST(state, (value) => {
                 if (value instanceof TextNodeModel) {
                     value.selected = false
                     value.cursor = false
@@ -193,8 +185,10 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             if (selection?.rangeCount) {
                 let rangeAt = selection.getRangeAt(0);
 
-                const startNode = rangeAt.startContainer.ast[rangeAt.startOffset - 1]
-                const endNode = rangeAt.endContainer.ast[rangeAt.endOffset - 1]
+                let models = rangeAt.startContainer.ast;
+
+                const startNode = models?.[rangeAt.startOffset === models.length ? rangeAt.startOffset - 1 : rangeAt.startOffset]
+                const endNode = models?.[rangeAt.endOffset === models.length ? rangeAt.endOffset - 1 : rangeAt.endOffset]
 
                 if (startNode && endNode) {
 
@@ -206,17 +200,17 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                         }
                     } else {
                         let selectionEnabler = false
-                        traverseAST(state.ast, (value, ast) => {
+                        traverseAST(state, (value, ast) => {
                             if (value.id === startNode.id) {
                                 selectionEnabler = true
                             }
-                            if (value.id === endNode?.id) {
-                                selectionEnabler = false
-                            }
-                            if (selectionEnabler) {
+                            if (selectionEnabler || (value.id === startNode.id && value.id === endNode.id)) {
                                 if (value instanceof TextNodeModel) {
                                     value.selected = true
                                 }
+                            }
+                            if (value.id === endNode.id) {
+                                selectionEnabler = false
                             }
                         })
                     }
@@ -239,10 +233,10 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     return (
         <div>
             <div contentEditable={true} suppressContentEditableWarning={true} style={{height: 300}}>
-                {NodeFactory(state.ast)}
+                {NodeFactory(state)}
             </div>
-            <button onClick={() => onBoldClick(state.ast)}>Bold</button>
-            <button onClick={() => onItalicClick(state.ast)}>Italic</button>
+            <button onClick={() => onBoldClick(state)}>Bold</button>
+            <button onClick={() => onItalicClick(state)}>Italic</button>
         </div>
 
     )
