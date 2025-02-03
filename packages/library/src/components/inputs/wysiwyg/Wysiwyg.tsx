@@ -15,6 +15,8 @@ export class NodeModel extends ActiveObject {
     id: string = v4()
     node: Node
     type: string
+    cursor: boolean = false
+    selected: boolean = false
 }
 
 export class ParagraphModel extends NodeModel {
@@ -25,8 +27,6 @@ export class ParagraphModel extends NodeModel {
 export class TextNodeModel extends NodeModel {
     type = "text"
     text: string
-    cursor: boolean = false
-    selected: boolean = false
     bold: boolean
     italic: boolean
 }
@@ -41,7 +41,10 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         let outer: any = null;
 
         const traverse = (ast: NodeModel[]) => {
-            ast.forEach((node, index) => {
+
+            for (let index = 0; index < ast.length; index++) {
+                const node = ast[index];
+
                 let result = callback(node, index, ast);
                 if (result) {
                     outer = result;
@@ -49,10 +52,16 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 }
 
                 if (node instanceof ParagraphModel) {
-                    traverse(node.children);
+                    let result = callback(node, index, ast);
+                    if (result) {
+                        outer = result;
+                        return;
+                    }
                     if (outer) return;
+                    traverse(node.children);
                 }
-            })
+            }
+
         };
 
         traverse(ast);
@@ -127,15 +136,14 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         };
 
         const handleKeyPress = (event: KeyboardEvent) => {
-            let {index, ast} = traverseAST(state, (value, index, ast) => {
-                if (value instanceof TextNodeModel) {
-                    if (value.cursor) {
-                        return {index : index, ast : ast}
-                    }
+            let {index, ast} : {index : number, ast : NodeModel[]} = traverseAST(state, (value, index, ast) => {
+                if (value.cursor) {
+                    return {index : index, ast : ast}
                 }
             }, {index : 0, ast : state})
 
             if (ast) {
+
                 let cursorPosition = index
 
                 if (event.key.length === 1) {
@@ -151,20 +159,62 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     model.cursor = true
 
                     ast.splice(cursorPosition + 1, 0, model);
-                    setState([...ast])
+                    setState([...state])
                 }
 
                 switch (event.key) {
                     case "Backspace" : {
                         event.preventDefault()
                         ast.splice(cursorPosition, 1)
-                        setState([...ast])
+                        setState([...state])
                         let node = ast[cursorPosition - 1];
-                        if (node) {
+                        if (node instanceof TextNodeModel) {
                             node.cursor = true
                         }
                     }
                         break
+                    case "Enter" : {
+                        event.preventDefault()
+                        let {paragraph, paragraphsIndex, paragraphsAST} = traverseAST(state, (node, index, paragraphsAST) => {
+                            if (node instanceof ParagraphModel) {
+                                if (node.children === ast) {
+                                    return {paragraph : node, paragraphsIndex : index, paragraphsAST : paragraphsAST}
+                                }
+                            }
+                        }, {paragraph : null, paragraphsIndex : -1, paragraphsAST : []})
+
+                        let selection = window.getSelection();
+                        let rangeAt = selection.getRangeAt(0);
+
+                        cursorPosition = rangeAt.startContainer.textContent.length === rangeAt.endOffset ? cursorPosition + 1 : cursorPosition
+
+                        if (cursorPosition === ast.length) {
+                            document.execCommand('insertParagraph',false);
+                        } else {
+                            let prev = ast.slice(0, cursorPosition);
+                            let next = ast.slice(cursorPosition);
+
+                            let prevParagraphModel = new ParagraphModel();
+                            prevParagraphModel.children = prev
+                            let nextParagraphModel = new ParagraphModel();
+                            nextParagraphModel.children = next
+
+                            if (paragraph) {
+                                paragraphsAST.splice(paragraphsIndex, 1)
+                                paragraphsAST.splice(paragraphsIndex , 0, prevParagraphModel)
+                                paragraphsAST.splice(paragraphsIndex + 1, 0, nextParagraphModel)
+                            } else {
+                                ast.length = 0
+                                ast.push(prevParagraphModel)
+                                ast.push(nextParagraphModel)
+                            }
+
+
+                        }
+
+                        setState([...state])
+                    }
+
                 }
             }
         }
@@ -194,10 +244,8 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 if (startNode && endNode) {
 
                     if (selection.isCollapsed) {
-                        if (startNode instanceof TextNodeModel) {
-                            if (startNode.id === startNode.id) {
-                                startNode.cursor = true
-                            }
+                        if (startNode.id === startNode.id) {
+                            startNode.cursor = true
                         }
                     } else {
                         let selectionEnabler = false
@@ -205,7 +253,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                             if (value.id === startNode.id) {
                                 selectionEnabler = true
                             }
-                            if (selectionEnabler || (value.id === startNode.id && value.id === endNode.id)) {
+                            if (selectionEnabler) {
                                 if (value instanceof TextNodeModel) {
                                     value.selected = true
                                 }

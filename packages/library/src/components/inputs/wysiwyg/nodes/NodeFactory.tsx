@@ -6,8 +6,6 @@ import ParagraphNode from "./ParagraphNode";
 
 export function NodeFactory(nodes: NodeModel[]) {
 
-    let activeObject = nodes as any
-
     let {groups, record} = groupByConsecutiveMulti(nodes, [node => node.type]);
 
     for (const group of groups) {

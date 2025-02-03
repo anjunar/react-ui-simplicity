@@ -1,15 +1,24 @@
-import React, {useLayoutEffect} from "react";
-import {NodeModel, ParagraphModel, TextNodeModel} from "../Wysiwyg";
+import React, {useEffect, useRef} from "react";
+import {ParagraphModel} from "../Wysiwyg";
 import {NodeFactory} from "./NodeFactory";
 
-function ParagraphNode(properties : ParagraphNode.Attributes) {
+function ParagraphNode(properties: ParagraphNode.Attributes) {
 
     const {ast} = properties
 
+    const p = useRef<HTMLParagraphElement>(null);
+
+    useEffect(() => {
+        p.current.ast = [ast]
+    }, [ast]);
+
     return (
-        <p>
+        <div ref={p}>
+            {
+                ast.children.length === 0 ? <br/> : ""
+            }
             {NodeFactory(ast.children)}
-        </p>
+        </div>
     )
 }
 
