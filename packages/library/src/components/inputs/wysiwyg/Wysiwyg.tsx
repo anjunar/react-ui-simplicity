@@ -37,7 +37,6 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         let pm1 = new ParagraphModel();
         let tm1 = new TextNodeModel();
         tm1.text = "t"
-        tm1.cursor = true
         pm1.children.push(tm1)
 
         let pm2 = new ParagraphModel();
@@ -96,7 +95,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     }
 
-    const batch = useMemo(() => {
+    const key = useMemo(() => {
         let inputQueue = []
         let isProcessing = false
 
@@ -131,48 +130,48 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             }
         };
 
+        const handleKeyPress = (event: KeyboardEvent) => {
+            let {index, ast} = traverseAST(state.ast, (value, index, ast) => {
+                if (value instanceof TextNodeModel) {
+                    if (value.cursor) {
+                        return {index : index, ast : ast}
+                    }
+                }
+            })
+
+            if (ast) {
+                let cursorPosition = index
+
+                if (event.key.length === 1) {
+                    event.preventDefault()
+                    traverseAST(state.ast, (value) => {
+                        if (value instanceof TextNodeModel) {
+                            value.cursor = false
+                        }
+                    })
+
+                    let model = new TextNodeModel()
+                    model.text = event.key
+                    model.cursor = true
+
+                    ast.splice(cursorPosition + 1, 0, model)
+                }
+
+                switch (event.key) {
+                    case "Backspace" : {
+                        event.preventDefault()
+                        ast.splice(cursorPosition, 1)
+                        ast[cursorPosition - 1].cursor = true
+                    }
+                        break
+                }
+            }
+        }
+
         return {
             handler : handler
         }
     }, [])
-
-    const handleKeyPress = (event: KeyboardEvent) => {
-        let {index, ast} = traverseAST(state.ast, (value, index, ast) => {
-            if (value instanceof TextNodeModel) {
-                if (value.cursor) {
-                    return {index : index, ast : ast}
-                }
-            }
-        })
-
-        if (ast) {
-            let cursorPosition = index
-
-            if (event.key.length === 1) {
-                event.preventDefault()
-                traverseAST(ast, (value) => {
-                    if (value instanceof TextNodeModel) {
-                        value.cursor = false
-                    }
-                })
-
-                let model = new TextNodeModel()
-                model.text = event.key
-                model.cursor = true
-
-                ast.splice(cursorPosition + 1, 0, model)
-            }
-
-            switch (event.key) {
-                case "Backspace" : {
-                    event.preventDefault()
-                    ast.splice(cursorPosition, 1)
-                    ast[cursorPosition - 1].cursor = true
-                }
-                    break
-            }
-        }
-    }
 
     useLayoutEffect(() => {
         let selectionListener = () => {
@@ -221,10 +220,10 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
         }
 
-        document.addEventListener("keydown", batch.handler)
+        document.addEventListener("keydown", key.handler)
         document.addEventListener("selectionchange", selectionListener)
         return () => {
-            document.removeEventListener("keydown", batch.handler)
+            document.removeEventListener("keydown", key.handler)
             document.removeEventListener("selectionchange", selectionListener)
         }
     }, []);
