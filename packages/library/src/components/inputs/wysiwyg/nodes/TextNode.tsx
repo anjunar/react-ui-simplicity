@@ -3,7 +3,7 @@ import {TextNodeModel} from "../Wysiwyg";
 
 function TextNode(properties : TextNode.Attributes) {
 
-    const {ast, onClickCallback} = properties
+    const {ast} = properties
 
     const span = useRef<HTMLSpanElement>(null);
 
@@ -35,8 +35,6 @@ function TextNode(properties : TextNode.Attributes) {
 namespace TextNode {
     export interface Attributes {
         ast: TextNodeModel[]
-        onClickCallback : (node : TextNodeModel) => void
-
     }
 }
 

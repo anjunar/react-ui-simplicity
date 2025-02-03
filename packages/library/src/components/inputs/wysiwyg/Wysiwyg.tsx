@@ -49,7 +49,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         }
     })
 
-    const traverseAST = (ast: NodeModel[], callback: (value: NodeModel, index : number, ast: NodeModel[]) => any) => {
+    const traverseAST = (ast: NodeModel[], callback: (value: NodeModel, index : number, ast: NodeModel[]) => any, result? : any) => {
         let outer: any = null;
 
         const traverse = (ast: NodeModel[]) => {
@@ -68,7 +68,12 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         };
 
         traverse(ast);
-        return outer;
+
+        if (outer) {
+            return outer;
+        } else {
+            return result
+        }
     };
 
     const onBoldClick = (ast: NodeModel[]) => {
@@ -137,7 +142,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                         return {index : index, ast : ast}
                     }
                 }
-            })
+            }, {index : 0, ast : state.ast})
 
             if (ast) {
                 let cursorPosition = index
@@ -161,7 +166,10 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     case "Backspace" : {
                         event.preventDefault()
                         ast.splice(cursorPosition, 1)
-                        ast[cursorPosition - 1].cursor = true
+                        let node = ast[cursorPosition - 1];
+                        if (node) {
+                            node.cursor = true
+                        }
                     }
                         break
                 }
@@ -231,14 +239,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     return (
         <div>
             <div contentEditable={true} suppressContentEditableWarning={true} style={{height: 300}}>
-                {NodeFactory(state.ast, (node: TextNodeModel) => {
-                    traverseAST(state.ast, (value) => {
-                        if (value instanceof TextNodeModel) {
-                            value.cursor = false
-                        }
-                    })
-                    node.cursor = true
-                })}
+                {NodeFactory(state.ast)}
             </div>
             <button onClick={() => onBoldClick(state.ast)}>Bold</button>
             <button onClick={() => onItalicClick(state.ast)}>Italic</button>

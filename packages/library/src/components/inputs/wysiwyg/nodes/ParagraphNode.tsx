@@ -4,11 +4,11 @@ import {NodeFactory} from "./NodeFactory";
 
 function ParagraphNode(properties : ParagraphNode.Attributes) {
 
-    const {ast, textClickCallback} = properties
+    const {ast} = properties
 
     return (
         <p>
-            {NodeFactory(ast.children, textClickCallback)}
+            {NodeFactory(ast.children)}
         </p>
     )
 }
@@ -16,7 +16,6 @@ function ParagraphNode(properties : ParagraphNode.Attributes) {
 namespace ParagraphNode {
     export interface Attributes {
         ast: ParagraphModel
-        textClickCallback : (node : TextNodeModel) => void
     }
 }
 
