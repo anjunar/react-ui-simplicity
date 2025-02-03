@@ -136,11 +136,11 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         };
 
         const handleKeyPress = (event: KeyboardEvent) => {
-            let {index, ast} : {index : number, ast : NodeModel[]} = traverseAST(state, (value, index, ast) => {
+            let {node, index, ast} : {node : NodeModel, index : number, ast : NodeModel[]} = traverseAST(state, (value, index, ast) => {
                 if (value.cursor) {
-                    return {index : index, ast : ast}
+                    return {node : value, index : index, ast : ast}
                 }
-            }, {index : 0, ast : state})
+            }, {node : null, index : 0, ast : state})
 
             if (ast) {
 
@@ -158,7 +158,12 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     model.text = event.key
                     model.cursor = true
 
-                    ast.splice(cursorPosition + 1, 0, model);
+                    if (node instanceof ParagraphModel) {
+                        node.children.push(model)
+                    } else {
+                        ast.splice(cursorPosition + 1 === ast.length ? cursorPosition + 1 : cursorPosition, 0, model);
+                    }
+
                     setState([...state])
                 }
 
@@ -221,10 +226,8 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     useLayoutEffect(() => {
         let selectionListener = () => {
             traverseAST(state, (value) => {
-                if (value instanceof TextNodeModel) {
-                    value.selected = false
-                    value.cursor = false
-                }
+                value.selected = false
+                value.cursor = false
             })
             let selection = window.getSelection();
             if (selection?.rangeCount) {

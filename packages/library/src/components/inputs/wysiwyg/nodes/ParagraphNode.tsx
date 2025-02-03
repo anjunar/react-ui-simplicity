@@ -6,14 +6,24 @@ function ParagraphNode(properties: ParagraphNode.Attributes) {
 
     const {ast} = properties
 
-    const p = useRef<HTMLParagraphElement>(null);
+    const paragraph = useRef<HTMLParagraphElement>(null);
 
     useEffect(() => {
-        p.current.ast = [ast]
+        if (ast.children.length === 0) {
+            const range = document.createRange();
+            range.selectNodeContents(paragraph.current);
+            range.collapse(false);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+
+
+        paragraph.current.ast = [ast]
     }, [ast]);
 
     return (
-        <div ref={p}>
+        <div ref={paragraph}>
             {
                 ast.children.length === 0 ? <br/> : ""
             }
