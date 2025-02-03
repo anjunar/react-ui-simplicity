@@ -224,7 +224,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     }, [])
 
     useLayoutEffect(() => {
-        let selectionListener = () => {
+        let selectionListener = debounce(() => {
             traverseAST(state, (value) => {
                 value.selected = false
                 value.cursor = false
@@ -233,10 +233,11 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             if (selection?.rangeCount) {
                 let rangeAt = selection.getRangeAt(0);
 
-                let models = rangeAt.startContainer.ast;
+                let startModels = rangeAt.startContainer.ast;
+                let endModels = rangeAt.endContainer.ast;
 
-                const startNode = models?.[rangeAt.startOffset === models.length ? rangeAt.startOffset - 1 : rangeAt.startOffset]
-                const endNode = models?.[rangeAt.endOffset === models.length ? rangeAt.endOffset - 1 : rangeAt.endOffset]
+                const startNode = startModels?.[rangeAt.startOffset === startModels.length ? rangeAt.startOffset - 1 : rangeAt.startOffset]
+                const endNode = endModels?.[rangeAt.endOffset === endModels.length ? rangeAt.endOffset - 1 : rangeAt.endOffset]
 
                 if (startNode && endNode) {
 
@@ -251,9 +252,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                                 selectionEnabler = true
                             }
                             if (selectionEnabler) {
-                                if (value instanceof TextNodeModel) {
-                                    value.selected = true
-                                }
+                                value.selected = true
                             }
                             if (value.id === endNode.id) {
                                 selectionEnabler = false
@@ -266,7 +265,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
             }
 
-        }
+        }, 100)
 
         document.addEventListener("keydown", key.handler)
         document.addEventListener("selectionchange", selectionListener)
@@ -278,7 +277,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     return (
         <div>
-            <div contentEditable={true} suppressContentEditableWarning={true} style={{height: 300}}>
+            <div contentEditable={true} suppressContentEditableWarning={true} style={{height: 300, padding : "12px"}}>
                 {NodeFactory(state)}
             </div>
             <button onClick={() => onBoldClick(state)}>Bold</button>
