@@ -188,28 +188,22 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
                         cursorPosition = rangeAt.startContainer.textContent.length === rangeAt.endOffset ? cursorPosition + 1 : cursorPosition
 
-                        if (cursorPosition === ast.length) {
-                            document.execCommand('insertParagraph',false);
+                        let prev = ast.slice(0, cursorPosition);
+                        let next = ast.slice(cursorPosition);
+
+                        let prevParagraphModel = new ParagraphModel();
+                        prevParagraphModel.children = prev
+                        let nextParagraphModel = new ParagraphModel();
+                        nextParagraphModel.children = next
+
+                        if (paragraph) {
+                            paragraphsAST.splice(paragraphsIndex, 1)
+                            paragraphsAST.splice(paragraphsIndex , 0, prevParagraphModel)
+                            paragraphsAST.splice(paragraphsIndex + 1, 0, nextParagraphModel)
                         } else {
-                            let prev = ast.slice(0, cursorPosition);
-                            let next = ast.slice(cursorPosition);
-
-                            let prevParagraphModel = new ParagraphModel();
-                            prevParagraphModel.children = prev
-                            let nextParagraphModel = new ParagraphModel();
-                            nextParagraphModel.children = next
-
-                            if (paragraph) {
-                                paragraphsAST.splice(paragraphsIndex, 1)
-                                paragraphsAST.splice(paragraphsIndex , 0, prevParagraphModel)
-                                paragraphsAST.splice(paragraphsIndex + 1, 0, nextParagraphModel)
-                            } else {
-                                ast.length = 0
-                                ast.push(prevParagraphModel)
-                                ast.push(nextParagraphModel)
-                            }
-
-
+                            ast.length = 0
+                            ast.push(prevParagraphModel)
+                            ast.push(nextParagraphModel)
                         }
 
                         setState([...state])
