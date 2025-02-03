@@ -1,36 +1,39 @@
 import React, {useLayoutEffect} from "react"
-import TextNode from "./nodes/TextNode";
 import {v4} from "uuid";
 import {useForm} from "../../../hooks/UseFormHook";
-import {groupByConsecutiveMulti} from "./Util";
 import {NodeFactory} from "./nodes/NodeFactory";
-import ParagraphNode from "./nodes/ParagraphNode";
 import ActiveObject from "../../../domain/container/ActiveObject";
-import {arrayMembrane} from "../../../membrane/Membrane";
+import {debounce} from "../../shared/Utils";
+
+declare global {
+    interface Node {
+        ast: NodeModel[];
+    }
+}
 
 export class NodeModel extends ActiveObject {
-    id : string = v4()
-    node : Node
-    type : string
+    id: string = v4()
+    node: Node
+    type: string
 }
 
 export class ParagraphModel extends NodeModel {
-    children : NodeModel[] = []
+    children: NodeModel[] = []
     type = "p"
 }
 
 export class TextNodeModel extends NodeModel {
     type = "text"
-    text : string
-    cursor : boolean = false
-    selected : boolean = false
-    bold : boolean
-    italic : boolean
+    text: string
+    cursor: boolean = false
+    selected: boolean = false
+    bold: boolean
+    italic: boolean
 }
 
 function Wysiwyg(properties: Wysiwyg.Attributes) {
 
-    const state = useForm<{ast : NodeModel[]}>(() => {
+    const state = useForm<{ ast: NodeModel[] }>(() => {
         let pm1 = new ParagraphModel();
         let tm1 = new TextNodeModel();
         tm1.text = "t"
@@ -43,28 +46,33 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         pm2.children.push(tm2)
 
         return {
-            ast : [pm1, pm2]
+            ast: [pm1, pm2]
         }
     })
 
-    const traverseAST = (ast : NodeModel[], callback : (value : NodeModel, ast : NodeModel[]) => any) => {
-        let result = null
-        for (const node of ast) {
-            if (node instanceof TextNodeModel) {
+    const traverseAST = (ast: NodeModel[], callback: (value: NodeModel, ast: NodeModel[]) => any) => {
+        let outer: any = null;
+
+        const traverse = (ast: NodeModel[]) => {
+            for (const node of ast) {
                 let result = callback(node, ast);
                 if (result) {
-                    return result
+                    outer = result;
+                    return;
                 }
-            } else {
+
                 if (node instanceof ParagraphModel) {
-                    result = traverseAST(node.children, callback)
+                    traverse(node.children);
+                    if (outer) return;
                 }
             }
-        }
-        return result
-    }
+        };
 
-    const onBoldClick = (ast : NodeModel[]) => {
+        traverse(ast);
+        return outer;
+    };
+
+    const onBoldClick = (ast: NodeModel[]) => {
 
         traverseAST(ast, (node) => {
             if (node instanceof TextNodeModel) {
@@ -76,7 +84,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     }
 
-    const onItalicClick = (ast : NodeModel[]) => {
+    const onItalicClick = (ast: NodeModel[]) => {
 
         traverseAST(ast, (node) => {
             if (node instanceof TextNodeModel) {
@@ -88,67 +96,115 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     }
 
+    const handler = debounce((event: KeyboardEvent) => {
+        let selection = window.getSelection();
+
+        if (selection?.rangeCount) {
+
+            let rangeAt = selection.getRangeAt(0);
+            let selectedAST = rangeAt.startContainer.ast[rangeAt.startOffset - 1];
+
+            if (selectedAST) {
+                let {cursorPosition, ast} = traverseAST(state.ast, (value, ast) => {
+                    if (value.id === selectedAST.id) {
+                        return {cursorPosition : ast.findIndex(node => node.id === value.id), ast : ast}
+                    }
+                })
+
+                if (event.key.length === 1) {
+                    event.preventDefault()
+                    traverseAST(ast, (value) => {
+                        if (value instanceof TextNodeModel) {
+                            value.cursor = false
+                        }
+                    })
+
+                    let model = new TextNodeModel()
+                    model.text = event.key
+                    model.cursor = true
+
+                    ast.splice(cursorPosition + 1, 0, model)
+                }
+
+                switch (event.key) {
+                    case "Backspace" : {
+                        event.preventDefault()
+                        ast.splice(cursorPosition, 1)
+                        ast[cursorPosition - 1].cursor = true
+                    } break
+                }
+            }
+        }
+
+
+    },300);
+
     useLayoutEffect(() => {
-        let selectionListener = () => {
+        let selectionListener = debounce(() => {
             traverseAST(state.ast, (value) => {
                 if (value instanceof TextNodeModel) {
                     value.selected = false
+                    value.cursor = false
                 }
             })
             let selection = window.getSelection();
-            if (selection?.rangeCount && ! selection.isCollapsed) {
+            if (selection?.rangeCount) {
                 let rangeAt = selection.getRangeAt(0);
 
-                const startNode= traverseAST(state.ast, (node, ast) => {
-                    if (node.$resolve.node === rangeAt.startContainer) {
-                        let index = ast.findIndex(elem => node.id === elem.id) + rangeAt.startOffset;
-                        return ast[index]
-                    }
-                })
+                const startNode = rangeAt.startContainer.ast[rangeAt.startOffset]
+                const endNode = rangeAt.endContainer.ast[rangeAt.endOffset]
 
-                const endNode = traverseAST(state.ast, (node, ast) => {
-                    if (node.$resolve.node === rangeAt.endContainer) {
-                        let index = ast.findIndex(elem => node.id === elem.id) + rangeAt.endOffset;
-                        return ast[index]
-                    }
-                })
+                if (startNode && endNode) {
 
-                let selectionEnabler = false
-                traverseAST(state.ast, (value, ast) => {
-                    if (value.id === startNode.id) {
-                        selectionEnabler = true
-                    }
-                    if (value.id === endNode?.id) {
-                        selectionEnabler = false
-                    }
-                    if (selectionEnabler) {
-                        if (value instanceof TextNodeModel) {
-                            value.selected = true
+                    if (selection.isCollapsed) {
+                        if (startNode instanceof TextNodeModel) {
+                            if (startNode.id === startNode.id) {
+                                startNode.cursor = true
+                            }
                         }
+                    } else {
+                        let selectionEnabler = false
+                        traverseAST(state.ast, (value, ast) => {
+                            if (value.id === startNode.id) {
+                                selectionEnabler = true
+                            }
+                            if (value.id === endNode?.id) {
+                                selectionEnabler = false
+                            }
+                            if (selectionEnabler) {
+                                if (value instanceof TextNodeModel) {
+                                    value.selected = true
+                                }
+                            }
+                        })
                     }
-                })
+
+
+                }
+
             }
 
-        }
+        }, 300)
 
+        document.addEventListener("keydown", handler)
         document.addEventListener("selectionchange", selectionListener)
         return () => {
+            document.removeEventListener("keydown", handler)
             document.removeEventListener("selectionchange", selectionListener)
         }
     }, []);
 
-
     return (
         <div>
-            <div contentEditable={true} suppressContentEditableWarning={true} style={{height : 300}}>
-                { NodeFactory(state.ast, (node : TextNodeModel) => {
+            <div contentEditable={true} suppressContentEditableWarning={true} style={{height: 300}}>
+                {NodeFactory(state.ast, (node: TextNodeModel) => {
                     traverseAST(state.ast, (value) => {
                         if (value instanceof TextNodeModel) {
-                            value.$resolve.cursor = false
+                            value.cursor = false
                         }
                     })
                     node.cursor = true
-                }) }
+                })}
             </div>
             <button onClick={() => onBoldClick(state.ast)}>Bold</button>
             <button onClick={() => onItalicClick(state.ast)}>Italic</button>
