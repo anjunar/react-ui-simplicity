@@ -158,6 +158,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     case "Backspace" : {
                         event.preventDefault()
                         ast.splice(cursorPosition, 1)
+                        setState([...ast])
                         let node = ast[cursorPosition - 1];
                         if (node) {
                             node.cursor = true
