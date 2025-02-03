@@ -20,8 +20,8 @@ export function NodeFactory(nodes: NodeModel[], textClickCallback : (node : Text
                     .groups
                     .map(segments => {
                         let callback = (property : string[], value :any) => {
-                            let index = nodes.findIndex(node => node.id === value.id);
-                            nodes.splice(index, 1)
+                            // let index = nodes.findIndex(node => node.id === value.id);
+                            // nodes.splice(index, 1)
                         }
                         let membrane = arrayMembrane(segments, [...activeObject.$callbacks, callback], activeObject.$path);
                         return (<TextNode key={segments[0].id} ast={membrane} onClickCallback={textClickCallback}/>);

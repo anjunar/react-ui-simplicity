@@ -13,7 +13,7 @@ function TextNode(properties : TextNode.Attributes) {
             if (selection.isCollapsed) {
                 const range = selection.getRangeAt(0);
                 const offset = ast.findIndex(segment => segment.cursor)
-                if (offset > -1 && offset !== range.startOffset) {
+                if ((offset > -1 && offset !== range.startOffset) ||offset === 0) {
                     range.setStart(span.current.firstChild, offset + 1);
                     range.collapse(true)
                     selection.removeAllRanges();

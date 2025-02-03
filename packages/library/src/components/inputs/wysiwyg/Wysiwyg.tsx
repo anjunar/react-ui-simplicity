@@ -1,4 +1,4 @@
-import React, {useLayoutEffect} from "react"
+import React, {useLayoutEffect, useMemo} from "react"
 import {v4} from "uuid";
 import {useForm} from "../../../hooks/UseFormHook";
 import {NodeFactory} from "./nodes/NodeFactory";
@@ -50,12 +50,12 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         }
     })
 
-    const traverseAST = (ast: NodeModel[], callback: (value: NodeModel, ast: NodeModel[]) => any) => {
+    const traverseAST = (ast: NodeModel[], callback: (value: NodeModel, index : number, ast: NodeModel[]) => any) => {
         let outer: any = null;
 
         const traverse = (ast: NodeModel[]) => {
-            for (const node of ast) {
-                let result = callback(node, ast);
+            ast.forEach((node, index) => {
+                let result = callback(node, index, ast);
                 if (result) {
                     outer = result;
                     return;
@@ -65,7 +65,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     traverse(node.children);
                     if (outer) return;
                 }
-            }
+            })
         };
 
         traverse(ast);
@@ -96,51 +96,86 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     }
 
-    const handler = debounce((event: KeyboardEvent) => {
-        let selection = window.getSelection();
+    const batch = useMemo(() => {
+        let inputQueue = []
+        let isProcessing = false
 
-        if (selection?.rangeCount) {
+        const processQueue = debounce(() => {
+            if (inputQueue.length === 0) {
+                isProcessing = false;
+                return;
+            }
 
-            let rangeAt = selection.getRangeAt(0);
-            let selectedAST = rangeAt.startContainer.ast[rangeAt.startOffset - 1];
+            const batch = [...inputQueue];
+            inputQueue = [];
 
-            if (selectedAST) {
-                let {cursorPosition, ast} = traverseAST(state.ast, (value, ast) => {
-                    if (value.id === selectedAST.id) {
-                        return {cursorPosition : ast.findIndex(node => node.id === value.id), ast : ast}
+            batch.forEach(event => {
+                handleKeyPress(event);
+            });
+
+            requestAnimationFrame(processQueue)
+        }, 200);
+
+        const handler = (event: KeyboardEvent) => {
+            if (event.key.length === 1 || event.key === "Backspace") {
+                event.preventDefault()
+
+                inputQueue.push(event);
+
+                if (!isProcessing) {
+                    isProcessing = true;
+                    requestAnimationFrame(processQueue)
+                }
+            } else {
+                handleKeyPress(event)
+            }
+        };
+
+        return {
+            handler : handler
+        }
+    }, [])
+
+    const handleKeyPress = (event: KeyboardEvent) => {
+        let {index, ast} = traverseAST(state.ast, (value, index, ast) => {
+            if (value instanceof TextNodeModel) {
+                if (value.cursor) {
+                    return {index : index, ast : ast}
+                }
+            }
+        })
+
+        if (ast) {
+            let cursorPosition = index
+
+            if (event.key.length === 1) {
+                event.preventDefault()
+                traverseAST(ast, (value) => {
+                    if (value instanceof TextNodeModel) {
+                        value.cursor = false
                     }
                 })
 
-                if (event.key.length === 1) {
+                let model = new TextNodeModel()
+                model.text = event.key
+                model.cursor = true
+
+                ast.splice(cursorPosition + 1, 0, model)
+            }
+
+            switch (event.key) {
+                case "Backspace" : {
                     event.preventDefault()
-                    traverseAST(ast, (value) => {
-                        if (value instanceof TextNodeModel) {
-                            value.cursor = false
-                        }
-                    })
-
-                    let model = new TextNodeModel()
-                    model.text = event.key
-                    model.cursor = true
-
-                    ast.splice(cursorPosition + 1, 0, model)
+                    ast.splice(cursorPosition, 1)
+                    ast[cursorPosition - 1].cursor = true
                 }
-
-                switch (event.key) {
-                    case "Backspace" : {
-                        event.preventDefault()
-                        ast.splice(cursorPosition, 1)
-                        ast[cursorPosition - 1].cursor = true
-                    } break
-                }
+                    break
             }
         }
-
-
-    },300);
+    }
 
     useLayoutEffect(() => {
-        let selectionListener = debounce(() => {
+        let selectionListener = () => {
             traverseAST(state.ast, (value) => {
                 if (value instanceof TextNodeModel) {
                     value.selected = false
@@ -151,8 +186,8 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             if (selection?.rangeCount) {
                 let rangeAt = selection.getRangeAt(0);
 
-                const startNode = rangeAt.startContainer.ast[rangeAt.startOffset]
-                const endNode = rangeAt.endContainer.ast[rangeAt.endOffset]
+                const startNode = rangeAt.startContainer.ast[rangeAt.startOffset - 1]
+                const endNode = rangeAt.endContainer.ast[rangeAt.endOffset - 1]
 
                 if (startNode && endNode) {
 
@@ -184,12 +219,12 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
             }
 
-        }, 300)
+        }
 
-        document.addEventListener("keydown", handler)
+        document.addEventListener("keydown", batch.handler)
         document.addEventListener("selectionchange", selectionListener)
         return () => {
-            document.removeEventListener("keydown", handler)
+            document.removeEventListener("keydown", batch.handler)
             document.removeEventListener("selectionchange", selectionListener)
         }
     }, []);
