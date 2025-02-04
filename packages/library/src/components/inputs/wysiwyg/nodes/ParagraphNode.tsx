@@ -9,14 +9,12 @@ function ParagraphNode(properties: ParagraphNode.Attributes) {
     const paragraph = useRef<HTMLParagraphElement>(null);
 
     useEffect(() => {
-        if (ast.children.length === 0) {
-            const range = document.createRange();
-            range.selectNodeContents(paragraph.current);
-            range.collapse(false);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-        }
+        const range = document.createRange();
+        range.selectNodeContents(paragraph.current);
+        range.collapse(false);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
 
 
         paragraph.current.ast = [ast]

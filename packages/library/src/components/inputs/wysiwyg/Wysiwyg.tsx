@@ -265,21 +265,19 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 let endModels = rangeAt.endContainer.ast;
 
                 let startNode, endNode
-                if (rangeAt.startOffset === 0 && rangeAt.endOffset === 0) {
-                    let foundNode = traverseAST(state, (node) => {
+                if (rangeAt.startOffset === 0) {
+                    startNode = traverseAST(state, (node) => {
                         if (node instanceof ParagraphModel) {
                             if (arraysAreEqual(node.children, startModels)) {
                                 return node
                             }
                         }
-                    });
-                    startNode = foundNode
-                    endNode = foundNode
+                    })
                 } else {
                     startNode = startModels?.[rangeAt.startOffset - 1]
-                    endNode = endModels?.[rangeAt.endOffset - 1]
                 }
 
+                endNode = endModels?.[rangeAt.endOffset - 1]
 
                 if (startNode && endNode) {
 
@@ -290,11 +288,11 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     } else {
                         let selectionEnabler = false
                         traverseAST(state, (value) => {
-                            if (value.id === startNode.id) {
-                                selectionEnabler = true
-                            }
                             if (selectionEnabler) {
                                 value.selected = true
+                            }
+                            if (value.id === startNode.id) {
+                                selectionEnabler = true
                             }
                             if (value.id === endNode.id) {
                                 selectionEnabler = false
