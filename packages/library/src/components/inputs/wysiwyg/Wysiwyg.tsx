@@ -30,12 +30,12 @@ export class TreeNode {
     appendChild(node: TreeNode) {
         node.parent = this;
         if (this.children.length > 0) {
-            node.previousSibling = this.children[this.children.length - 1];
-            this.children[this.children.length - 1].nextSibling = node;
+            const lastChild = this.children[this.children.length - 1];
+            node.previousSibling = lastChild;
+            lastChild.nextSibling = node;
         }
         this.children.push(node);
     }
-
     appendChildren(nodes: TreeNode[]) {
         for (const node of nodes) {
             this.appendChild(node)
@@ -117,18 +117,31 @@ export class TreeNode {
         }
     }
 
-    clone(parent: TreeNode | null = null): TreeNode {
+    cloneDeep(parent: TreeNode | null = null): TreeNode {
         const newNode = new TreeNode(this.type, parent);
         newNode.id = this.id
         newNode.attributes = { ...this.attributes };
 
         newNode.children = this.children.map(child => {
-            return child.clone(newNode);
+            return child.cloneDeep(newNode);
         });
 
         for (let i = 0; i < newNode.children.length; i++) {
             newNode.children[i].previousSibling = i > 0 ? newNode.children[i - 1] : null;
             newNode.children[i].nextSibling = i < newNode.children.length - 1 ? newNode.children[i + 1] : null;
+        }
+
+        return newNode;
+    }
+
+    cloneShallow(parent: TreeNode | null = null): TreeNode {
+        const newNode = new TreeNode(this.type, parent);
+        newNode.id = this.id
+        newNode.attributes = this.attributes;
+
+        newNode.children = this.children
+        for (const child of newNode.children) {
+            child.parent = newNode
         }
 
         return newNode;
@@ -169,13 +182,43 @@ export class TreeNode {
             this.splice(index, 0, wrapper)
         }
     }
+
+    traverseBetween(startNode: TreeNode, endNode: TreeNode, callback: (node: TreeNode) => void): void {
+        if (!startNode || !endNode) return;
+
+        let currentNode: TreeNode | null = startNode;
+        let reachedEnd = false;
+
+        while (currentNode && !reachedEnd) {
+            callback(currentNode);
+
+            if (currentNode === endNode) {
+                reachedEnd = true;
+                break;
+            }
+
+            if (currentNode.children.length > 0) {
+                currentNode = currentNode.children[0];
+                continue;
+            }
+
+            while (currentNode && !currentNode.nextSibling) {
+                currentNode = currentNode.parent;
+            }
+
+            if (currentNode) {
+                currentNode = currentNode.nextSibling;
+            }
+        }
+    }
+
 }
 
 
 function Wysiwyg(properties: Wysiwyg.Attributes) {
 
-    const [state, setState] = useState<TreeNode>(() => {
-        return new TreeNode("root", null)
+    const [state, setState] = useState<{root : TreeNode}>(() => {
+        return {root : new TreeNode("root", null)}
     })
 
     const onBoldClick = (ast: TreeNode) => {
@@ -188,7 +231,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             }
         })
 
-        setState(ast.clone())
+        setState({...state})
 
     }
 
@@ -202,7 +245,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             }
         })
 
-        setState(ast.clone())
+        setState({...state})
 
     }
 
@@ -242,7 +285,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         };
 
         const handleKeyPress = (event: KeyboardEvent) => {
-            let node = state.find((node) => node.attributes.cursor)
+            let node = state.root.find((node) => node.attributes.cursor)
 
             if (node) {
                 let container = node.parent;
@@ -252,7 +295,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
                 if (event.key.length === 1) {
                     event.preventDefault()
-                    state.traverse((node) => node.attributes.cursor = false)
+                    state.root.traverse((node) => node.attributes.cursor = false)
 
                     let model = new TreeNode("text")
                     model.attributes.text = event.key
@@ -262,11 +305,11 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                         node.appendChild(model)
                         model.parent = node
                     } else {
-                        ast.splice(cursorPosition + 1, 0, model);
+                        (container || node).splice(cursorPosition + 1, 0, model);
                         model.parent = container || node
                     }
 
-                    setState(state.clone())
+                    setState({...state})
                 }
 
                 switch (event.key) {
@@ -287,7 +330,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                             }
                         }
 
-                        setState(state.clone())
+                        setState({...state})
                     }
                         break
                     case "Enter" : {
@@ -314,7 +357,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                             }
                         }
 
-                        setState(state.clone())
+                        setState({...state})
                     }
                         break
 
@@ -336,7 +379,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     useLayoutEffect(() => {
         let selectionListener = debounce(() => {
 
-            state.traverse((node) => {
+            state.root.traverse((node) => {
                 node.attributes.selected = false
                 node.attributes.cursor = false
             })
@@ -368,22 +411,11 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 }
 
                 if (startNode && endNode) {
-                    startNode = state.findById(startNode.id)
-                    endNode = state.findById(endNode.id)
                     if (selection.isCollapsed) {
                         startNode.attributes.cursor = true
                     } else {
-                        let selectionEnabler = false
-                        state.traverse((value) => {
-                            if (selectionEnabler) {
-                                value.attributes.selected = true
-                            }
-                            if (value.id === startNode.id) {
-                                selectionEnabler = true
-                            }
-                            if (value.id === endNode.id) {
-                                selectionEnabler = false
-                            }
+                        state.root.traverseBetween(startNode, endNode, (node) => {
+                            node.attributes.selected = true
                         })
                     }
 
@@ -404,10 +436,10 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     return (
         <div>
             <div contentEditable={true} suppressContentEditableWarning={true} style={{height: 300, padding: "12px"}}>
-                <NodeFactory nodes={[state]}/>
+                <NodeFactory nodes={[state.root]}/>
             </div>
-            <button onClick={() => onBoldClick(state)}>Bold</button>
-            <button onClick={() => onItalicClick(state)}>Italic</button>
+            <button onClick={() => onBoldClick(state.root)}>Bold</button>
+            <button onClick={() => onItalicClick(state.root)}>Italic</button>
         </div>
 
     )
