@@ -3,11 +3,31 @@ import NodeFactory from "./nodes/NodeFactory";
 import {debounce} from "../../shared/Utils";
 import {TreeNode} from "./TreeNode";
 
+
+const insertUl = {
+    key(value : string) {
+        return value === "Enter" || value === "Backspace"
+    },
+    handler(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
+        let indexOf = ast.indexOf(node);
+
+        let ulNode = new TreeNode("ul");
+        let liNode = new TreeNode("li");
+        let treeNode = new TreeNode("p");
+        treeNode.attributes.text = "t"
+        liNode.appendChild(treeNode)
+        ulNode.appendChild(liNode)
+
+        container.splice(indexOf, 0, ulNode)
+    }
+
+}
+
 const enterPress = {
     key(value: string) {
         return value === "Enter"
     },
-    handler: function enterPress(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
+    handler(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
         event.preventDefault()
         let prev = ast.slice(0, cursorPosition + 1)
         let next = ast.slice(cursorPosition + 1)
@@ -40,7 +60,7 @@ const backspacePress = {
     key(value : string) {
         return value === "Backspace"
     },
-    handler : function backspacePress(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
+    handler(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
         event.preventDefault()
         if (node.type === "text") {
             ast.splice(cursorPosition, 1)
@@ -64,7 +84,7 @@ const keyPress = {
     key(value : string) {
         return value.length === 1
     },
-    handler : function keyPress(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
+    handler(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
         event.preventDefault()
         let model = new TreeNode("text")
         model.attributes.text = event.key
@@ -82,7 +102,7 @@ const keyPress = {
     }
 }
 
-const handlerRegistry = [keyPress, enterPress, backspacePress]
+const handlerRegistry = [enterPress, backspacePress]
 
 function executeKeyPress(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
 
@@ -96,7 +116,10 @@ function executeKeyPress(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], 
 function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     const [state, setState] = useState<{ root: TreeNode }>(() => {
-        return {root: new TreeNode("root", null)}
+        let treeNode = new TreeNode("root", null);
+        let treeNode1 = new TreeNode("p");
+        treeNode.appendChild(treeNode1)
+        return {root: treeNode}
     })
 
     const onBoldClick = (ast: TreeNode) => {
@@ -125,6 +148,21 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
         setState({...state})
 
+    }
+
+    const onListClick = (ast : TreeNode) => {
+        let node = state.root.find((node) => node.attributes.cursor)
+
+        if (node) {
+            let container = node.parent;
+            let ast = container?.children || node.children
+            let cursorPosition = ast.indexOf(node)
+
+            insertUl.handler(null, node,  ast, container, cursorPosition)
+
+            setState({...state})
+
+        }
     }
 
     const key = useMemo(() => {
@@ -171,7 +209,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
                 let cursorPosition = ast.indexOf(node)
 
-                state.root.traverse((node) => node.attributes.cursor = false)
+                // state.root.traverse((node) => node.attributes.cursor = false)
 
                 let executed = executeKeyPress(event, node, ast, container, cursorPosition);
 
@@ -249,10 +287,11 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     return (
         <div>
             <div contentEditable={true} suppressContentEditableWarning={true} style={{height: 300, padding: "12px", whiteSpace: "pre"}}>
-                <NodeFactory nodes={[state.root]}/>
+                <NodeFactory nodes={[state.root]} astChange={() => setState({...state})}/>
             </div>
             <button onClick={() => onBoldClick(state.root)}>Bold</button>
             <button onClick={() => onItalicClick(state.root)}>Italic</button>
+            <button onClick={() => onListClick(state.root)}>New List</button>
         </div>
 
     )

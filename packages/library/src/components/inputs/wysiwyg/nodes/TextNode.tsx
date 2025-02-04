@@ -3,7 +3,7 @@ import {TreeNode} from "../TreeNode";
 
 function TextNode(properties : TextNode.Attributes) {
 
-    const {ast} = properties
+    const {ast, astChange} = properties
 
     const span = useRef<HTMLSpanElement>(null);
 
@@ -37,6 +37,7 @@ function TextNode(properties : TextNode.Attributes) {
 namespace TextNode {
     export interface Attributes {
         ast: TreeNode[]
+        astChange : () => void
     }
 }
 

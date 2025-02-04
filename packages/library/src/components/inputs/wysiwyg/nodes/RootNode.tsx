@@ -4,7 +4,7 @@ import {TreeNode} from "../TreeNode";
 
 function RootNode(properties : RootNode.Attributes) {
 
-    const {ast} = properties
+    const {ast, astChange} = properties
 
     const div = useRef<HTMLDivElement>(null);
 
@@ -17,7 +17,7 @@ function RootNode(properties : RootNode.Attributes) {
             {
                 ast.children.length === 0 ? <br/> : ""
             }
-            <NodeFactory nodes={ast.children}/>
+            <NodeFactory nodes={ast.children} astChange={astChange}/>
         </div>
     )
 }
@@ -25,6 +25,7 @@ function RootNode(properties : RootNode.Attributes) {
 namespace RootNode {
     export interface Attributes {
         ast : TreeNode
+        astChange : () => void
     }
 }
 
