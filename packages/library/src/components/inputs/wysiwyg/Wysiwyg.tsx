@@ -7,7 +7,7 @@ import {arraysAreEqual} from "./Util";
 
 declare global {
     interface Node {
-        ast: NodeModel[];
+        ast: NodeModel[] | NodeModel;
     }
 }
 
@@ -141,6 +141,79 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             }
         };
 
+        function handleEnterPress(ast: NodeModel[], cursorPosition: number) {
+            let {paragraph, paragraphsIndex, paragraphsAST} = traverseAST(state, (node, index, paragraphsAST) => {
+                if (node instanceof ParagraphModel) {
+                    if (node.children === ast) {
+                        return {paragraph: node, paragraphsIndex: index, paragraphsAST: paragraphsAST}
+                    }
+                }
+            }, {paragraph: null, paragraphsIndex: -1, paragraphsAST: []})
+
+            let selection = window.getSelection();
+            let rangeAt = selection.getRangeAt(0);
+
+            cursorPosition = rangeAt.startContainer.textContent.length === rangeAt.endOffset ? cursorPosition + 1 : cursorPosition
+
+            if (paragraph || ast[0] instanceof TextNodeModel) {
+                let prev = ast.slice(0, cursorPosition + 1);
+                let next = ast.slice(cursorPosition + 1);
+
+                let prevParagraphModel = new ParagraphModel();
+                prevParagraphModel.children = prev
+                let nextParagraphModel = new ParagraphModel();
+                nextParagraphModel.children = next
+                nextParagraphModel.cursor = true
+
+                if (paragraph) {
+                    paragraphsAST.splice(paragraphsIndex, 1)
+                    paragraphsAST.splice(paragraphsIndex, 0, prevParagraphModel)
+                    paragraphsAST.splice(paragraphsIndex + 1, 0, nextParagraphModel)
+                } else {
+                    ast.length = 0
+                    ast.push(prevParagraphModel)
+                    ast.push(nextParagraphModel)
+                }
+            } else {
+                ast.splice(cursorPosition, 0, new ParagraphModel())
+            }
+
+
+            setState([...state])
+            return cursorPosition;
+        }
+
+        function handleBackspacePress(ast: NodeModel[], index: number, node: NodeModel, cursorPosition: number) {
+            let selection = window.getSelection();
+            if (selection?.rangeCount) {
+                let range = selection.getRangeAt(0);
+                let startOffset = range.startOffset;
+
+                if (startOffset === 0) {
+                    let prevParagraph = ast[index - 1] as ParagraphModel;
+                    let paragraphNode = node as ParagraphModel;
+                    prevParagraph.children.push(...paragraphNode.children)
+                    prevParagraph.children[prevParagraph.children.length - paragraphNode.children.length - 1].cursor = true
+                    ast.splice(index, 1)
+                } else {
+                    ast.splice(cursorPosition, 1)
+                    let node = ast[cursorPosition - 1];
+                    if (node) {
+                        node.cursor = true
+                    } else {
+                        traverseAST(state, (value) => {
+                            if (value instanceof ParagraphModel) {
+                                if (value.children === ast) {
+                                    value.cursor = true
+                                }
+                            }
+                        })
+                    }
+                }
+                setState([...state])
+            }
+        }
+
         const handleKeyPress = (event: KeyboardEvent) => {
             let {node, index, ast} : {node : NodeModel, index : number, ast : NodeModel[]} = traverseAST(state, (value, index, ast) => {
                 if (value.cursor) {
@@ -174,73 +247,15 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 switch (event.key) {
                     case "Backspace" : {
                         event.preventDefault()
-
-                        let selection = window.getSelection();
-                        if (selection?.rangeCount) {
-                            let range = selection.getRangeAt(0);
-                            let startOffset = range.startOffset;
-
-                            if (startOffset === 0)  {
-                                let prevParagraph = ast[index - 1] as ParagraphModel;
-                                prevParagraph.children.push(...(node as ParagraphModel).children)
-                                prevParagraph.children[prevParagraph.children.length - (node as ParagraphModel).children.length - 1].cursor = true
-                                ast.splice(index, 1)
-                            } else {
-                                ast.splice(cursorPosition, 1)
-                                let node = ast[cursorPosition - 1];
-                                if (node) {
-                                    node.cursor = true
-                                } else {
-                                    traverseAST(state, (value) => {
-                                        if (value instanceof ParagraphModel) {
-                                            if (value.children === ast) {
-                                                value.cursor = true
-                                            }
-                                        }
-                                    })
-                                }
-                            }
-                            setState([...state])
-                        }
+                        handleBackspacePress(ast, index, node, cursorPosition);
 
                     }
                         break
                     case "Enter" : {
                         event.preventDefault()
-                        let {paragraph, paragraphsIndex, paragraphsAST} = traverseAST(state, (node, index, paragraphsAST) => {
-                            if (node instanceof ParagraphModel) {
-                                if (node.children === ast) {
-                                    return {paragraph : node, paragraphsIndex : index, paragraphsAST : paragraphsAST}
-                                }
-                            }
-                        }, {paragraph : null, paragraphsIndex : -1, paragraphsAST : []})
-
-                        let selection = window.getSelection();
-                        let rangeAt = selection.getRangeAt(0);
-
-                        cursorPosition = rangeAt.startContainer.textContent.length === rangeAt.endOffset ? cursorPosition + 1 : cursorPosition
-
-                        let prev = ast.slice(0, cursorPosition + 1 );
-                        let next = ast.slice(cursorPosition + 1) ;
-
-                        let prevParagraphModel = new ParagraphModel();
-                        prevParagraphModel.children = prev
-                        let nextParagraphModel = new ParagraphModel();
-                        nextParagraphModel.children = next
-                        nextParagraphModel.cursor = true
-
-                        if (paragraph) {
-                            paragraphsAST.splice(paragraphsIndex, 1)
-                            paragraphsAST.splice(paragraphsIndex , 0, prevParagraphModel)
-                            paragraphsAST.splice(paragraphsIndex + 1, 0, nextParagraphModel)
-                        } else {
-                            ast.length = 0
-                            ast.push(prevParagraphModel)
-                            ast.push(nextParagraphModel)
-                        }
-
-                        setState([...state])
+                        cursorPosition = handleEnterPress(ast, cursorPosition);
                     }
+                        break
 
                 }
             }
@@ -265,19 +280,23 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 let endModels = rangeAt.endContainer.ast;
 
                 let startNode, endNode
-                if (rangeAt.startOffset === 0) {
-                    startNode = traverseAST(state, (node) => {
-                        if (node instanceof ParagraphModel) {
-                            if (arraysAreEqual(node.children, startModels)) {
-                                return node
-                            }
-                        }
-                    })
-                } else {
-                    startNode = startModels?.[rangeAt.startOffset - 1]
-                }
 
-                endNode = endModels?.[rangeAt.endOffset - 1]
+                if (startModels instanceof ParagraphModel && endModels instanceof ParagraphModel) {
+                    startNode = startModels
+                    endNode = endModels
+                } else {
+                    if (rangeAt.startOffset === 0) {
+                        startNode = rangeAt.startContainer.parentNode.parentNode.ast
+                    } else {
+                        startNode = startModels?.[rangeAt.startOffset - 1]
+                    }
+
+                    if (rangeAt.endOffset === 0) {
+                        endNode = rangeAt.endContainer.parentNode.parentNode.ast
+                    } else {
+                        endNode = endModels?.[rangeAt.endOffset - 1]
+                    }
+                }
 
                 if (startNode && endNode) {
 

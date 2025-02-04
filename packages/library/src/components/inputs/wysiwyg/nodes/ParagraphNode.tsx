@@ -17,7 +17,7 @@ function ParagraphNode(properties: ParagraphNode.Attributes) {
         selection.addRange(range);
 
 
-        paragraph.current.ast = [ast]
+        paragraph.current.ast = ast
     }, [ast]);
 
     return (
