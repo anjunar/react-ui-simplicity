@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react";
 import NodeFactory from "./NodeFactory";
-import {TreeNode} from "../Wysiwyg";
+import {TreeNode} from "../TreeNode";
 
 function ParagraphNode(properties: ParagraphNode.Attributes) {
 

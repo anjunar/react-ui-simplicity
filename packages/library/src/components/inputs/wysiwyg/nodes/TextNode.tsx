@@ -1,5 +1,5 @@
 import React, {useLayoutEffect, useRef} from "react";
-import {TreeNode} from "../Wysiwyg";
+import {TreeNode} from "../TreeNode";
 
 function TextNode(properties : TextNode.Attributes) {
 

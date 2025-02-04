@@ -3,7 +3,8 @@ import TextNode from "./TextNode";
 import React from "react";
 import ParagraphNode from "./ParagraphNode";
 import RootNode from "./RootNode";
-import {TreeNode} from "../Wysiwyg";
+import {TreeNode} from "../TreeNode";
+
 
 export default function NodeFactory({nodes} : {nodes : TreeNode[]}) {
 

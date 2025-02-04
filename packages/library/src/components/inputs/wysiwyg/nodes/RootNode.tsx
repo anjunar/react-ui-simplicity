@@ -1,6 +1,6 @@
 import React, {useLayoutEffect, useRef} from "react"
-import {TreeNode} from "../Wysiwyg";
 import NodeFactory from "./NodeFactory";
+import {TreeNode} from "../TreeNode";
 
 function RootNode(properties : RootNode.Attributes) {
 
