@@ -16,9 +16,8 @@ function ParagraphNode(properties: ParagraphNode.Attributes) {
         selection.removeAllRanges();
         selection.addRange(range);
 
-
         paragraph.current.ast = ast
-    }, [ast]);
+    }, [ast.id]);
 
     return (
         <div ref={paragraph}>

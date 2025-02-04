@@ -1,8 +1,7 @@
-import React, {useLayoutEffect, useMemo, useState} from "react"
+import React, {useLayoutEffect, useState} from "react"
 import {v4} from "uuid";
 import NodeFactory from "./nodes/NodeFactory";
 import {debounce} from "../../shared/Utils";
-import {node} from "webpack";
 
 declare global {
     interface Node {
@@ -11,6 +10,9 @@ declare global {
 }
 
 export class TreeNode {
+    static counter = 0
+    version = TreeNode.counter++
+
     id: string;
     type: string;
     parent: TreeNode | null = null;
@@ -116,13 +118,19 @@ export class TreeNode {
     }
 
     clone(parent: TreeNode | null = null): TreeNode {
-        const newNode = new TreeNode(this.type, parent)
+        const newNode = new TreeNode(this.type, parent);
         newNode.id = this.id
-        newNode.parent = parent
-        newNode.children = this.children
-        for (const child of newNode.children) {
-            child.parent = this
+        newNode.attributes = { ...this.attributes };
+
+        newNode.children = this.children.map(child => {
+            return child.clone(newNode);
+        });
+
+        for (let i = 0; i < newNode.children.length; i++) {
+            newNode.children[i].previousSibling = i > 0 ? newNode.children[i - 1] : null;
+            newNode.children[i].nextSibling = i < newNode.children.length - 1 ? newNode.children[i + 1] : null;
         }
+
         return newNode;
     }
 
@@ -220,7 +228,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     model.parent = node
                 } else {
                     ast.splice(cursorPosition + 1, 0, model);
-                    model.parent = container
+                    model.parent = container || node
                 }
 
                 setState(state.clone())
@@ -279,6 +287,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         } else {
             if (event.key.length === 1) {
                 event.preventDefault()
+                setState(state.clone())
             }
 
         }
@@ -319,7 +328,8 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 }
 
                 if (startNode && endNode) {
-
+                    startNode = state.findById(startNode.id)
+                    endNode = state.findById(endNode.id)
                     if (selection.isCollapsed) {
                         startNode.attributes.cursor = true
                     } else {
@@ -341,7 +351,6 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 }
 
             }
-
         }, 100)
 
         document.addEventListener("keydown", handleKeyPress)
