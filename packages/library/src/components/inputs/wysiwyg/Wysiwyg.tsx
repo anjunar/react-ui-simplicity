@@ -134,6 +134,8 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         };
 
         const handler = (event: KeyboardEvent) => {
+            handleKeyPress(event)
+/*
             if (event.key.length === 1 || event.key === "Backspace") {
                 event.preventDefault()
 
@@ -146,6 +148,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             } else {
                 handleKeyPress(event)
             }
+*/
         };
 
         const handleKeyPress = (event: KeyboardEvent) => {
@@ -189,35 +192,23 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             switch (event.key) {
                 case "Backspace" : {
                     event.preventDefault()
-                    let selection = window.getSelection();
-                    if (selection?.rangeCount) {
-                        let range = selection.getRangeAt(0);
-                        let startOffset = range.startOffset;
 
-                        if (startOffset === 0) {
-                            let prevParagraph = ast[index - 1] as ParagraphModel;
-                            let paragraphNode = node as ParagraphModel;
-                            prevParagraph.children.push(...paragraphNode.children)
-                            prevParagraph.children[prevParagraph.children.length - paragraphNode.children.length - 1].cursor = true
-                            ast.splice(index, 1)
-                        } else {
-                            ast.splice(cursorPosition, 1)
-                            let node1 = ast[cursorPosition - 1];
-                            if (node1) {
-                                node1.cursor = true
-                            } else {
-                                traverseAST(state, (value) => {
-                                    if (value instanceof ParagraphModel) {
-                                        if (value.children === ast) {
-                                            value.cursor = true
-                                        }
-                                    }
-                                })
-                            }
+                    if (node instanceof TextNodeModel) {
+                        ast.splice(cursorPosition, 1)
+                        let node = ast[cursorPosition - 1];
+                        if (node) {
+                            node.cursor = true
                         }
-                        setState([...state])
+                    } else {
+                        if (node instanceof ParagraphModel) {
+                            let indexOf = container.children.indexOf(node);
+                            let prevModel = container.children[indexOf - 1] as ContainerModel;
+                            prevModel.children.push(...node.children)
+                            container.children.splice(indexOf, 1)
+                        }
                     }
 
+                    setState([...state])
                 }
                     break
                 case "Enter" : {
@@ -311,9 +302,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 if (startNode && endNode) {
 
                     if (selection.isCollapsed) {
-                        if (startNode.id === startNode.id) {
-                            startNode.cursor = true
-                        }
+                        startNode.cursor = true
                     } else {
                         let selectionEnabler = false
                         traverseAST(state, (value) => {
