@@ -148,7 +148,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         };
 
         const handler = (event: KeyboardEvent) => {
-            if (event.key.length === 1 || event.key === "Backspace") {
+            if (handlerRegistry.some(handler => handler.key(event.key))) {
                 event.preventDefault()
 
                 inputQueue.push(event);
@@ -199,21 +199,23 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             if (selection?.rangeCount) {
                 let rangeAt = selection.getRangeAt(0);
 
-                let startModels = state.root.filter((node) => node.dom === rangeAt.startContainer)
-                let endModels = state.root.filter((node) => node.dom === rangeAt.endContainer)
-
                 let startNode, endNode
 
+                let startModels = state.root.filter((node) => node.dom === rangeAt.startContainer)
                 if (startModels.length === 1 && startModels[0].isContainer) {
                     startNode = startModels[0]
-                    endNode = endModels[0]
                 } else {
                     if (rangeAt.startOffset === 0) {
                         startNode = state.root.find((node) => node.dom === rangeAt.startContainer).parent
                     } else {
                         startNode = startModels?.[rangeAt.startOffset - 1]
                     }
+                }
 
+                let endModels = state.root.filter((node) => node.dom === rangeAt.endContainer)
+                if (endModels.length === 1 && endModels[0].isContainer) {
+                    endNode = endModels[0]
+                } else {
                     if (rangeAt.endOffset === 0) {
                         endNode = state.root.find((node) => node.dom === rangeAt.endContainer).parent
                     } else {
