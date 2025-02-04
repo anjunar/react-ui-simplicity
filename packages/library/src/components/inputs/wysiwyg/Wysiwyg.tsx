@@ -1,7 +1,11 @@
-import React, {useLayoutEffect, useMemo, useState} from "react"
+import "./Wysiwyg.css"
+import React, {useLayoutEffect, useMemo, useRef, useState} from "react"
 import NodeFactory from "./nodes/NodeFactory";
 import {debounce} from "../../shared/Utils";
 import {TreeNode} from "./TreeNode";
+import Toolbar from "./toolbar/Toolbar";
+import Footer from "./footer/Footer";
+import Inspector from "./inspector/Inspector";
 
 
 const insertUl = {
@@ -98,6 +102,10 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         treeNode.appendChild(treeNode1)
         return {root: treeNode}
     })
+
+    const [page, setPage] = useState(0)
+
+    const contentEditable = useRef<HTMLDivElement>(null);
 
     const onBoldClick = () => {
 
@@ -262,13 +270,13 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     }, []);
 
     return (
-        <div style={{height : "100%"}}>
-            <div contentEditable={true} suppressContentEditableWarning={true} style={{height: "80%", padding: "12px", whiteSpace: "pre"}}>
+        <div className={"wysiwyg"}>
+            <Toolbar page={page} editableContent={contentEditable}/>
+            <div ref={contentEditable} contentEditable={true} suppressContentEditableWarning={true} style={{flex : 1, padding: "12px", whiteSpace: "pre"}}>
                 <NodeFactory nodes={[ast.root]} astChange={() => setAst({...ast})}/>
             </div>
-            <button onClick={() => onBoldClick()}>Bold</button>
-            <button onClick={() => onItalicClick()}>Italic</button>
-            <button onClick={() => onListClick()}>New List</button>
+            <Inspector contentRef={contentEditable}/>
+            <Footer page={page} onPage={(value) => setPage(value)}/>
         </div>
 
     )

@@ -1,0 +1,9 @@
+.wysiwyg {
+    height : calc(100% - 4px);
+    display: flex;
+    flex-direction: column;
+
+    div[contenteditable=true] {
+        outline: 0;
+    }
+}
