@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useState} from "react"
+import React, {useLayoutEffect, useMemo, useState} from "react"
 import {v4} from "uuid";
 import NodeFactory from "./nodes/NodeFactory";
 import {debounce} from "../../shared/Utils";
@@ -206,92 +206,132 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     }
 
-    const handleKeyPress = (event: KeyboardEvent) => {
-        let node = state.find((node) => node.attributes.cursor)
+    const key = useMemo(() => {
+        let inputQueue = []
+        let isProcessing = false
 
-        if (node) {
-            let container = node.parent;
-            let ast = container?.children || node.children
-
-            let cursorPosition = ast.indexOf(node)
-
-            if (event.key.length === 1) {
-                event.preventDefault()
-                state.traverse((node) => node.attributes.cursor = false)
-
-                let model = new TreeNode("text")
-                model.attributes.text = event.key
-                model.attributes.cursor = true
-
-                if (node.type === "p") {
-                    node.appendChild(model)
-                    model.parent = node
-                } else {
-                    ast.splice(cursorPosition + 1, 0, model);
-                    model.parent = container || node
-                }
-
-                setState(state.clone())
+        const processQueue = () => {
+            if (inputQueue.length === 0) {
+                isProcessing = false;
+                return;
             }
 
-            switch (event.key) {
-                case "Backspace" : {
-                    event.preventDefault()
+            const batch = [...inputQueue];
+            inputQueue = [];
 
-                    if (node.type === "text") {
-                        ast.splice(cursorPosition, 1)
-                        let node = ast[cursorPosition - 1];
-                        if (node) {
-                            node.attributes.cursor = true
-                        }
+            batch.forEach(event => {
+                handleKeyPress(event);
+            });
+
+            requestAnimationFrame(processQueue)
+        };
+
+        const handler = (event: KeyboardEvent) => {
+            if (event.key.length === 1 || event.key === "Backspace") {
+                event.preventDefault()
+
+                inputQueue.push(event);
+
+                if (!isProcessing) {
+                    isProcessing = true;
+                    requestAnimationFrame(processQueue)
+                }
+            } else {
+                handleKeyPress(event)
+            }
+        };
+
+        const handleKeyPress = (event: KeyboardEvent) => {
+            let node = state.find((node) => node.attributes.cursor)
+
+            if (node) {
+                let container = node.parent;
+                let ast = container?.children || node.children
+
+                let cursorPosition = ast.indexOf(node)
+
+                if (event.key.length === 1) {
+                    event.preventDefault()
+                    state.traverse((node) => node.attributes.cursor = false)
+
+                    let model = new TreeNode("text")
+                    model.attributes.text = event.key
+                    model.attributes.cursor = true
+
+                    if (node.type === "p") {
+                        node.appendChild(model)
+                        model.parent = node
                     } else {
-                        if (node.type === "p") {
-                            let prevModel = node.previousSibling
-                            prevModel.appendChildren(node.children)
-                            container.removeChild(node)
-                        }
+                        ast.splice(cursorPosition + 1, 0, model);
+                        model.parent = container || node
                     }
 
                     setState(state.clone())
                 }
-                    break
-                case "Enter" : {
-                    event.preventDefault()
 
-                    let prev = ast.slice(0, cursorPosition + 1)
-                    let next = ast.slice(cursorPosition + 1)
+                switch (event.key) {
+                    case "Backspace" : {
+                        event.preventDefault()
 
-                    if (node.type === "text" && container.type === "p") {
-                        let parent = container.parent
-                        let indexOf = parent.children.indexOf(container)
-                        parent.removeChild(container)
-                        parent.surroundWith(prev, new TreeNode("p", parent), indexOf)
-                        parent.surroundWith(next, new TreeNode("p", parent), indexOf + 1)
-                    } else {
-                        if (node.type === "p") {
-                            let paragraphModel = new TreeNode("p", container)
-                            container.splice(cursorPosition + 1, 0, paragraphModel)
+                        if (node.type === "text") {
+                            ast.splice(cursorPosition, 1)
+                            let node = ast[cursorPosition - 1];
+                            if (node) {
+                                node.attributes.cursor = true
+                            }
                         } else {
-                            if (container.type === "root") {
-                                container.surroundWith(prev, new TreeNode("p", container))
-                                container.surroundWith(next, new TreeNode("p", container))
+                            if (node.type === "p") {
+                                let prevModel = node.previousSibling
+                                prevModel.appendChildren(node.children)
+                                container.removeChild(node)
                             }
                         }
+
+                        setState(state.clone())
                     }
+                        break
+                    case "Enter" : {
+                        event.preventDefault()
 
-                    setState(state.clone())
+                        let prev = ast.slice(0, cursorPosition + 1)
+                        let next = ast.slice(cursorPosition + 1)
+
+                        if (node.type === "text" && container.type === "p") {
+                            let parent = container.parent
+                            let indexOf = parent.children.indexOf(container)
+                            parent.removeChild(container)
+                            parent.surroundWith(prev, new TreeNode("p", parent), indexOf)
+                            parent.surroundWith(next, new TreeNode("p", parent), indexOf + 1)
+                        } else {
+                            if (node.type === "p") {
+                                let paragraphModel = new TreeNode("p", container)
+                                container.splice(cursorPosition + 1, 0, paragraphModel)
+                            } else {
+                                if (container.type === "root") {
+                                    container.surroundWith(prev, new TreeNode("p", container))
+                                    container.surroundWith(next, new TreeNode("p", container))
+                                }
+                            }
+                        }
+
+                        setState(state.clone())
+                    }
+                        break
+
                 }
-                    break
+            } else {
+                if (event.key.length === 1) {
+                    event.preventDefault()
+                }
 
             }
-        } else {
-            if (event.key.length === 1) {
-                event.preventDefault()
-                setState(state.clone())
-            }
-
         }
-    }
+
+        return {
+            handler : handler
+        }
+    }, [])
+
 
     useLayoutEffect(() => {
         let selectionListener = debounce(() => {
@@ -353,10 +393,10 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             }
         }, 100)
 
-        document.addEventListener("keydown", handleKeyPress)
+        document.addEventListener("keydown", key.handler)
         document.addEventListener("selectionchange", selectionListener)
         return () => {
-            document.removeEventListener("keydown", handleKeyPress)
+            document.removeEventListener("keydown", key.handler)
             document.removeEventListener("selectionchange", selectionListener)
         }
     }, []);
