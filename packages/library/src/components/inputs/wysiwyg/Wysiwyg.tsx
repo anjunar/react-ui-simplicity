@@ -13,9 +13,8 @@ const insertUl = {
 
         let ulNode = new TreeNode("ul");
         let liNode = new TreeNode("li");
-        let treeNode = new TreeNode("p");
-        treeNode.attributes.text = "t"
-        liNode.appendChild(treeNode)
+        let pNode = new TreeNode("p");
+        liNode.appendChild(pNode)
         ulNode.appendChild(liNode)
 
         container.splice(indexOf + 1, 0, ulNode)
@@ -93,16 +92,16 @@ function executeKeyPress(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], 
 
 function Wysiwyg(properties: Wysiwyg.Attributes) {
 
-    const [state, setState] = useState<{ root: TreeNode }>(() => {
+    const [ast, setAst] = useState<{ root: TreeNode }>(() => {
         let treeNode = new TreeNode("root", null);
         let treeNode1 = new TreeNode("p");
         treeNode.appendChild(treeNode1)
         return {root: treeNode}
     })
 
-    const onBoldClick = (ast: TreeNode) => {
+    const onBoldClick = () => {
 
-        ast.traverse((node) => {
+        ast.root.traverse((node) => {
             if (node.type === "text") {
                 if (node.attributes.selected) {
                     node.attributes.bold = true
@@ -110,13 +109,13 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             }
         })
 
-        setState({...state})
+        setAst({...ast})
 
     }
 
-    const onItalicClick = (ast: TreeNode) => {
+    const onItalicClick = () => {
 
-        ast.traverse((node) => {
+        ast.root.traverse((node) => {
             if (node.type === "text") {
                 if (node.attributes.selected) {
                     node.attributes.italic = true
@@ -124,21 +123,21 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             }
         })
 
-        setState({...state})
+        setAst({...ast})
 
     }
 
-    const onListClick = (ast : TreeNode) => {
-        let node = state.root.find((node) => node.attributes.cursor)
+    const onListClick = () => {
+        let node = ast.root.find((node) => node.attributes.cursor)
 
         if (node) {
             let container = node.parent;
-            let ast = container?.children || node.children
-            let cursorPosition = ast.indexOf(node)
+            let nodes = container?.children || node.children
+            let cursorPosition = nodes.indexOf(node)
 
-            insertUl.handler(null, node,  ast, container, cursorPosition)
+            insertUl.handler(null, node,  nodes, container, cursorPosition)
 
-            setState({...state})
+            setAst({...ast})
 
         }
     }
@@ -179,20 +178,20 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         };
 
         const handleKeyPress = (event: KeyboardEvent) => {
-            let node = state.root.find((node) => node.attributes.cursor)
+            let node = ast.root.find((node) => node.attributes.cursor)
 
             if (node) {
                 let container = node.parent;
-                let ast = container?.children || node.children
+                let nodes = container?.children || node.children
 
-                let cursorPosition = ast.indexOf(node)
+                let cursorPosition = nodes.indexOf(node)
 
-                // state.root.traverse((node) => node.attributes.cursor = false)
+                // nodes.root.traverse((node) => node.attributes.cursor = false)
 
-                let executed = executeKeyPress(event, node, ast, container, cursorPosition);
+                let executed = executeKeyPress(event, node, nodes, container, cursorPosition);
 
                 if (executed) {
-                    setState({...state})
+                    setAst({...ast})
                 }
             }
         }
@@ -206,7 +205,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     useLayoutEffect(() => {
         let selectionListener = debounce(() => {
 
-            state.root.traverse((node) => {
+            ast.root.traverse((node) => {
                 node.attributes.selected = false
                 node.attributes.cursor = false
             })
@@ -217,23 +216,23 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
                 let startNode, endNode
 
-                let startModels = state.root.filter((node) => node.dom === rangeAt.startContainer)
+                let startModels = ast.root.filter((node) => node.dom === rangeAt.startContainer)
                 if (startModels.length === 1 && startModels[0].isContainer) {
                     startNode = startModels[0]
                 } else {
                     if (rangeAt.startOffset === 0) {
-                        startNode = state.root.find((node) => node.dom === rangeAt.startContainer).parent
+                        startNode = ast.root.find((node) => node.dom === rangeAt.startContainer).parent
                     } else {
                         startNode = startModels?.[rangeAt.startOffset - 1]
                     }
                 }
 
-                let endModels = state.root.filter((node) => node.dom === rangeAt.endContainer)
+                let endModels = ast.root.filter((node) => node.dom === rangeAt.endContainer)
                 if (endModels.length === 1 && endModels[0].isContainer) {
                     endNode = endModels[0]
                 } else {
                     if (rangeAt.endOffset === 0) {
-                        endNode = state.root.find((node) => node.dom === rangeAt.endContainer).parent
+                        endNode = ast.root.find((node) => node.dom === rangeAt.endContainer).parent
                     } else {
                         endNode = endModels?.[rangeAt.endOffset - 1]
                     }
@@ -243,7 +242,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     if (selection.isCollapsed) {
                         startNode.attributes.cursor = true
                     } else {
-                        state.root.traverseBetween(startNode, endNode, (node) => {
+                        ast.root.traverseBetween(startNode, endNode, (node) => {
                             node.attributes.selected = true
                         })
                     }
@@ -263,13 +262,13 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     }, []);
 
     return (
-        <div>
-            <div contentEditable={true} suppressContentEditableWarning={true} style={{height: 300, padding: "12px", whiteSpace: "pre"}}>
-                <NodeFactory nodes={[state.root]} astChange={() => setState({...state})}/>
+        <div style={{height : "100%"}}>
+            <div contentEditable={true} suppressContentEditableWarning={true} style={{height: "80%", padding: "12px", whiteSpace: "pre"}}>
+                <NodeFactory nodes={[ast.root]} astChange={() => setAst({...ast})}/>
             </div>
-            <button onClick={() => onBoldClick(state.root)}>Bold</button>
-            <button onClick={() => onItalicClick(state.root)}>Italic</button>
-            <button onClick={() => onListClick(state.root)}>New List</button>
+            <button onClick={() => onBoldClick()}>Bold</button>
+            <button onClick={() => onItalicClick()}>Italic</button>
+            <button onClick={() => onListClick()}>New List</button>
         </div>
 
     )

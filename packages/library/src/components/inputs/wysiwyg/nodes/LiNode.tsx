@@ -1,7 +1,6 @@
 import React, {useLayoutEffect, useRef} from "react";
 import {TreeNode} from "../TreeNode";
 import NodeFactory from "./NodeFactory";
-import {node} from "webpack";
 
 function LiNode(properties : LiNode.Attributes) {
 
@@ -13,21 +12,6 @@ function LiNode(properties : LiNode.Attributes) {
         ast.dom = li.current
     }, [ast]);
 
-    useLayoutEffect(() => {
-        let listener = (event : KeyboardEvent) => {
-            let cursor = ast.find((node : TreeNode) => node.attributes.cursor);
-
-            if (cursor?.nextSibling === null) {
-                if (event.key === "Enter") {
-                    callback()
-                }
-            }
-        };
-        document.addEventListener("keydown", listener)
-        return () => {
-            document.removeEventListener("keydown", listener)
-        }
-    }, []);
 
     return (
         <li ref={li}>

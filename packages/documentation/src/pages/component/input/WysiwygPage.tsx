@@ -3,7 +3,7 @@ import {Wysiwyg} from "react-ui-simplicity";
 
 export default function WysiwygPage() {
     return (
-        <div>
+        <div className={"wysiwyg-page"} style={{height : "100%"}}>
             <Wysiwyg/>
         </div>
     )
