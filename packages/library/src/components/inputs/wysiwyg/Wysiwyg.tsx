@@ -18,7 +18,7 @@ const insertUl = {
         liNode.appendChild(treeNode)
         ulNode.appendChild(liNode)
 
-        container.splice(indexOf, 0, ulNode)
+        container.splice(indexOf + 1, 0, ulNode)
     }
 
 }
@@ -75,28 +75,6 @@ const backspacePress = {
                 prevModel.appendChildren(node.children)
                 container.removeChild(node)
             }
-            return true
-        }
-    }
-}
-
-const keyPress = {
-    key(value : string) {
-        return value.length === 1
-    },
-    handler(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
-        event.preventDefault()
-        let model = new TreeNode("text")
-        model.attributes.text = event.key
-        model.attributes.cursor = true
-
-        if (node.type === "p") {
-            node.appendChild(model)
-            model.parent = node
-            return true
-        } else {
-            (container || node).splice(cursorPosition + 1, 0, model);
-            model.parent = container || node
             return true
         }
     }

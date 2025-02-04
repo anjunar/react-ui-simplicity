@@ -105,6 +105,21 @@ export class TreeNode {
         return this.filter(predicate)[0]
     }
 
+    search(
+        predicate: (node: TreeNode) => boolean,
+        maxDepth: number = Infinity,
+        currentDepth: number = 0
+    ): TreeNode | null {
+        if (predicate(this)) return this;
+        if (currentDepth >= maxDepth) return null;
+
+        for (let child of this.children) {
+            let found = child.search(predicate, maxDepth, currentDepth + 1);
+            if (found) return found;
+        }
+        return null;
+    }
+
     traverse(callback: (node: TreeNode) => void): void {
         callback(this);
 

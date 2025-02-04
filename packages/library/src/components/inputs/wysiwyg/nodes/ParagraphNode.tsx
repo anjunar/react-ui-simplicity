@@ -21,16 +21,21 @@ function ParagraphNode(properties: ParagraphNode.Attributes) {
 
     useLayoutEffect(() => {
         let listener = (event : KeyboardEvent) => {
-            let cursor = ast.find((node : TreeNode) => node.attributes.cursor);
+            let cursor = ast.search((node : TreeNode) => node.attributes.cursor, 2);
             if (cursor) {
                 if (event.key.length === 1) {
                     event.preventDefault()
-                    ast.traverse((node) => node.attributes.cursor = false)
+                    cursor.attributes.cursor = false
                     let indexOf = ast.children.indexOf(cursor);
                     let textNode = new TreeNode("text");
                     textNode.attributes.text = event.key
                     textNode.attributes.cursor = true
-                    ast.splice(indexOf + 1, 0, textNode)
+                    if (cursor.type === "p") {
+                        cursor.splice(indexOf + 1, 0, textNode)
+                    } else {
+                        ast.splice(indexOf + 1, 0, textNode)
+                    }
+
                     astChange()
                 }
             }

@@ -1,16 +1,5 @@
 export function arraysAreEqual<T extends { id: any }>(arr1: T[], arr2: T[]): boolean {
-    if (arr1.length !== arr2.length) return false;
-
-    for (let i = 0; i < arr1.length; i++) {
-        const item1 = arr1[i];
-        const item2 = arr2[i];
-
-        if (item1.id !== item2.id) {
-            return false;
-        }
-    }
-
-    return true;
+    return arr2.every((item, index) => (arr1.findIndex(it => it.id === item.id) > - 1));
 }
 
 export function findKeyByValue<T extends { id: any }>(record: Record<string, T[]>, value: T[]): string | undefined {
@@ -25,19 +14,18 @@ export function groupByConsecutiveMulti<T>(
     const groups: T[][] = [];
     const record: Record<string, T[]> = {};
 
+    let lastKey: string | null = null;
+
     array.forEach(item => {
         const key = keyFns.map(fn => fn(item)).join("|");
 
-        if (groups.length === 0 || keyFns.some(fn => fn(groups[groups.length - 1][0]) !== fn(item))) {
-            groups.push([item]);
-        } else {
-            groups[groups.length - 1].push(item);
+        if (lastKey !== key) {
+            groups.push([]);
+            lastKey = key;
         }
 
-        if (!record[key]) {
-            record[key] = [];
-        }
-        record[key].push(item);
+        groups[groups.length - 1].push(item);
+        record[key] = [...(record[key] || []), item];
     });
 
     return { groups, record };
