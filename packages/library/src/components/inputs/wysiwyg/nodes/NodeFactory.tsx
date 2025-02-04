@@ -1,4 +1,4 @@
-import {findKeyByValue, groupByConsecutiveMulti} from "../Util";
+import {findKeyByValue, groupByConsecutiveMulti} from "../Arrays";
 import TextNode from "./TextNode";
 import React from "react";
 import ParagraphNode from "./ParagraphNode";
