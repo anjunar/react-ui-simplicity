@@ -16,7 +16,7 @@ function ParagraphNode(properties: ParagraphNode.Attributes) {
         selection.removeAllRanges();
         selection.addRange(range);
 
-        paragraph.current.ast = ast
+        ast.dom = paragraph.current
     }, [ast]);
 
     return (

@@ -3,12 +3,6 @@ import {v4} from "uuid";
 import NodeFactory from "./nodes/NodeFactory";
 import {debounce} from "../../shared/Utils";
 
-declare global {
-    interface Node {
-        ast: TreeNode[] | TreeNode;
-    }
-}
-
 export class TreeNode {
     static counter = 0
     version = TreeNode.counter++
@@ -20,11 +14,16 @@ export class TreeNode {
     previousSibling: TreeNode | null = null;
     nextSibling: TreeNode | null = null;
     attributes: Record<string, any> = {};
+    dom : Node
 
     constructor(type: string, parent: TreeNode | null = null) {
         this.id = v4()
         this.type = type;
         this.parent = parent;
+    }
+
+    get isContainer() {
+        return this.type === "p" || this.type === "root"
     }
 
     appendChild(node: TreeNode) {
@@ -397,23 +396,23 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             if (selection?.rangeCount) {
                 let rangeAt = selection.getRangeAt(0);
 
-                let startModels = rangeAt.startContainer.ast;
-                let endModels = rangeAt.endContainer.ast;
+                let startModels = state.root.filter((node) => node.dom === rangeAt.startContainer)
+                let endModels = state.root.filter((node) => node.dom === rangeAt.endContainer)
 
                 let startNode, endNode
 
-                if (startModels instanceof TreeNode && endModels instanceof TreeNode) {
-                    startNode = startModels
-                    endNode = endModels
+                if (startModels.length === 1 && startModels[0].isContainer) {
+                    startNode = startModels[0]
+                    endNode = endModels[0]
                 } else {
                     if (rangeAt.startOffset === 0) {
-                        startNode = rangeAt.startContainer.ast?.[0].parent
+                        startNode = state.root.find((node) => node.dom === rangeAt.startContainer).parent
                     } else {
                         startNode = startModels?.[rangeAt.startOffset - 1]
                     }
 
                     if (rangeAt.endOffset === 0) {
-                        endNode = rangeAt.endContainer.ast?.[0].parent
+                        endNode = state.root.find((node) => node.dom === rangeAt.endContainer).parent
                     } else {
                         endNode = endModels?.[rangeAt.endOffset - 1]
                     }

@@ -9,7 +9,7 @@ function RootNode(properties : RootNode.Attributes) {
     const div = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
-        div.current.ast = ast
+        ast.dom = div.current
     }, [ast]);
 
     return (

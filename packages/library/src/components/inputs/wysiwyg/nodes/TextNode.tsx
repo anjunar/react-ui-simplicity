@@ -22,7 +22,9 @@ function TextNode(properties : TextNode.Attributes) {
             }
         }
 
-        span.current.firstChild.ast = ast
+        for (const node of ast) {
+            node.dom = span.current.firstChild
+        }
     }, [ast])
 
     return (
