@@ -215,6 +215,59 @@ export class TreeNode {
 }
 
 
+function enterPress(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
+    let prev = ast.slice(0, cursorPosition + 1)
+    let next = ast.slice(cursorPosition + 1)
+
+    if (node.type === "text" && container.type === "p") {
+        let parent = container.parent
+        let indexOf = parent.children.indexOf(container)
+        parent.removeChild(container)
+        parent.surroundWith(prev, new TreeNode("p", parent), indexOf)
+        parent.surroundWith(next, new TreeNode("p", parent), indexOf + 1)
+    } else {
+        if (node.type === "p") {
+            let paragraphModel = new TreeNode("p", container)
+            container.splice(cursorPosition + 1, 0, paragraphModel)
+        } else {
+            if (container.type === "root") {
+                container.surroundWith(prev, new TreeNode("p", container))
+                container.surroundWith(next, new TreeNode("p", container))
+            }
+        }
+    }
+}
+
+function backspacePress(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
+    if (node.type === "text") {
+        ast.splice(cursorPosition, 1)
+        let node = ast[cursorPosition - 1];
+        if (node) {
+            node.attributes.cursor = true
+        }
+    } else {
+        if (node.type === "p") {
+            let prevModel = node.previousSibling
+            prevModel.appendChildren(node.children)
+            container.removeChild(node)
+        }
+    }
+}
+
+function keyPress(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
+    let model = new TreeNode("text")
+    model.attributes.text = event.key
+    model.attributes.cursor = true
+
+    if (node.type === "p") {
+        node.appendChild(model)
+        model.parent = node
+    } else {
+        (container || node).splice(cursorPosition + 1, 0, model);
+        model.parent = container || node
+    }
+}
+
 function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     const [state, setState] = useState<{root : TreeNode}>(() => {
@@ -287,48 +340,28 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         const handleKeyPress = (event: KeyboardEvent) => {
             let node = state.root.find((node) => node.attributes.cursor)
 
+            let key = event.key;
             if (node) {
                 let container = node.parent;
                 let ast = container?.children || node.children
 
                 let cursorPosition = ast.indexOf(node)
 
-                if (event.key.length === 1) {
+                if (key.length === 1) {
                     event.preventDefault()
+
                     state.root.traverse((node) => node.attributes.cursor = false)
 
-                    let model = new TreeNode("text")
-                    model.attributes.text = event.key
-                    model.attributes.cursor = true
-
-                    if (node.type === "p") {
-                        node.appendChild(model)
-                        model.parent = node
-                    } else {
-                        (container || node).splice(cursorPosition + 1, 0, model);
-                        model.parent = container || node
-                    }
+                    keyPress(event, node, ast, container, cursorPosition);
 
                     setState({...state})
                 }
 
-                switch (event.key) {
+                switch (key) {
                     case "Backspace" : {
                         event.preventDefault()
 
-                        if (node.type === "text") {
-                            ast.splice(cursorPosition, 1)
-                            let node = ast[cursorPosition - 1];
-                            if (node) {
-                                node.attributes.cursor = true
-                            }
-                        } else {
-                            if (node.type === "p") {
-                                let prevModel = node.previousSibling
-                                prevModel.appendChildren(node.children)
-                                container.removeChild(node)
-                            }
-                        }
+                        backspacePress(event, node, ast, container, cursorPosition);
 
                         setState({...state})
                     }
@@ -336,37 +369,13 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     case "Enter" : {
                         event.preventDefault()
 
-                        let prev = ast.slice(0, cursorPosition + 1)
-                        let next = ast.slice(cursorPosition + 1)
-
-                        if (node.type === "text" && container.type === "p") {
-                            let parent = container.parent
-                            let indexOf = parent.children.indexOf(container)
-                            parent.removeChild(container)
-                            parent.surroundWith(prev, new TreeNode("p", parent), indexOf)
-                            parent.surroundWith(next, new TreeNode("p", parent), indexOf + 1)
-                        } else {
-                            if (node.type === "p") {
-                                let paragraphModel = new TreeNode("p", container)
-                                container.splice(cursorPosition + 1, 0, paragraphModel)
-                            } else {
-                                if (container.type === "root") {
-                                    container.surroundWith(prev, new TreeNode("p", container))
-                                    container.surroundWith(next, new TreeNode("p", container))
-                                }
-                            }
-                        }
+                        enterPress(event, node, ast, container, cursorPosition);
 
                         setState({...state})
                     }
                         break
 
                 }
-            } else {
-                if (event.key.length === 1) {
-                    event.preventDefault()
-                }
-
             }
         }
 
@@ -435,7 +444,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     return (
         <div>
-            <div contentEditable={true} suppressContentEditableWarning={true} style={{height: 300, padding: "12px"}}>
+            <div contentEditable={true} suppressContentEditableWarning={true} style={{height: 300, padding: "12px", whiteSpace : "pre"}}>
                 <NodeFactory nodes={[state.root]}/>
             </div>
             <button onClick={() => onBoldClick(state.root)}>Bold</button>
