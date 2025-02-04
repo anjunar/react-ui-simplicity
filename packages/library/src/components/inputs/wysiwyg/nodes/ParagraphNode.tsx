@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react";
-import {ParagraphModel} from "../Wysiwyg";
 import NodeFactory from "./NodeFactory";
+import {TreeNode} from "../Wysiwyg";
 
 function ParagraphNode(properties: ParagraphNode.Attributes) {
 
@@ -32,7 +32,7 @@ function ParagraphNode(properties: ParagraphNode.Attributes) {
 
 namespace ParagraphNode {
     export interface Attributes {
-        ast: ParagraphModel
+        ast: TreeNode
     }
 }
 

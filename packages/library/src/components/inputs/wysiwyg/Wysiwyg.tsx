@@ -2,213 +2,233 @@ import React, {useLayoutEffect, useMemo, useState} from "react"
 import {v4} from "uuid";
 import NodeFactory from "./nodes/NodeFactory";
 import {debounce} from "../../shared/Utils";
-import RootNode from "./nodes/RootNode";
 
 declare global {
     interface Node {
-        ast: NodeModel[] | NodeModel;
+        ast: TreeNode[] | TreeNode;
     }
 }
 
-export class NodeModel {
-    id: string = v4()
-    node: Node
-    type: string
-    cursor: boolean = false
-    selected: boolean = false
-    parent : NodeModel
+export class TreeNode {
+    id: string;
+    type: string;
+    parent: TreeNode | null = null;
+    children: TreeNode[] = [];
+    previousSibling: TreeNode | null = null;
+    nextSibling: TreeNode | null = null;
+    attributes: Record<string, any> = {};
+
+    constructor(type: string, parent: TreeNode | null = null) {
+        this.id = v4()
+        this.type = type;
+        this.parent = parent;
+    }
+
+    appendChild(node: TreeNode) {
+        node.parent = this;
+        if (this.children.length > 0) {
+            node.previousSibling = this.children[this.children.length - 1];
+            this.children[this.children.length - 1].nextSibling = node;
+        }
+        this.children.push(node);
+    }
+
+    appendChildren(nodes: TreeNode[]) {
+        for (const node of nodes) {
+            this.appendChild(node)
+        }
+    }
+
+    removeChild(node: TreeNode) {
+        this.children = this.children.filter((child) => child.id !== node.id);
+        if (node.previousSibling) node.previousSibling.nextSibling = node.nextSibling;
+        if (node.nextSibling) node.nextSibling.previousSibling = node.previousSibling;
+        node.parent = null;
+    }
+
+    removeAllChildren() {
+        for (const child of this.children) {
+            this.removeChild(child)
+        }
+    }
+
+    insertAfter(newNode: TreeNode, referenceNode: TreeNode) {
+        if (!referenceNode.parent) return;
+        let parent = referenceNode.parent;
+
+        let index = parent.children.indexOf(referenceNode);
+        newNode.parent = parent;
+
+        newNode.previousSibling = referenceNode;
+        newNode.nextSibling = referenceNode.nextSibling;
+        if (referenceNode.nextSibling) referenceNode.nextSibling.previousSibling = newNode;
+        referenceNode.nextSibling = newNode;
+
+        parent.children.splice(index + 1, 0, newNode);
+    }
+
+    findById(id: string): TreeNode | null {
+        if (this.id === id) return this;
+        for (let child of this.children) {
+            let found = child.findById(id);
+            if (found) return found;
+        }
+        return null;
+    }
+
+    splitNode(node: TreeNode) {
+        if (!node.parent) return null;
+
+        let oldParent = node.parent;
+        let newParent = new TreeNode(oldParent.type, oldParent.parent);
+
+        let index = oldParent.children.indexOf(node);
+        let movingNodes = oldParent.children.splice(index);
+
+        movingNodes.forEach((n) => newParent.appendChild(n));
+
+        oldParent.parent?.insertAfter(newParent, oldParent);
+
+        return newParent;
+    }
+
+    filter(predicate: (node: TreeNode) => boolean): TreeNode[] {
+        let result: TreeNode[] = [];
+        if (predicate(this)) result.push(this);
+
+        for (let child of this.children) {
+            result.push(...child.filter(predicate));
+        }
+        return result;
+    }
+
+    find(predicate: (node: TreeNode) => boolean): TreeNode {
+        return this.filter(predicate)[0]
+    }
+
+    traverse(callback: (node: TreeNode) => void): void {
+        callback(this);
+
+        for (let child of this.children) {
+            child.traverse(callback);
+        }
+    }
+
+    clone(parent: TreeNode | null = null): TreeNode {
+        const newNode = new TreeNode(this.type, parent)
+        newNode.id = this.id
+        newNode.parent = parent
+        newNode.children = this.children
+        for (const child of newNode.children) {
+            child.parent = this
+        }
+        return newNode;
+    }
+
+    splice(index: number, deleteCount: number, ...newNodes: TreeNode[]): void {
+        const removedNodes = this.children.splice(index, deleteCount, ...newNodes);
+
+        newNodes.forEach((node) => {
+            node.parent = this;
+        });
+
+        for (let i = 0; i < this.children.length; i++) {
+            let prev = this.children[i - 1] || null;
+            let next = this.children[i + 1] || null;
+            this.children[i].previousSibling = prev;
+            this.children[i].nextSibling = next;
+        }
+
+        removedNodes.forEach((node) => {
+            node.parent = null;
+            node.previousSibling = null;
+            node.nextSibling = null;
+        });
+    }
 }
 
-export class ContainerModel extends NodeModel {
-    children : NodeModel[] = []
-}
-
-export class RootModel extends ContainerModel {
-    type = "root"
-}
-
-export class ParagraphModel extends ContainerModel {
-    type = "p"
-}
-
-export class TextNodeModel extends NodeModel {
-    type = "text"
-    text: string
-    bold: boolean
-    italic: boolean
-}
 
 function Wysiwyg(properties: Wysiwyg.Attributes) {
 
-    const [state, setState] = useState<NodeModel[]>(() => {
-        return [new RootModel()]
+    const [state, setState] = useState<TreeNode>(() => {
+        return new TreeNode("root", null)
     })
 
-    const traverseAST = (ast: NodeModel[], callback: (value: NodeModel, index : number, container : ContainerModel) => any, result? : any) => {
-        let outer: any = null;
+    const onBoldClick = (ast: TreeNode) => {
 
-        const traverse = (ast: NodeModel[], container : ContainerModel) => {
-
-            for (let index = 0; index < ast.length; index++) {
-                const node = ast[index];
-
-                let result = callback(node, index, container);
-                if (result) {
-                    outer = result;
-                    return;
-                }
-
-                if (node instanceof ContainerModel) {
-                    let result = callback(node, index, container);
-                    if (result) {
-                        outer = result;
-                        return;
-                    }
-                    if (outer) return;
-                    traverse(node.children, node);
-                }
-            }
-
-        };
-
-        traverse(ast, null);
-
-        if (outer) {
-            return outer;
-        } else {
-            return result
-        }
-    };
-
-    const onBoldClick = (ast: NodeModel[]) => {
-
-        traverseAST(ast, (node) => {
-            if (node instanceof TextNodeModel) {
-                if (node.selected) {
-                    node.bold = true
+        ast.traverse((node) => {
+            if (node.type === "text") {
+                if (node.attributes.selected) {
+                    node.attributes.bold = true
                 }
             }
         })
 
-        setState([...ast])
+        setState(ast.clone())
 
     }
 
-    const onItalicClick = (ast: NodeModel[]) => {
+    const onItalicClick = (ast: TreeNode) => {
 
-        traverseAST(ast, (node) => {
-            if (node instanceof TextNodeModel) {
-                if (node.selected) {
-                    node.italic = true
+        ast.traverse((node) => {
+            if (node.type === "text") {
+                if (node.attributes.selected) {
+                    node.attributes.italic = true
                 }
             }
         })
 
-        setState([...ast])
+        setState(ast.clone())
+
     }
 
-    const key = useMemo(() => {
-        let inputQueue = []
-        let isProcessing = false
+    const handleKeyPress = (event: KeyboardEvent) => {
+        let node = state.find((node) => node.attributes.cursor)
 
-        setInterval(() => {
-            if (inputQueue.length === 0) {
-                isProcessing = false
-            }
-        }, 1000)
+        if (node) {
+            let container = node.parent;
+            let ast = container?.children || node.children
 
-        const processQueue = () => {
-            if (inputQueue.length === 0) {
-                isProcessing = false;
-                return;
-            }
-
-            const batch = [...inputQueue];
-            inputQueue = [];
-
-            batch.forEach(event => {
-                handleKeyPress(event);
-            });
-
-            requestAnimationFrame(processQueue)
-        };
-
-        const handler = (event: KeyboardEvent) => {
-            handleKeyPress(event)
-/*
-            if (event.key.length === 1 || event.key === "Backspace") {
-                event.preventDefault()
-
-                inputQueue.push(event);
-
-                if (!isProcessing) {
-                    isProcessing = true;
-                    requestAnimationFrame(processQueue)
-                }
-            } else {
-                handleKeyPress(event)
-            }
-*/
-        };
-
-        const handleKeyPress = (event: KeyboardEvent) => {
-            let {node, index, container} : {node : NodeModel, index : number, container : ContainerModel} = traverseAST(state, (value, index, container) => {
-                if (value.cursor) {
-                    return {node : value, index : index, container : container}
-                }
-            }, {node : null, index : 0, container : state})
-
-
-            let ast
-            if (node instanceof RootModel) {
-                container = node
-                ast = node.children
-            } else {
-                ast = container.children
-            }
-
-            let cursorPosition = index
+            let cursorPosition = ast.indexOf(node)
 
             if (event.key.length === 1) {
                 event.preventDefault()
-                traverseAST(state, (value) => {
-                    value.cursor = false
-                })
+                state.traverse((node) => node.attributes.cursor = false)
 
-                let model = new TextNodeModel()
-                model.text = event.key
-                model.cursor = true
-                model.parent = container
+                let model = new TreeNode("text")
+                model.attributes.text = event.key
+                model.attributes.cursor = true
 
-                if (node instanceof ContainerModel) {
-                    node.children.push(model)
+                if (node.type === "p") {
+                    node.appendChild(model)
+                    model.parent = node
                 } else {
                     ast.splice(cursorPosition + 1, 0, model);
+                    model.parent = container
                 }
 
-                setState([...state])
+                setState(state.clone())
             }
 
             switch (event.key) {
                 case "Backspace" : {
                     event.preventDefault()
 
-                    if (node instanceof TextNodeModel) {
+                    if (node.type === "text") {
                         ast.splice(cursorPosition, 1)
                         let node = ast[cursorPosition - 1];
                         if (node) {
-                            node.cursor = true
+                            node.attributes.cursor = true
                         }
                     } else {
-                        if (node instanceof ParagraphModel) {
-                            let indexOf = container.children.indexOf(node);
-                            let prevModel = container.children[indexOf - 1] as ContainerModel;
-                            prevModel.children.push(...node.children)
-                            container.children.splice(indexOf, 1)
+                        if (node.type === "p") {
+                            let prevModel = node.previousSibling
+                            prevModel.appendChildren(node.children)
+                            container.removeChild(node)
                         }
                     }
 
-                    setState([...state])
+                    setState(state.clone())
                 }
                     break
                 case "Enter" : {
@@ -217,62 +237,61 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     let prev = ast.slice(0, cursorPosition + 1)
                     let next = ast.slice(cursorPosition + 1)
 
-                    if (node instanceof TextNodeModel && container instanceof ParagraphModel) {
-                        let parent : ContainerModel = container.parent as ContainerModel;
+                    if (node.type === "text" && container.type === "p") {
+                        let parent = container.parent
 
-                        let prevParagraph = new ParagraphModel()
-                        prevParagraph.children = prev
-                        prevParagraph.parent = parent
+                        let prevParagraph = new TreeNode("p", parent)
+                        prevParagraph.appendChildren(prev)
 
-                        let nextParagraph = new ParagraphModel()
-                        nextParagraph.children = next
-                        nextParagraph.parent = parent
+                        let nextParagraph = new TreeNode("p", parent)
+                        nextParagraph.appendChildren(next)
 
                         let indexOf = parent.children.indexOf(container)
-                        parent.children.splice(indexOf, 1)
-                        parent.children.splice(indexOf, 0, prevParagraph)
-                        parent.children.splice(indexOf + 1, 0, nextParagraph)
+                        parent.splice(indexOf, 1)
+                        parent.splice(indexOf, 0, prevParagraph)
+                        parent.splice(indexOf + 1, 0, nextParagraph)
 
                     } else {
-                        if (node instanceof ParagraphModel) {
-                            let rootModel = node.parent as RootModel;
-                            let paragraphModel = new ParagraphModel();
-                            paragraphModel.parent = rootModel
-                            rootModel.children.splice(cursorPosition + 1, 0, paragraphModel)
+                        if (node.type === "p") {
+                            let rootModel = container
+                            let paragraphModel = new TreeNode("p", rootModel)
+                            rootModel.splice(cursorPosition + 1, 0, paragraphModel)
                         } else {
-                            if (container instanceof RootModel) {
-                                let prevParagraph = new ParagraphModel()
-                                prevParagraph.children = prev
-                                prevParagraph.parent = container
+                            if (container.type === "root") {
+                                container.removeAllChildren()
 
-                                let nextParagraph = new ParagraphModel()
-                                nextParagraph.children = next
-                                nextParagraph.parent = container
+                                let prevParagraph = new TreeNode("p", container)
+                                prevParagraph.appendChildren(prev)
 
-                                container.children = []
-                                container.children.push(prevParagraph, nextParagraph)
+                                let nextParagraph = new TreeNode("p", container)
+                                nextParagraph.appendChildren(next)
+
+                                container.appendChildren([prevParagraph, nextParagraph])
                             }
                         }
                     }
 
-                    setState([...state])
+                    setState(state.clone())
                 }
                     break
 
             }
-        }
+        } else {
+            if (event.key.length === 1) {
+                event.preventDefault()
+            }
 
-        return {
-            handler : handler
         }
-    }, [])
+    }
 
     useLayoutEffect(() => {
         let selectionListener = debounce(() => {
-            traverseAST(state, (value) => {
-                value.selected = false
-                value.cursor = false
+
+            state.traverse((node) => {
+                node.attributes.selected = false
+                node.attributes.cursor = false
             })
+
             let selection = window.getSelection();
             if (selection?.rangeCount) {
                 let rangeAt = selection.getRangeAt(0);
@@ -282,18 +301,18 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
                 let startNode, endNode
 
-                if (startModels instanceof ContainerModel && endModels instanceof ContainerModel) {
+                if (startModels instanceof TreeNode && endModels instanceof TreeNode) {
                     startNode = startModels
                     endNode = endModels
                 } else {
                     if (rangeAt.startOffset === 0) {
-                        startNode = rangeAt.startContainer.parentNode.parentNode.ast
+                        startNode = rangeAt.startContainer.ast[0].parent
                     } else {
                         startNode = startModels?.[rangeAt.startOffset - 1]
                     }
 
                     if (rangeAt.endOffset === 0) {
-                        endNode = rangeAt.endContainer.parentNode.parentNode.ast
+                        endNode = rangeAt.endContainer.ast[0].parent
                     } else {
                         endNode = endModels?.[rangeAt.endOffset - 1]
                     }
@@ -302,12 +321,12 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 if (startNode && endNode) {
 
                     if (selection.isCollapsed) {
-                        startNode.cursor = true
+                        startNode.attributes.cursor = true
                     } else {
                         let selectionEnabler = false
-                        traverseAST(state, (value) => {
+                        state.traverse((value) => {
                             if (selectionEnabler) {
-                                value.selected = true
+                                value.attributes.selected = true
                             }
                             if (value.id === startNode.id) {
                                 selectionEnabler = true
@@ -325,18 +344,18 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
         }, 100)
 
-        document.addEventListener("keydown", key.handler)
+        document.addEventListener("keydown", handleKeyPress)
         document.addEventListener("selectionchange", selectionListener)
         return () => {
-            document.removeEventListener("keydown", key.handler)
+            document.removeEventListener("keydown", handleKeyPress)
             document.removeEventListener("selectionchange", selectionListener)
         }
     }, []);
 
     return (
         <div>
-            <div contentEditable={true} suppressContentEditableWarning={true} style={{height: 300, padding : "12px"}}>
-                <NodeFactory nodes={state}/>
+            <div contentEditable={true} suppressContentEditableWarning={true} style={{height: 300, padding: "12px"}}>
+                <NodeFactory nodes={[state]}/>
             </div>
             <button onClick={() => onBoldClick(state)}>Bold</button>
             <button onClick={() => onItalicClick(state)}>Italic</button>

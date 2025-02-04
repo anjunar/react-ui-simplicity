@@ -1,5 +1,5 @@
 import React, {useLayoutEffect, useRef} from "react"
-import {RootModel} from "../Wysiwyg";
+import {TreeNode} from "../Wysiwyg";
 import NodeFactory from "./NodeFactory";
 
 function RootNode(properties : RootNode.Attributes) {
@@ -24,7 +24,7 @@ function RootNode(properties : RootNode.Attributes) {
 
 namespace RootNode {
     export interface Attributes {
-        ast : RootModel
+        ast : TreeNode
     }
 }
 

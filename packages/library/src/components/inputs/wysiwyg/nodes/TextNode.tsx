@@ -1,5 +1,5 @@
 import React, {useLayoutEffect, useRef} from "react";
-import {TextNodeModel} from "../Wysiwyg";
+import {TreeNode} from "../Wysiwyg";
 
 function TextNode(properties : TextNode.Attributes) {
 
@@ -12,7 +12,7 @@ function TextNode(properties : TextNode.Attributes) {
         if (selection?.rangeCount) {
             if (selection.isCollapsed) {
                 const range = selection.getRangeAt(0);
-                const offset = ast.findIndex(segment => segment.cursor)
+                const offset = ast.findIndex(segment => segment.attributes.cursor)
                 if (offset > -1) {
                     range.setStart(span.current.firstChild, offset + 1);
                     range.collapse(true)
@@ -26,15 +26,15 @@ function TextNode(properties : TextNode.Attributes) {
     }, [ast])
 
     return (
-        <span ref={span} style={{fontWeight: ast[0]?.bold ? "bold" : "", fontStyle: ast[0]?.italic ? "italic" : ""}}>
-            {ast.map(segment => segment.text).join("")}
+        <span ref={span} style={{fontWeight: ast[0]?.attributes.bold ? "bold" : "", fontStyle: ast[0]?.attributes.italic ? "italic" : ""}}>
+            {ast.map(segment => segment.attributes.text).join("")}
         </span>
     )
 }
 
 namespace TextNode {
     export interface Attributes {
-        ast: TextNodeModel[]
+        ast: TreeNode[]
     }
 }
 
