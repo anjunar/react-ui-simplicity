@@ -1,9 +1,9 @@
 import React, {useLayoutEffect, useMemo, useState} from "react"
 import {v4} from "uuid";
-import {useForm} from "../../../hooks/UseFormHook";
 import {NodeFactory} from "./nodes/NodeFactory";
 import ActiveObject from "../../../domain/container/ActiveObject";
 import {debounce} from "../../shared/Utils";
+import {arraysAreEqual} from "./Util";
 
 declare global {
     interface Node {
@@ -104,6 +104,12 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         let inputQueue = []
         let isProcessing = false
 
+        setInterval(() => {
+            if (inputQueue.length === 0) {
+                isProcessing = false
+            }
+        }, 1000)
+
         const processQueue = () => {
             if (inputQueue.length === 0) {
                 isProcessing = false;
@@ -149,9 +155,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 if (event.key.length === 1) {
                     event.preventDefault()
                     traverseAST(state, (value) => {
-                        if (value instanceof TextNodeModel) {
-                            value.cursor = false
-                        }
+                        value.cursor = false
                     })
 
                     let model = new TextNodeModel()
@@ -161,7 +165,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     if (node instanceof ParagraphModel) {
                         node.children.push(model)
                     } else {
-                        ast.splice(cursorPosition + 1 === ast.length ? cursorPosition + 1 : cursorPosition, 0, model);
+                        ast.splice(cursorPosition + 1, 0, model);
                     }
 
                     setState([...state])
@@ -170,12 +174,35 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 switch (event.key) {
                     case "Backspace" : {
                         event.preventDefault()
-                        ast.splice(cursorPosition, 1)
-                        setState([...state])
-                        let node = ast[cursorPosition - 1];
-                        if (node instanceof TextNodeModel) {
-                            node.cursor = true
+
+                        let selection = window.getSelection();
+                        if (selection?.rangeCount) {
+                            let range = selection.getRangeAt(0);
+                            let startOffset = range.startOffset;
+
+                            if (startOffset === 0)  {
+                                let prevParagraph = ast[index - 1] as ParagraphModel;
+                                prevParagraph.children.push(...(node as ParagraphModel).children)
+                                prevParagraph.children[prevParagraph.children.length - (node as ParagraphModel).children.length - 1].cursor = true
+                                ast.splice(index, 1)
+                            } else {
+                                ast.splice(cursorPosition, 1)
+                                let node = ast[cursorPosition - 1];
+                                if (node) {
+                                    node.cursor = true
+                                } else {
+                                    traverseAST(state, (value) => {
+                                        if (value instanceof ParagraphModel) {
+                                            if (value.children === ast) {
+                                                value.cursor = true
+                                            }
+                                        }
+                                    })
+                                }
+                            }
+                            setState([...state])
                         }
+
                     }
                         break
                     case "Enter" : {
@@ -193,13 +220,14 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
                         cursorPosition = rangeAt.startContainer.textContent.length === rangeAt.endOffset ? cursorPosition + 1 : cursorPosition
 
-                        let prev = ast.slice(0, cursorPosition);
-                        let next = ast.slice(cursorPosition);
+                        let prev = ast.slice(0, cursorPosition + 1 );
+                        let next = ast.slice(cursorPosition + 1) ;
 
                         let prevParagraphModel = new ParagraphModel();
                         prevParagraphModel.children = prev
                         let nextParagraphModel = new ParagraphModel();
                         nextParagraphModel.children = next
+                        nextParagraphModel.cursor = true
 
                         if (paragraph) {
                             paragraphsAST.splice(paragraphsIndex, 1)
@@ -236,8 +264,22 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 let startModels = rangeAt.startContainer.ast;
                 let endModels = rangeAt.endContainer.ast;
 
-                const startNode = startModels?.[rangeAt.startOffset === startModels.length ? rangeAt.startOffset - 1 : rangeAt.startOffset]
-                const endNode = endModels?.[rangeAt.endOffset === endModels.length ? rangeAt.endOffset - 1 : rangeAt.endOffset]
+                let startNode, endNode
+                if (rangeAt.startOffset === 0 && rangeAt.endOffset === 0) {
+                    let foundNode = traverseAST(state, (node) => {
+                        if (node instanceof ParagraphModel) {
+                            if (arraysAreEqual(node.children, startModels)) {
+                                return node
+                            }
+                        }
+                    });
+                    startNode = foundNode
+                    endNode = foundNode
+                } else {
+                    startNode = startModels?.[rangeAt.startOffset - 1]
+                    endNode = endModels?.[rangeAt.endOffset - 1]
+                }
+
 
                 if (startNode && endNode) {
 
@@ -247,7 +289,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                         }
                     } else {
                         let selectionEnabler = false
-                        traverseAST(state, (value, ast) => {
+                        traverseAST(state, (value) => {
                             if (value.id === startNode.id) {
                                 selectionEnabler = true
                             }
