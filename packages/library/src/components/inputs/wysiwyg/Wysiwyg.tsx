@@ -253,9 +253,8 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
                     } else {
                         if (node.type === "p") {
-                            let rootModel = container
-                            let paragraphModel = new TreeNode("p", rootModel)
-                            rootModel.splice(cursorPosition + 1, 0, paragraphModel)
+                            let paragraphModel = new TreeNode("p", container)
+                            container.splice(cursorPosition + 1, 0, paragraphModel)
                         } else {
                             if (container.type === "root") {
                                 container.removeAllChildren()
