@@ -1,26 +1,35 @@
-import {NodeModel, ParagraphModel, TextNodeModel} from "../Wysiwyg";
+import {NodeModel, ParagraphModel, RootModel, TextNodeModel} from "../Wysiwyg";
 import {findKeyByValue, groupByConsecutiveMulti} from "../Util";
 import TextNode from "./TextNode";
 import React from "react";
 import ParagraphNode from "./ParagraphNode";
+import RootNode from "./RootNode";
 
-export function NodeFactory(nodes: NodeModel[]) {
+export default function NodeFactory({nodes} : {nodes : NodeModel[]}) {
 
     let {groups, record} = groupByConsecutiveMulti(nodes, [node => node.type]);
+
+    let result = []
 
     for (const group of groups) {
         let key = findKeyByValue(record, group);
 
         switch (key) {
+            case "root" :
+                result.push(...group.map(model => (<RootNode key={model.id} ast={model as RootModel}/>)))
+                break
             case "text" :
-                return groupByConsecutiveMulti(group as TextNodeModel[], [node => node.bold, node => node.italic])
+                result.push(...groupByConsecutiveMulti(group as TextNodeModel[], [node => node.bold, node => node.italic])
                     .groups
                     .map(segments => {
                         return (<TextNode key={segments[0].id} ast={segments}/>);
-                    })
+                    }))
+                break
             case "p" :
-                return group.map(model => <ParagraphNode key={model.id} ast={model as ParagraphModel}/>)
+                result.push(...group.map(model => <ParagraphNode key={model.id} ast={model as ParagraphModel}/>))
+                break
         }
     }
 
+    return result
 }

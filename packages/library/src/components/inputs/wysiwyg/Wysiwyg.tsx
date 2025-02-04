@@ -1,9 +1,8 @@
 import React, {useLayoutEffect, useMemo, useState} from "react"
 import {v4} from "uuid";
-import {NodeFactory} from "./nodes/NodeFactory";
-import ActiveObject from "../../../domain/container/ActiveObject";
+import NodeFactory from "./nodes/NodeFactory";
 import {debounce} from "../../shared/Utils";
-import {arraysAreEqual} from "./Util";
+import RootNode from "./nodes/RootNode";
 
 declare global {
     interface Node {
@@ -11,16 +10,24 @@ declare global {
     }
 }
 
-export class NodeModel extends ActiveObject {
+export class NodeModel {
     id: string = v4()
     node: Node
     type: string
     cursor: boolean = false
     selected: boolean = false
+    parent : NodeModel
 }
 
-export class ParagraphModel extends NodeModel {
-    children: NodeModel[] = []
+export class ContainerModel extends NodeModel {
+    children : NodeModel[] = []
+}
+
+export class RootModel extends ContainerModel {
+    type = "root"
+}
+
+export class ParagraphModel extends ContainerModel {
     type = "p"
 }
 
@@ -34,37 +41,37 @@ export class TextNodeModel extends NodeModel {
 function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     const [state, setState] = useState<NodeModel[]>(() => {
-        return []
+        return [new RootModel()]
     })
 
-    const traverseAST = (ast: NodeModel[], callback: (value: NodeModel, index : number, ast: NodeModel[]) => any, result? : any) => {
+    const traverseAST = (ast: NodeModel[], callback: (value: NodeModel, index : number, container : ContainerModel) => any, result? : any) => {
         let outer: any = null;
 
-        const traverse = (ast: NodeModel[]) => {
+        const traverse = (ast: NodeModel[], container : ContainerModel) => {
 
             for (let index = 0; index < ast.length; index++) {
                 const node = ast[index];
 
-                let result = callback(node, index, ast);
+                let result = callback(node, index, container);
                 if (result) {
                     outer = result;
                     return;
                 }
 
-                if (node instanceof ParagraphModel) {
-                    let result = callback(node, index, ast);
+                if (node instanceof ContainerModel) {
+                    let result = callback(node, index, container);
                     if (result) {
                         outer = result;
                         return;
                     }
                     if (outer) return;
-                    traverse(node.children);
+                    traverse(node.children, node);
                 }
             }
 
         };
 
-        traverse(ast);
+        traverse(ast, null);
 
         if (outer) {
             return outer;
@@ -141,123 +148,126 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             }
         };
 
-        function handleEnterPress(ast: NodeModel[], cursorPosition: number) {
-            let {paragraph, paragraphsIndex, paragraphsAST} = traverseAST(state, (node, index, paragraphsAST) => {
-                if (node instanceof ParagraphModel) {
-                    if (node.children === ast) {
-                        return {paragraph: node, paragraphsIndex: index, paragraphsAST: paragraphsAST}
-                    }
+        const handleKeyPress = (event: KeyboardEvent) => {
+            let {node, index, container} : {node : NodeModel, index : number, container : ContainerModel} = traverseAST(state, (value, index, container) => {
+                if (value.cursor) {
+                    return {node : value, index : index, container : container}
                 }
-            }, {paragraph: null, paragraphsIndex: -1, paragraphsAST: []})
+            }, {node : null, index : 0, container : state})
 
-            let selection = window.getSelection();
-            let rangeAt = selection.getRangeAt(0);
 
-            cursorPosition = rangeAt.startContainer.textContent.length === rangeAt.endOffset ? cursorPosition + 1 : cursorPosition
-
-            if (paragraph || ast[0] instanceof TextNodeModel) {
-                let prev = ast.slice(0, cursorPosition + 1);
-                let next = ast.slice(cursorPosition + 1);
-
-                let prevParagraphModel = new ParagraphModel();
-                prevParagraphModel.children = prev
-                let nextParagraphModel = new ParagraphModel();
-                nextParagraphModel.children = next
-                nextParagraphModel.cursor = true
-
-                if (paragraph) {
-                    paragraphsAST.splice(paragraphsIndex, 1)
-                    paragraphsAST.splice(paragraphsIndex, 0, prevParagraphModel)
-                    paragraphsAST.splice(paragraphsIndex + 1, 0, nextParagraphModel)
-                } else {
-                    ast.length = 0
-                    ast.push(prevParagraphModel)
-                    ast.push(nextParagraphModel)
-                }
+            let ast
+            if (node instanceof RootModel) {
+                container = node
+                ast = node.children
             } else {
-                ast.splice(cursorPosition, 0, new ParagraphModel())
+                ast = container.children
             }
 
+            let cursorPosition = index
 
-            setState([...state])
-            return cursorPosition;
-        }
+            if (event.key.length === 1) {
+                event.preventDefault()
+                traverseAST(state, (value) => {
+                    value.cursor = false
+                })
 
-        function handleBackspacePress(ast: NodeModel[], index: number, node: NodeModel, cursorPosition: number) {
-            let selection = window.getSelection();
-            if (selection?.rangeCount) {
-                let range = selection.getRangeAt(0);
-                let startOffset = range.startOffset;
+                let model = new TextNodeModel()
+                model.text = event.key
+                model.cursor = true
+                model.parent = container
 
-                if (startOffset === 0) {
-                    let prevParagraph = ast[index - 1] as ParagraphModel;
-                    let paragraphNode = node as ParagraphModel;
-                    prevParagraph.children.push(...paragraphNode.children)
-                    prevParagraph.children[prevParagraph.children.length - paragraphNode.children.length - 1].cursor = true
-                    ast.splice(index, 1)
+                if (node instanceof ContainerModel) {
+                    node.children.push(model)
                 } else {
-                    ast.splice(cursorPosition, 1)
-                    let node = ast[cursorPosition - 1];
-                    if (node) {
-                        node.cursor = true
-                    } else {
-                        traverseAST(state, (value) => {
-                            if (value instanceof ParagraphModel) {
-                                if (value.children === ast) {
-                                    value.cursor = true
-                                }
-                            }
-                        })
-                    }
+                    ast.splice(cursorPosition + 1, 0, model);
                 }
+
                 setState([...state])
             }
-        }
 
-        const handleKeyPress = (event: KeyboardEvent) => {
-            let {node, index, ast} : {node : NodeModel, index : number, ast : NodeModel[]} = traverseAST(state, (value, index, ast) => {
-                if (value.cursor) {
-                    return {node : value, index : index, ast : ast}
-                }
-            }, {node : null, index : 0, ast : state})
-
-            if (ast) {
-
-                let cursorPosition = index
-
-                if (event.key.length === 1) {
+            switch (event.key) {
+                case "Backspace" : {
                     event.preventDefault()
-                    traverseAST(state, (value) => {
-                        value.cursor = false
-                    })
+                    let selection = window.getSelection();
+                    if (selection?.rangeCount) {
+                        let range = selection.getRangeAt(0);
+                        let startOffset = range.startOffset;
 
-                    let model = new TextNodeModel()
-                    model.text = event.key
-                    model.cursor = true
+                        if (startOffset === 0) {
+                            let prevParagraph = ast[index - 1] as ParagraphModel;
+                            let paragraphNode = node as ParagraphModel;
+                            prevParagraph.children.push(...paragraphNode.children)
+                            prevParagraph.children[prevParagraph.children.length - paragraphNode.children.length - 1].cursor = true
+                            ast.splice(index, 1)
+                        } else {
+                            ast.splice(cursorPosition, 1)
+                            let node1 = ast[cursorPosition - 1];
+                            if (node1) {
+                                node1.cursor = true
+                            } else {
+                                traverseAST(state, (value) => {
+                                    if (value instanceof ParagraphModel) {
+                                        if (value.children === ast) {
+                                            value.cursor = true
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                        setState([...state])
+                    }
 
-                    if (node instanceof ParagraphModel) {
-                        node.children.push(model)
+                }
+                    break
+                case "Enter" : {
+                    event.preventDefault()
+
+                    let prev = ast.slice(0, cursorPosition + 1)
+                    let next = ast.slice(cursorPosition + 1)
+
+                    if (node instanceof TextNodeModel && container instanceof ParagraphModel) {
+                        let parent : ContainerModel = container.parent as ContainerModel;
+
+                        let prevParagraph = new ParagraphModel()
+                        prevParagraph.children = prev
+                        prevParagraph.parent = parent
+
+                        let nextParagraph = new ParagraphModel()
+                        nextParagraph.children = next
+                        nextParagraph.parent = parent
+
+                        let indexOf = parent.children.indexOf(container)
+                        parent.children.splice(indexOf, 1)
+                        parent.children.splice(indexOf, 0, prevParagraph)
+                        parent.children.splice(indexOf + 1, 0, nextParagraph)
+
                     } else {
-                        ast.splice(cursorPosition + 1, 0, model);
+                        if (node instanceof ParagraphModel) {
+                            let rootModel = node.parent as RootModel;
+                            let paragraphModel = new ParagraphModel();
+                            paragraphModel.parent = rootModel
+                            rootModel.children.splice(cursorPosition + 1, 0, paragraphModel)
+                        } else {
+                            if (container instanceof RootModel) {
+                                let prevParagraph = new ParagraphModel()
+                                prevParagraph.children = prev
+                                prevParagraph.parent = container
+
+                                let nextParagraph = new ParagraphModel()
+                                nextParagraph.children = next
+                                nextParagraph.parent = container
+
+                                container.children = []
+                                container.children.push(prevParagraph, nextParagraph)
+                            }
+                        }
                     }
 
                     setState([...state])
                 }
+                    break
 
-                switch (event.key) {
-                    case "Backspace" : {
-                        event.preventDefault()
-                        handleBackspacePress(ast, index, node, cursorPosition);
-
-                    }
-                        break
-                    case "Enter" : {
-                        event.preventDefault()
-                        cursorPosition = handleEnterPress(ast, cursorPosition);
-                    }
-                        break
-
-                }
             }
         }
 
@@ -281,7 +291,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
                 let startNode, endNode
 
-                if (startModels instanceof ParagraphModel && endModels instanceof ParagraphModel) {
+                if (startModels instanceof ContainerModel && endModels instanceof ContainerModel) {
                     startNode = startModels
                     endNode = endModels
                 } else {
@@ -337,7 +347,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     return (
         <div>
             <div contentEditable={true} suppressContentEditableWarning={true} style={{height: 300, padding : "12px"}}>
-                {NodeFactory(state)}
+                <NodeFactory nodes={state}/>
             </div>
             <button onClick={() => onBoldClick(state)}>Bold</button>
             <button onClick={() => onItalicClick(state)}>Italic</button>

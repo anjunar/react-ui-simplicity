@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react";
 import {ParagraphModel} from "../Wysiwyg";
-import {NodeFactory} from "./NodeFactory";
+import NodeFactory from "./NodeFactory";
 
 function ParagraphNode(properties: ParagraphNode.Attributes) {
 
@@ -25,7 +25,7 @@ function ParagraphNode(properties: ParagraphNode.Attributes) {
             {
                 ast.children.length === 0 ? <br/> : ""
             }
-            {NodeFactory(ast.children)}
+            <NodeFactory nodes={ast.children}/>
         </div>
     )
 }
