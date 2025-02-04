@@ -2,6 +2,7 @@ import React, {useLayoutEffect, useMemo, useState} from "react"
 import {v4} from "uuid";
 import NodeFactory from "./nodes/NodeFactory";
 import {debounce} from "../../shared/Utils";
+import {node} from "webpack";
 
 declare global {
     interface Node {
@@ -145,6 +146,21 @@ export class TreeNode {
             node.nextSibling = null;
         });
     }
+
+    surroundWith(nodes: TreeNode[], wrapper: TreeNode, index : number = -1): void {
+
+        for (const node of nodes) {
+            node.parent.removeChild(node)
+        }
+
+        wrapper.appendChildren(nodes)
+
+        if (index === -1) {
+            this.appendChild(wrapper)
+        } else {
+            this.splice(index, 0, wrapper)
+        }
+    }
 }
 
 
@@ -239,33 +255,18 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
                     if (node.type === "text" && container.type === "p") {
                         let parent = container.parent
-
-                        let prevParagraph = new TreeNode("p", parent)
-                        prevParagraph.appendChildren(prev)
-
-                        let nextParagraph = new TreeNode("p", parent)
-                        nextParagraph.appendChildren(next)
-
                         let indexOf = parent.children.indexOf(container)
-                        parent.splice(indexOf, 1)
-                        parent.splice(indexOf, 0, prevParagraph)
-                        parent.splice(indexOf + 1, 0, nextParagraph)
-
+                        parent.removeChild(container)
+                        parent.surroundWith(prev, new TreeNode("p", parent), indexOf)
+                        parent.surroundWith(next, new TreeNode("p", parent), indexOf + 1)
                     } else {
                         if (node.type === "p") {
                             let paragraphModel = new TreeNode("p", container)
                             container.splice(cursorPosition + 1, 0, paragraphModel)
                         } else {
                             if (container.type === "root") {
-                                container.removeAllChildren()
-
-                                let prevParagraph = new TreeNode("p", container)
-                                prevParagraph.appendChildren(prev)
-
-                                let nextParagraph = new TreeNode("p", container)
-                                nextParagraph.appendChildren(next)
-
-                                container.appendChildren([prevParagraph, nextParagraph])
+                                container.surroundWith(prev, new TreeNode("p", container))
+                                container.surroundWith(next, new TreeNode("p", container))
                             }
                         }
                     }
@@ -305,13 +306,13 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     endNode = endModels
                 } else {
                     if (rangeAt.startOffset === 0) {
-                        startNode = rangeAt.startContainer.ast[0].parent
+                        startNode = rangeAt.startContainer.ast?.[0].parent
                     } else {
                         startNode = startModels?.[rangeAt.startOffset - 1]
                     }
 
                     if (rangeAt.endOffset === 0) {
-                        endNode = rangeAt.endContainer.ast[0].parent
+                        endNode = rangeAt.endContainer.ast?.[0].parent
                     } else {
                         endNode = endModels?.[rangeAt.endOffset - 1]
                     }
