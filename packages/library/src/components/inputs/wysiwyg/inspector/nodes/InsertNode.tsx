@@ -8,24 +8,36 @@ function InsertNode(properties: InsertNode.Attributes) {
 
     const [after, setAfter] = useState(true)
 
-    const [activeChild, setActiveChild] = useState(null)
-
     const onCreateList = () => {
-        let activeNode = ast.find((node) => node.dom === activeChild);
+        let activeNode = ast.find((node) => node.dom === payload);
 
-        let indexOf = ast.children.indexOf(activeNode)
+        let parent = activeNode.parent
+        let indexOf = parent.children.indexOf(activeNode)
+        let root = new TreeNode("p")
         let ulNode = new TreeNode("ul");
+        root.appendChild(ulNode)
         let liNode = new TreeNode("li");
+        ulNode.appendChild(liNode)
         let pNode = new TreeNode("p");
         liNode.appendChild(pNode)
-        ulNode.appendChild(liNode)
 
-        ast.splice(indexOf + (after ? 1 : 0), 0, ulNode)
+        parent.splice(indexOf + (after ? 1 : 0), 0, root)
 
         astChange()
     }
 
-    const onDeleteList = () => {
+    const onCreateParagraph = () => {
+        let activeNode = ast.find((node) => node.dom === payload);
+
+        let parent = activeNode.parent
+        let indexOf = parent.children.indexOf(activeNode)
+        let pNode = new TreeNode("p");
+        parent.splice(indexOf + (after ? 1 : 0), 0, pNode)
+
+        astChange()
+    }
+
+    const onDeleteSelected = () => {
         let activeNode = ast.find((node) => node.dom === payload);
         activeNode.remove()
         astChange()
@@ -61,38 +73,26 @@ function InsertNode(properties: InsertNode.Attributes) {
                 return <div>{payload.textContent}</div>
             case "div" :
                 return (
-                    <div style={{display: "flex", gap: "12px"}}>
+                    <div style={{display: "flex", gap : "12px"}}>
                         <div>
-                            {
-                                Array.from(element.children)
-                                    .map((child, index) => (
-                                        <p key={index} style={{color: child === activeChild ? "var(--color-selected)" : "var(--color-text)"}} onClick={() => setActiveChild(child)}>{child.localName}</p>
-                                    ))
-                            }
+                            <button onClick={onCreateParagraph}>new Paragraph</button>
+                            <br/>
+                            <button>new Table</button>
+                            <br/>
+                            <button>new Image</button>
+                            <br/>
+                            <button onClick={onCreateList}>new List</button>
                         </div>
-                        {
-                            activeChild && (
-                                <div style={{display: "flex"}}>
-                                    <div>
-                                        <button>new Table</button>
-                                        <br/>
-                                        <button>new Image</button>
-                                        <br/>
-                                        <button onClick={onCreateList}>new List</button>
-                                    </div>
-                                    <div>
-                                        <label>After</label>
-                                        <Input standalone={true} value={after} type={"checkbox"} onChange={(event: any) => setAfter(event)}/>
-                                    </div>
-                                </div>
-                            )
-                        }
+                        <div style={{display : "flex", alignItems : "center", gap : "12px"}}>
+                            <label>After</label>
+                            <Input standalone={true} value={after} type={"checkbox"} onChange={(event: any) => setAfter(event)}/>
+                        </div>
                     </div>
                 )
             case "ul" :
                 return (
                     <div>
-                        <button onClick={onDeleteList}>delete List</button>
+                        <button onClick={onDeleteSelected}>delete List</button>
                     </div>
                 )
             case "li" :
