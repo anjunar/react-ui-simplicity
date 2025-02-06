@@ -8,7 +8,7 @@ function FontInputStyle(properties: FontInputStyle.Attributes) {
 
     const click: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         let htmlElement = event.target
-        document.execCommand(command, false, htmlElement.value)
+        editableContent.current.dispatchEvent(new CustomEvent("action", {detail : {command : command, value : htmlElement.value}}))
         setValue(htmlElement.value)
     }
 

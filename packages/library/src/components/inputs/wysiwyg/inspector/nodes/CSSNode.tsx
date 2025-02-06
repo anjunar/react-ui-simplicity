@@ -72,7 +72,7 @@ function CSSNode(properties: CSSNode.Attributes) {
                 <FormArray name={"styles"} onCreate={() => ({id: v4(), key: "", value: ""})}>
                     {
                         (elements) => elements.map((element, index) => (
-                            <SubForm index={index} key={payload.id}>
+                            <SubForm index={index} key={element.id}>
                                 <div style={{display: "flex", alignItems: "center"}}>
                                     <span>&emsp;</span>
                                     <AutoSuggest style={{border: "1px solid var(--color-background-secondary)"}} name={"key"} dynamicWidth={true} autoSuggest={suggestions}>

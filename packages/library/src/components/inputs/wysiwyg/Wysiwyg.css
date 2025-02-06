@@ -5,5 +5,10 @@
 
     div[contenteditable=true] {
         outline: 0;
+
+        .editor-selected {
+            border : 1px solid var(--color-selected);
+        }
+
     }
 }

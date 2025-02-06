@@ -8,7 +8,7 @@ function FontSelectStyle(properties: FontSelectStyle.Attributes) {
 
     const click: React.ChangeEventHandler<HTMLSelectElement> = (event) => {
         let htmlElement = event.target
-        document.execCommand(command, false, htmlElement.value)
+        editableContent.current.dispatchEvent(new CustomEvent("action", {detail : {command : command, value : htmlElement.value}}))
         setValue(htmlElement.value)
     }
 

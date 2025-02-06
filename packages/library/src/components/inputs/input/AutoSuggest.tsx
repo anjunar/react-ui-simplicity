@@ -25,7 +25,7 @@ function AutoSuggest(properties : AutoSuggest.Attributes) {
         <div className={"auto-suggest"} style={style}>
             <Input type={"text"} dynamicWidth={dynamicWidth}
                    name={name} onChange={(value : any) => setState(value)}
-                   standalone={true}
+                   standalone={true} onKeyDown={event => event.stopPropagation()}
                    value={state} onFocus={onFocus} onBlur={onBlur}/>
             {
                 open ? (

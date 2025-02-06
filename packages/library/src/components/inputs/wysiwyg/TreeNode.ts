@@ -51,7 +51,12 @@ export class TreeNode {
         }
     }
 
-    insertAfter(newNode: TreeNode, referenceNode: TreeNode) {
+    remove() {
+        this.parent.removeChild(this)
+    }
+
+    insertAfter(newNode: TreeNode) {
+        let referenceNode = this
         if (!referenceNode.parent) return;
         let parent = referenceNode.parent;
 
@@ -86,7 +91,7 @@ export class TreeNode {
 
         movingNodes.forEach((n) => newParent.appendChild(n));
 
-        oldParent.parent?.insertAfter(newParent, oldParent);
+        oldParent.insertAfter(newParent);
 
         return newParent;
     }
@@ -103,6 +108,27 @@ export class TreeNode {
 
     find(predicate: (node: TreeNode) => boolean): TreeNode {
         return this.filter(predicate)[0]
+    }
+
+    findConnectedChunkFromNode(startNode: TreeNode, predicate: (node: TreeNode) => boolean): TreeNode[] {
+        let chunk: TreeNode[] = [];
+        let visited = new Set<string>();
+
+        const dfs = (node: TreeNode | null) => {
+            if (!node || visited.has(node.id) || !predicate(node)) return;
+            visited.add(node.id);
+            chunk.push(node);
+
+            dfs(node.previousSibling);
+            dfs(node.nextSibling);
+            dfs(node.parent);
+            for (const child of node.children) {
+                dfs(child);
+            }
+        };
+
+        dfs(startNode);
+        return chunk;
     }
 
     search(

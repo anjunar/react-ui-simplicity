@@ -232,19 +232,13 @@ function Toolbar(properties: Toolbar.Attributes) {
                 <Page>
                     <div className={"toolbox"}>
                         <button type={"button"} className={"material-icons"}
-                                onClick={() => editableContent.current.dispatchEvent(new CustomEvent("action", {detail: "default"}))}>css
+                                onClick={() => editableContent.current.dispatchEvent(new CustomEvent("action", {detail: {command : "default"}}))}>css
                         </button>
                         <button type={"button"} className={"material-icons"}
-                                onClick={() => editableContent.current.dispatchEvent(new CustomEvent("action", {detail: "attributes"}))}>settings
+                                onClick={() => editableContent.current.dispatchEvent(new CustomEvent("action", {detail: {command : "attributes"}}))}>edit_attributes
                         </button>
                         <button type={"button"} className={"material-icons"}
-                                onClick={() => editableContent.current.dispatchEvent(new CustomEvent("action", {detail: "image"}))}>imagesmode
-                        </button>
-                        <button type={"button"} className={"material-icons"}
-                                onClick={() => editableContent.current.dispatchEvent(new CustomEvent("action", {detail: "link"}))}>link
-                        </button>
-                        <button type={"button"} className={"material-icons"}
-                                onClick={() => editableContent.current.dispatchEvent(new CustomEvent("action", {detail: "table"}))}>table
+                                onClick={() => editableContent.current.dispatchEvent(new CustomEvent("action", {detail: {command : "insert"}}))}>variable_insert
                         </button>
                     </div>
                 </Page>

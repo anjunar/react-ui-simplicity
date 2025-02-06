@@ -7,8 +7,7 @@ function FontStyle(properties: FontStyle.Attributes) {
     const [selected, setSelected] = useState(false)
 
     const click = () => {
-        document.execCommand("styleWithCSS", false, "true")
-        document.execCommand(command, false, "")
+        editableContent.current.dispatchEvent(new CustomEvent("action", {detail : {command : command, value : ! selected}}))
         let selection = document.getSelection()
         if (selection) {
             let anchorNode = selection.anchorNode

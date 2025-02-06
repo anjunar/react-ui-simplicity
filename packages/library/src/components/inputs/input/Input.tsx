@@ -73,9 +73,11 @@ function Input(properties: Input.Attributes) {
             model.addValidator(new Required())
         }
         if (min) {
+            // @ts-ignore
             model.addValidator(new Min(min))
         }
         if (max) {
+            // @ts-ignore
             model.addValidator(new Max(max))
         }
         if (minLength) {
@@ -248,29 +250,17 @@ function Input(properties: Input.Attributes) {
 }
 
 namespace Input {
-    export interface Attributes {
+    // @ts-ignore
+    export interface Attributes extends React.InputHTMLAttributes<HTMLInputElement> {
         asyncValidators?: AsyncValidator[],
-        autoComplete?: string
-        disabled?: boolean,
         dynamicWidth?: boolean
         email?: boolean,
-        max?: number
-        maxLength?: number
-        min?: number
-        minLength?: number
-        name?: string
         onBlur? : () => void
         onChange?: (value: Temporal | TemporalAmount | string | number | boolean) => void
-        onFocus? : () => void
         onModel?: (value: Model) => void
         past?: boolean,
-        pattern?: string
-        required?: boolean,
-        size?: number
         standalone?: boolean
-        style?: CSSProperties
         subType?: string
-        type: string
         validators?: Validator[]
         value?: Temporal | TemporalAmount | string | number | boolean
     }

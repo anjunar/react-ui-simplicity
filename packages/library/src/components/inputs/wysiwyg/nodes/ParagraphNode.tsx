@@ -28,6 +28,7 @@ function ParagraphNode(properties: ParagraphNode.Attributes) {
                     cursor.attributes.cursor = false
                     let indexOf = ast.children.indexOf(cursor);
                     let textNode = new TreeNode("text");
+                    textNode.attributes = {...cursor.attributes}
                     textNode.attributes.text = event.key
                     textNode.attributes.cursor = true
                     if (cursor.type === "p") {

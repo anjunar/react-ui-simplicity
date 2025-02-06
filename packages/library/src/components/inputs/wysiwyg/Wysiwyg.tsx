@@ -1,30 +1,11 @@
 import "./Wysiwyg.css"
-import React, {useLayoutEffect, useMemo, useRef, useState} from "react"
+import React, {useCallback, useLayoutEffect, useMemo, useRef, useState} from "react"
 import NodeFactory from "./nodes/NodeFactory";
 import {debounce} from "../../shared/Utils";
 import {TreeNode} from "./TreeNode";
 import Toolbar from "./toolbar/Toolbar";
 import Footer from "./footer/Footer";
 import Inspector from "./inspector/Inspector";
-
-
-const insertUl = {
-    key(value : string) {
-        return value === "Enter" || value === "Backspace"
-    },
-    handler(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
-        let indexOf = ast.indexOf(node);
-
-        let ulNode = new TreeNode("ul");
-        let liNode = new TreeNode("li");
-        let pNode = new TreeNode("p");
-        liNode.appendChild(pNode)
-        ulNode.appendChild(liNode)
-
-        container.splice(indexOf + 1, 0, ulNode)
-    }
-
-}
 
 const enterPress = {
     key(value: string) {
@@ -105,50 +86,9 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     const [page, setPage] = useState(0)
 
+    const [editable, setEditable] = useState(true)
+
     const contentEditable = useRef<HTMLDivElement>(null);
-
-    const onBoldClick = () => {
-
-        ast.root.traverse((node) => {
-            if (node.type === "text") {
-                if (node.attributes.selected) {
-                    node.attributes.bold = true
-                }
-            }
-        })
-
-        setAst({...ast})
-
-    }
-
-    const onItalicClick = () => {
-
-        ast.root.traverse((node) => {
-            if (node.type === "text") {
-                if (node.attributes.selected) {
-                    node.attributes.italic = true
-                }
-            }
-        })
-
-        setAst({...ast})
-
-    }
-
-    const onListClick = () => {
-        let node = ast.root.find((node) => node.attributes.cursor)
-
-        if (node) {
-            let container = node.parent;
-            let nodes = container?.children || node.children
-            let cursorPosition = nodes.indexOf(node)
-
-            insertUl.handler(null, node,  nodes, container, cursorPosition)
-
-            setAst({...ast})
-
-        }
-    }
 
     const key = useMemo(() => {
         let inputQueue = []
@@ -209,10 +149,8 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         }
     }, [])
 
-
-    useLayoutEffect(() => {
-        let selectionListener = debounce(() => {
-
+    let selectionListener = useCallback(debounce((event : Event) => {
+        if (contentEditable.current.contains(document.getSelection().anchorNode)) {
             ast.root.traverse((node) => {
                 node.attributes.selected = false
                 node.attributes.cursor = false
@@ -229,7 +167,8 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     startNode = startModels[0]
                 } else {
                     if (rangeAt.startOffset === 0) {
-                        startNode = ast.root.find((node) => node.dom === rangeAt.startContainer).parent
+                        startNode = startModels?.[rangeAt.startOffset]
+                        // startNode = ast.root.find((node) => node.dom === rangeAt.startContainer).parent
                     } else {
                         startNode = startModels?.[rangeAt.startOffset - 1]
                     }
@@ -240,7 +179,8 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                     endNode = endModels[0]
                 } else {
                     if (rangeAt.endOffset === 0) {
-                        endNode = ast.root.find((node) => node.dom === rangeAt.endContainer).parent
+                        endNode = endModels?.[rangeAt.endOffset]
+                        // endNode = ast.root.find((node) => node.dom === rangeAt.endContainer).parent
                     } else {
                         endNode = endModels?.[rangeAt.endOffset - 1]
                     }
@@ -259,15 +199,67 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
                 }
 
             }
-        }, 100)
+        }
 
+    }, 100), [])
+
+    const actionListener = useCallback((e : Event) => {
+        const event = e as CustomEvent
+        const value = event.detail.value
+
+        function applyFontStyle(style : string) {
+            let cursor = ast.root.find((node) => node.attributes.cursor);
+            if (cursor) {
+                ast.root.findConnectedChunkFromNode(cursor, (node) => (!!node.attributes[style]) == !value)
+                    .forEach(node => node.attributes[style] = value)
+            } else {
+                ast.root.traverse((node) => {
+                    if (node.type === "text") {
+                        if (node.attributes.selected) {
+                            node.attributes[style] = value
+                        }
+                    }
+                })
+            }
+        }
+
+        switch (event.detail.command) {
+            case "bold" : {
+                applyFontStyle("bold");
+            } break
+            case "italic" : {
+                applyFontStyle("italic")
+            }
+
+        }
+
+        setAst({...ast})
+    }, []);
+
+    const contextMenuListener = useCallback((event : Event) => {
+        event.preventDefault()
+    }, []);
+
+    useLayoutEffect(() => {
         document.addEventListener("keydown", key.handler)
         document.addEventListener("selectionchange", selectionListener)
+        // document.addEventListener("contextmenu", contextMenuListener)
+        contentEditable.current.addEventListener("action", actionListener)
         return () => {
             document.removeEventListener("keydown", key.handler)
             document.removeEventListener("selectionchange", selectionListener)
+            // document.removeEventListener("contextmenu", contextMenuListener)
+            contentEditable.current.removeEventListener("action", actionListener)
         }
     }, []);
+
+    useLayoutEffect(() => {
+        if (page === 5) {
+            setEditable(false)
+        } else {
+            setEditable(true)
+        }
+    }, [page])
 
     return (
         <div className={"wysiwyg"}>
@@ -275,7 +267,9 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             <div ref={contentEditable} contentEditable={true} suppressContentEditableWarning={true} style={{flex : 1, padding: "12px", whiteSpace: "pre"}}>
                 <NodeFactory nodes={[ast.root]} astChange={() => setAst({...ast})}/>
             </div>
-            <Inspector contentRef={contentEditable}/>
+            {
+                ! editable && <Inspector contentRef={contentEditable} ast={ast.root} astChange={() => setAst({...ast})}/>
+            }
             <Footer page={page} onPage={(value) => setPage(value)}/>
         </div>
 

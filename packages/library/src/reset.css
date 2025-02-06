@@ -48,6 +48,7 @@ table {
 }
 button {
   border: 0;
+  font-size: 16px;
   color: inherit;
 }
 
