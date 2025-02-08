@@ -5,6 +5,7 @@ import ParagraphNode from "./ParagraphNode";
 import RootNode from "./RootNode";
 import {TreeNode} from "../TreeNode";
 import UlNode from "./UlNode";
+import TableNode from "./TableNode";
 
 
 function NodeFactory(properties : NodeFactory.Attributes) {
@@ -34,6 +35,10 @@ function NodeFactory(properties : NodeFactory.Attributes) {
                 break
             case "ul" :
                 result.push(...group.map(model => <UlNode key={model.id} ast={model} astChange={astChange}/>))
+                break
+            case "table" :
+                result.push(...group.map(model => <TableNode key={model.id} ast={model} astChange={astChange}/>))
+                break
         }
     }
 
