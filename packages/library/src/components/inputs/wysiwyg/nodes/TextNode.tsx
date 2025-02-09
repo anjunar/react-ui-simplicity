@@ -28,7 +28,7 @@ function TextNode(properties : TextNode.Attributes) {
     }, [ast])
 
     return (
-        <span ref={span} style={{fontWeight: ast[0]?.attributes.bold ? "bold" : "", fontStyle: ast[0]?.attributes.italic ? "italic" : ""}}>
+        <span className={ast[0].attributes.clicked ? "editor-selected" : ""} ref={span} style={{fontWeight: ast[0]?.attributes.bold ? "bold" : "", fontStyle: ast[0]?.attributes.italic ? "italic" : ""}}>
             {ast.map(segment => segment.attributes.text).join("")}
         </span>
     )

@@ -1,7 +1,5 @@
 import React, {useLayoutEffect, useState} from "react";
 import CSSNode from "./nodes/CSSNode";
-import ImageNode from "./nodes/ImageNode";
-import TableNode from "./nodes/TableNode";
 import AttributeNode from "./nodes/AttributeNode";
 import InsertNode from "./nodes/InsertNode";
 import {TreeNode} from "../TreeNode";

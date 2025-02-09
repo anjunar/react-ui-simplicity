@@ -14,7 +14,7 @@ function TdNode(properties : TdNode.Attributes) {
 
 
     return (
-        <td ref={td}>
+        <td ref={td} className={ast.attributes.clicked ? "editor-selected" : ""}>
             <NodeFactory nodes={ast.children} astChange={astChange}/>
         </td>
     )

@@ -22,7 +22,7 @@ function UlNode(properties : UlNode.Attributes) {
 
 
     return (
-        <ul ref={ul}>
+        <ul ref={ul} className={ast.attributes.clicked ? "editor-selected" : ""}>
             {
                 ast.children.map(node => <LiNode callback={callbackHandler} key={node.id} ast={node} astChange={astChange}/>)
             }

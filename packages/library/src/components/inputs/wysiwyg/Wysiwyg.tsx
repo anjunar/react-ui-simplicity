@@ -46,18 +46,18 @@ const backspacePress = {
     },
     handler(event: KeyboardEvent, node: TreeNode, ast: TreeNode[], container: TreeNode, cursorPosition: number) {
         event.preventDefault()
-        if (node.type === "text") {
+
+        if (cursorPosition === 0) {
+            let parent = node.parent
+            let prevModel = parent.previousSibling;
+            prevModel.appendChildren(parent.children)
+            parent.remove()
+            return true
+        } else {
             ast.splice(cursorPosition, 1)
             let node = ast[cursorPosition - 1];
             if (node) {
                 node.attributes.cursor = true
-            }
-            return true
-        } else {
-            if (node.type === "p") {
-                let prevModel = node.previousSibling
-                prevModel.appendChildren(node.children)
-                container.removeChild(node)
             }
             return true
         }
@@ -236,6 +236,17 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         setAst({...ast})
     }, []);
 
+    const clickListener = useCallback((event : Event) => {
+        ast.root.traverse((node) => node.attributes.clicked = false)
+        let target = event.target as HTMLElement;
+        let clickedNode = ast.root.find(node => (node.dom.nodeType === Node.TEXT_NODE ? node.dom.parentElement : node.dom) === target);
+        if (clickedNode) {
+            clickedNode.attributes.clicked = true
+            setAst({...ast})
+        }
+
+    }, [])
+
     const contextMenuListener = useCallback((event : Event) => {
         event.preventDefault()
     }, []);
@@ -243,11 +254,13 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     useLayoutEffect(() => {
         document.addEventListener("keydown", key.handler)
         document.addEventListener("selectionchange", selectionListener)
+        contentEditable.current.addEventListener("click", clickListener)
         // document.addEventListener("contextmenu", contextMenuListener)
         contentEditable.current.addEventListener("action", actionListener)
         return () => {
             document.removeEventListener("keydown", key.handler)
             document.removeEventListener("selectionchange", selectionListener)
+            contentEditable.current.removeEventListener("click", clickListener)
             // document.removeEventListener("contextmenu", contextMenuListener)
             contentEditable.current.removeEventListener("action", actionListener)
         }

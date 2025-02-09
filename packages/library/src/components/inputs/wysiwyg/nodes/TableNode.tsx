@@ -14,7 +14,7 @@ function TableNode(properties : TableNode.Attributes) {
 
 
     return (
-        <table ref={table} style={{width : "100%", tableLayout : "fixed"}}>
+        <table ref={table} style={{width : "100%", tableLayout : "fixed"}} className={ast.attributes.clicked ? "editor-selected" : ""}>
             <thead>
             {
                 ast.find((node) => node.type === "thead")

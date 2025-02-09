@@ -14,7 +14,7 @@ function LiNode(properties : LiNode.Attributes) {
 
 
     return (
-        <li ref={li}>
+        <li ref={li} className={ast.attributes.clicked ? "editor-selected" : ""}>
             <NodeFactory nodes={ast.children} astChange={astChange}/>
         </li>
     )

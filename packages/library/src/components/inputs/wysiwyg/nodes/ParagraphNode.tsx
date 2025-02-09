@@ -48,7 +48,7 @@ function ParagraphNode(properties: ParagraphNode.Attributes) {
     }, []);
 
     return (
-        <div ref={paragraph}>
+        <div ref={paragraph} className={ast.attributes.clicked ? "editor-selected" : ""}>
             {
                 ast.children.length === 0 ? <br/> : ""
             }

@@ -15,7 +15,7 @@ function TrNode(properties : TrNode.Attributes) {
 
 
     return (
-        <tr ref={tr}>
+        <tr ref={tr} className={ast.attributes.clicked ? "editor-selected" : ""}>
             {
                 ast.children.map(child => (
                     <TdNode key={child.id} ast={child} astChange={astChange}/>
