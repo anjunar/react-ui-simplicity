@@ -44,7 +44,14 @@ export abstract class AbstractCommand<E> {
                 let parentElement = ancestorContainer.parentElement;
 
                 if (range.startOffset === 0 && range.endOffset === completeText.length) {
-                    this.addCallback(value)(parentElement)
+                    if (ancestorContainer.parentElement instanceof HTMLSpanElement) {
+                        this.addCallback(value)(parentElement)
+                    } else {
+                        let contents = range.extractContents();
+                        let childNodes = Array.from(contents.childNodes);
+                        let documentFragment = this.modify(childNodes, this.addCallback(value));
+                        range.insertNode(documentFragment)
+                    }
                 }  else {
                     let left = completeText.substring(0, range.startOffset)
                     let middle = completeText.substring(range.startOffset, range.endOffset)
@@ -104,7 +111,12 @@ export abstract class AbstractCommand<E> {
         }
     }
 
-    abstract inherit(node : HTMLElement, parent : HTMLElement) : void
+    inherit(node: HTMLElement, parent: HTMLElement): void {
+        if (! parent.hasAttribute("contentEditable")) {
+            node.setAttribute("style", parent.getAttribute("style"))
+            node.className = parent.className
+        }
+    }
 
     abstract addCallback(value : E) : (element : HTMLElement) => void
 
