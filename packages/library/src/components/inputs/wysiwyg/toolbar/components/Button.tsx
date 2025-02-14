@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react"
 import {AbstractCommand} from "../../commands/AbstractCommand";
+import {normalize} from "../../commands/Commands";
 
 function Button(properties: FontStyle.Attributes) {
 
@@ -10,6 +11,7 @@ function Button(properties: FontStyle.Attributes) {
     const click = () => {
         if (command instanceof AbstractCommand) {
             command.execute(! selected)
+            normalize(editableContent.current)
         } else {
             document.execCommand(command, false)
         }
@@ -22,7 +24,6 @@ function Button(properties: FontStyle.Attributes) {
                     let computedStyle = window.getComputedStyle(anchorNode.parentElement)
                     let selected = callback(computedStyle);
                     if (selected) {
-                        anchorNode.parentElement.style.textAlign = ""
                         setSelected(false)
                     } else {
                         setSelected(selected)

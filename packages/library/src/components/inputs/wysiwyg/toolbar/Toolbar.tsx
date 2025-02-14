@@ -13,6 +13,10 @@ import {FontFamilyCommand} from "../commands/FontFamilyCommand";
 import {DeletedCommand} from "../commands/DeletedCommand";
 import {SubCommand} from "../commands/SubCommand";
 import {SupCommand} from "../commands/SupCommand";
+import {JustifyFullCommand} from "../commands/JustifyFullCommand";
+import {JustifyLeftCommand} from "../commands/JustifyLeftCommand";
+import {JustifyRightCommand} from "../commands/JustifyRightCommand";
+import {JustifyCenterCommand} from "../commands/JustifyCenterCommand";
 
 function Toolbar(properties: Toolbar.Attributes) {
 
@@ -202,7 +206,7 @@ function Toolbar(properties: Toolbar.Attributes) {
                     <div className={"toolbox"}>
                         <Button
                             editableContent={contentEditable}
-                            command={"justifyFull"}
+                            command={new JustifyFullCommand()}
                             callback={css => css.textAlign === "justify"}
                         >
                             format_align_justify
@@ -210,23 +214,23 @@ function Toolbar(properties: Toolbar.Attributes) {
 
                         <Button
                             editableContent={contentEditable}
-                            command={"justifyLeft"}
-                            callback={css => css.textAlign === "left"}
+                            command={new JustifyLeftCommand()}
+                            callback={css => css.textAlign === "start"}
                         >
                             format_align_left
                         </Button>
 
                         <Button
                             editableContent={contentEditable}
-                            command={"justifyRight"}
-                            callback={css => css.textAlign === "right"}
+                            command={new JustifyRightCommand()}
+                            callback={css => css.textAlign === "end"}
                         >
                             format_align_right
                         </Button>
 
                         <Button
                             editableContent={contentEditable}
-                            command={"justifyCenter"}
+                            command={new JustifyCenterCommand()}
                             callback={css => css.textAlign === "center"}
                         >
                             format_align_center

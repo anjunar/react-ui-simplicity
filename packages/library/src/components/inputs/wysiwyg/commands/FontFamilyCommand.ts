@@ -1,6 +1,6 @@
-import {AbstractFontCommand} from "./AbstractFontCommand";
+import {AbstractFormatCommand} from "./AbstractFormatCommand";
 
-export class FontFamilyCommand extends AbstractFontCommand {
+export class FontFamilyCommand extends AbstractFormatCommand<string> {
 
     removeCallback(value: string): (element: HTMLElement) => void {
         return (element) => {

@@ -1,4 +1,5 @@
 import React, {CSSProperties, useEffect, useLayoutEffect, useState} from "react"
+import {normalize} from "../../commands/Commands";
 
 function Select(properties: FontSelectStyle.Attributes) {
 
@@ -10,6 +11,7 @@ function Select(properties: FontSelectStyle.Attributes) {
         let htmlElement = event.target
         setValue(htmlElement.value)
         command.execute(htmlElement.value)
+        normalize(editableContent.current)
     }
 
     const handler = (event: Event) => {
