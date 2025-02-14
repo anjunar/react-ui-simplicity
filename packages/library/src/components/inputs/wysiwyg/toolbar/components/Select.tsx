@@ -1,6 +1,6 @@
 import React, {CSSProperties, useEffect, useLayoutEffect, useState} from "react"
 
-function FontSelectStyle(properties: FontSelectStyle.Attributes) {
+function Select(properties: FontSelectStyle.Attributes) {
 
     const {children, editableContent, command, callback, ...rest} = properties
 
@@ -8,8 +8,8 @@ function FontSelectStyle(properties: FontSelectStyle.Attributes) {
 
     const click: React.ChangeEventHandler<HTMLSelectElement> = (event) => {
         let htmlElement = event.target
-        editableContent.current.dispatchEvent(new CustomEvent("action", {detail : {command : command, value : htmlElement.value}}))
         setValue(htmlElement.value)
+        command.execute(htmlElement.value)
     }
 
     const handler = (event: Event) => {
@@ -46,4 +46,4 @@ namespace FontSelectStyle {
     }
 }
 
-export default FontSelectStyle
+export default Select

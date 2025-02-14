@@ -10,5 +10,33 @@
             border : 1px solid var(--color-selected);
         }
 
+        span.bold {
+            font-weight: bold;
+        }
+
+        span.italic {
+            font-style: italic;
+        }
+
+        span.deleted {
+            text-decoration: line-through;
+        }
+
+        span.sub {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+            bottom: -0.25em;
+        }
+
+        span.sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+            top: -0.5em;
+        }
+
     }
 }

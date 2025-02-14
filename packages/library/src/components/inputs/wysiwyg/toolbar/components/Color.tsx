@@ -1,6 +1,6 @@
 import React, {CSSProperties, useEffect, useState} from "react"
 
-function FontInputStyle(properties: FontInputStyle.Attributes) {
+function Color(properties: FontInputStyle.Attributes) {
 
     const {editableContent, placeholder, command, callback, ...rest} = properties
 
@@ -59,4 +59,4 @@ namespace FontInputStyle {
     }
 }
 
-export default FontInputStyle
+export default Color

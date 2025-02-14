@@ -1,13 +1,19 @@
 import React, {useEffect, useState} from "react"
+import {AbstractCommand} from "../../commands/AbstractCommand";
 
-function FontStyle(properties: FontStyle.Attributes) {
+function Button(properties: FontStyle.Attributes) {
 
     const {children, editableContent, command, callback} = properties
 
     const [selected, setSelected] = useState(false)
 
     const click = () => {
-        editableContent.current.dispatchEvent(new CustomEvent("action", {detail : {command : command, value : ! selected}}))
+        if (command instanceof AbstractCommand) {
+            command.execute(! selected)
+        } else {
+            document.execCommand(command, false)
+        }
+
         let selection = document.getSelection()
         if (selection) {
             let anchorNode = selection.anchorNode
@@ -65,4 +71,4 @@ namespace FontStyle {
     }
 }
 
-export default FontStyle
+export default Button

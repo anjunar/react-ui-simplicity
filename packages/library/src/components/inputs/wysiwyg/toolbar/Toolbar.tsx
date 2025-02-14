@@ -1,14 +1,22 @@
 import "./Toolbar.css"
 import React, {CSSProperties} from "react"
-import FontSelectStyle from "./FontSelectStyle"
-import FontStyle from ".//FontStyle"
+import Select from "./components/Select"
+import Button from "./components/Button"
 import Pages from "../../../layout/pages/Pages";
 import Page from "../../../layout/pages/Page";
-import FontInputStyle from "./FontInputStyle";
+import Color from "./components/Color";
+import {BoldCommand} from "../commands/BoldCommand";
+import {ItalicCommand} from "../commands/ItalicCommand";
+import {FontSizeCommand} from "../commands/FontSizeCommand";
+import Input from "./components/Input";
+import {FontFamilyCommand} from "../commands/FontFamilyCommand";
+import {DeletedCommand} from "../commands/DeletedCommand";
+import {SubCommand} from "../commands/SubCommand";
+import {SupCommand} from "../commands/SupCommand";
 
 function Toolbar(properties: Toolbar.Attributes) {
 
-    const {editableContent, page, ...rest} = properties
+    const {contentEditable, page, ...rest} = properties
 
     function rgbToHex(color: string) {
         color = "" + color
@@ -72,49 +80,49 @@ function Toolbar(properties: Toolbar.Attributes) {
                 <Page>
                     <div className={"toolbox"}>
                         <div className={"flex"}>
-                            <FontStyle
-                                editableContent={editableContent}
-                                command={"bold"}
+                            <Button
+                                editableContent={contentEditable}
+                                command={new BoldCommand()}
                                 callback={css => css.fontWeight === "700"}
                             >
                                 format_bold
-                            </FontStyle>
-                            <FontStyle
-                                editableContent={editableContent}
-                                command={"italic"}
+                            </Button>
+                            <Button
+                                editableContent={contentEditable}
+                                command={new ItalicCommand()}
                                 callback={css => css.fontStyle === "italic"}
                             >
                                 format_italic
-                            </FontStyle>
-                            <FontStyle
-                                editableContent={editableContent}
-                                command={"strikethrough"}
+                            </Button>
+                            <Button
+                                editableContent={contentEditable}
+                                command={new DeletedCommand()}
                                 callback={css => css.textDecorationLine === "line-through"}
                             >
                                 strikethrough_s
-                            </FontStyle>
-                            <FontStyle
-                                editableContent={editableContent}
-                                command={"subscript"}
+                            </Button>
+                            <Button
+                                editableContent={contentEditable}
+                                command={new SubCommand()}
                                 callback={css => css.verticalAlign === "sub"}
                             >
                                 subscript
-                            </FontStyle>
-                            <FontStyle
-                                editableContent={editableContent}
-                                command={"superscript"}
+                            </Button>
+                            <Button
+                                editableContent={contentEditable}
+                                command={new SupCommand()}
                                 callback={css => css.verticalAlign === "super"}
                             >
                                 superscript
-                            </FontStyle>
+                            </Button>
                         </div>
                     </div>
                 </Page>
                 <Page>
                     <div className={"toolbox"}>
-                        <FontSelectStyle
-                            editableContent={editableContent}
-                            command={"fontname"}
+                        <Select
+                            editableContent={contentEditable}
+                            command={new FontFamilyCommand()}
                             callback={css => css.fontFamily.replaceAll("\"", "")}
                         >
                             <option value="Georgia, serif">Georgia</option>
@@ -129,41 +137,38 @@ function Toolbar(properties: Toolbar.Attributes) {
                             <option value="Verdana, serif">Verdana</option>
                             <option value="Courier New, serif">Couria New</option>
                             <option value="Lucida Console, serif">Lucida</option>
-                        </FontSelectStyle>
+                        </Select>
 
-                        <FontSelectStyle
-                            key={"fontSize"}
-                            editableContent={editableContent}
-                            command={"fontSize"}
-                            callback={value => fontSizeTranslate(value)}
+                        <Input
+                            command={new FontSizeCommand()}
+                            editableContent={contentEditable}
+                            callback={node => {
+                                let regex = /(\d+)px/
+                                let exec = regex.exec(node.fontSize);
+                                return  exec[1]
+                            }}
+                            placeholder={"px"}
                         >
-                            <option value="0">xx-small</option>
-                            <option value="1">x-small</option>
-                            <option value="2">small</option>
-                            <option value="3">medium</option>
-                            <option value="4">large</option>
-                            <option value="5">x-large</option>
-                            <option value="6">xx-large</option>
-                        </FontSelectStyle>
+                        </Input>
 
                     </div>
                 </Page>
                 <Page>
                     <div className={"toolbox"}>
 
-                        <FontInputStyle
+                        <Color
                             placeholder={"Schriftfarbe"}
                             command={"foreColor"}
-                            editableContent={editableContent}
+                            editableContent={contentEditable}
                             callback={value => rgbToHex(value.color)}>
-                        </FontInputStyle>
+                        </Color>
 
-                        <FontInputStyle
+                        <Color
                             placeholder={"Hintergrundfarbe"}
                             command={"backColor"}
-                            editableContent={editableContent}
+                            editableContent={contentEditable}
                             callback={value => rgbToHex(value.backgroundColor)}>
-                        </FontInputStyle>
+                        </Color>
 
                     </div>
                 </Page>
@@ -171,74 +176,74 @@ function Toolbar(properties: Toolbar.Attributes) {
                 <Page>
                     <div className={"toolbox"}>
                         <div>
-                            <FontStyle editableContent={editableContent} command={"copy"}>
+                            <Button editableContent={contentEditable} command={"copy"}>
                                 file_copy
-                            </FontStyle>
-                            <FontStyle editableContent={editableContent} command={"cut"}>
+                            </Button>
+                            <Button editableContent={contentEditable} command={"cut"}>
                                 content_cut
-                            </FontStyle>
-                            <FontStyle editableContent={editableContent} command={"removeFormat"}>
+                            </Button>
+                            <Button editableContent={contentEditable} command={"removeFormat"}>
                                 delete
-                            </FontStyle>
-                            <FontStyle editableContent={editableContent} command={"selectALl"}>
+                            </Button>
+                            <Button editableContent={contentEditable} command={"selectALl"}>
                                 select_all
-                            </FontStyle>
-                            <FontStyle editableContent={editableContent} command={"undo"}>
+                            </Button>
+                            <Button editableContent={contentEditable} command={"undo"}>
                                 undo
-                            </FontStyle>
-                            <FontStyle editableContent={editableContent} command={"redo"}>
+                            </Button>
+                            <Button editableContent={contentEditable} command={"redo"}>
                                 redo
-                            </FontStyle>
+                            </Button>
                         </div>
                     </div>
                 </Page>
 
                 <Page>
                     <div className={"toolbox"}>
-                        <FontStyle
-                            editableContent={editableContent}
+                        <Button
+                            editableContent={contentEditable}
                             command={"justifyFull"}
                             callback={css => css.textAlign === "justify"}
                         >
                             format_align_justify
-                        </FontStyle>
+                        </Button>
 
-                        <FontStyle
-                            editableContent={editableContent}
+                        <Button
+                            editableContent={contentEditable}
                             command={"justifyLeft"}
                             callback={css => css.textAlign === "left"}
                         >
                             format_align_left
-                        </FontStyle>
+                        </Button>
 
-                        <FontStyle
-                            editableContent={editableContent}
+                        <Button
+                            editableContent={contentEditable}
                             command={"justifyRight"}
                             callback={css => css.textAlign === "right"}
                         >
                             format_align_right
-                        </FontStyle>
+                        </Button>
 
-                        <FontStyle
-                            editableContent={editableContent}
+                        <Button
+                            editableContent={contentEditable}
                             command={"justifyCenter"}
                             callback={css => css.textAlign === "center"}
                         >
                             format_align_center
-                        </FontStyle>
+                        </Button>
                     </div>
                 </Page>
 
                 <Page>
                     <div className={"toolbox"}>
                         <button type={"button"} className={"material-icons"}
-                                onClick={() => editableContent.current.dispatchEvent(new CustomEvent("action", {detail: {command : "default"}}))}>css
+                                onClick={() => contentEditable.current.dispatchEvent(new CustomEvent("action", {detail: {command : "default"}}))}>css
                         </button>
                         <button type={"button"} className={"material-icons"}
-                                onClick={() => editableContent.current.dispatchEvent(new CustomEvent("action", {detail: {command : "attributes"}}))}>edit_attributes
+                                onClick={() => contentEditable.current.dispatchEvent(new CustomEvent("action", {detail: {command : "attributes"}}))}>edit_attributes
                         </button>
                         <button type={"button"} className={"material-icons"}
-                                onClick={() => editableContent.current.dispatchEvent(new CustomEvent("action", {detail: {command : "insert"}}))}>variable_insert
+                                onClick={() => contentEditable.current.dispatchEvent(new CustomEvent("action", {detail: {command : "insert"}}))}>variable_insert
                         </button>
                     </div>
                 </Page>
@@ -250,7 +255,7 @@ function Toolbar(properties: Toolbar.Attributes) {
 
 namespace Toolbar {
     export interface Attributes {
-        editableContent: React.RefObject<HTMLDivElement>
+        contentEditable: React.RefObject<HTMLDivElement>
         style?: CSSProperties,
         page: number
     }
