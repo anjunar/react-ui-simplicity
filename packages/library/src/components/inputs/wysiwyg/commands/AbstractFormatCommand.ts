@@ -1,13 +1,21 @@
 import {AbstractCommand} from "./AbstractCommand";
 import {buildNewRange, modify} from "./Commands";
 
-const cutMiddleOut = (
-    completeText: string,
-    parentElement: HTMLElement | HTMLSpanElement,
-    ancestorContainer: Node,
+interface Context {
+    range : Range
+    oldRange? : any
+    node : Node
+
     callback :(element : HTMLElement) => void,
     inherit:(node: HTMLElement, parent: HTMLElement) => void,
-    range : Range)=> {
+}
+
+function cutMiddleOut(context : Context){
+
+    const {node, range, callback, inherit} = context
+
+    let parentElement = node.parentElement
+    let completeText = node.textContent
 
     let left = document.createTextNode(completeText.substring(0, range.startOffset))
     let middle = document.createTextNode(completeText.substring(range.startOffset, range.endOffset))
@@ -32,17 +40,19 @@ const cutMiddleOut = (
         grandParent.insertBefore(middleSpan, parentElement)
         grandParent.insertBefore(rightSpan, parentElement)
         parentElement.remove()
-        ancestorContainer.textContent = ""
+        node.textContent = ""
     } else {
         parentElement.appendChild(leftSpan)
         parentElement.appendChild(middleSpan)
         parentElement.appendChild(rightSpan)
-        ancestorContainer.textContent = ""
+        node.textContent = ""
     }
     return {startContainer : middle, startOffset : 0, endContainer : middle, endOffset : middle.length}
 }
 
-function rangeOverBlocks(range: Range, callback: (element: HTMLElement) => void) {
+function rangeOverBlocks(context : Context) {
+    const {range, callback} = context
+
     let contents = range.extractContents();
     let childNodes = Array.from(contents.childNodes);
     let documentFragment = modify(childNodes, callback);
@@ -52,15 +62,24 @@ function rangeOverBlocks(range: Range, callback: (element: HTMLElement) => void)
     return {startContainer: firstChild, startOffset: 0, endContainer: lastChild, endOffset: 1}
 }
 
-const modifyFullRangeSpan = <E>(
-    value : E,
-    parentElement: HTMLElement,
-    addCallback: (value : E)  => (element : HTMLElement) => void,
-    removeCallback: (value : E)  => (element : HTMLElement) => void
-)=> {
-    value ? addCallback(value)(parentElement) : removeCallback(value)(parentElement)
+function modifyFullRangeSpan(context : Context) {
+    const {node, callback} = context
+    callback(node.parentElement)
+    return context.oldRange
 }
 
+
+function firstElement(context : Context) {
+    const {node, range, callback, oldRange} = context
+
+    let parentElement = node.parentElement
+
+    let element = document.createElement("span");
+    element.appendChild(range.startContainer)
+    parentElement.appendChild(element)
+    callback(element)
+    return {startContainer: element.firstChild, startOffset: oldRange.startOffset, endContainer: element.firstChild, endOffset: oldRange.endOffset}
+}
 
 export abstract class AbstractFormatCommand<E> extends AbstractCommand<E> {
 
@@ -69,59 +88,48 @@ export abstract class AbstractFormatCommand<E> extends AbstractCommand<E> {
         let range = this.range;
         let oldRange = this.oldRange
 
-        const firstSpan = (parentElement: HTMLElement) => {
-            let element = document.createElement("span");
-            element.appendChild(range.startContainer)
-            parentElement.appendChild(element)
-            this.addCallback(value)(element)
-            return {startContainer : element.firstChild, startOffset : oldRange.startOffset, endContainer : element.firstChild, endOffset : oldRange.endOffset}
-        }
+        let context = {
+            node : range.startContainer,
+            oldRange : oldRange,
+            range : range,
+            callback : value ? this.addCallback(value) : this.removeCallback(value),
+            inherit : this.inherit
+        };
 
         if (range.collapsed) {
             if (value) {
                 let parentElement = range.startContainer.parentElement;
                 if (parentElement instanceof HTMLSpanElement) {
-                    modifyFullRangeSpan(value, parentElement, this.addCallback, this.removeCallback);
+                    modifyFullRangeSpan(context);
                     buildNewRange(oldRange)
                 } else {
-                    let newRange = firstSpan(parentElement);
+                    let newRange = firstElement(context);
                     buildNewRange(newRange)
                 }
             } else {
-                modifyFullRangeSpan(value, range.startContainer.parentElement, this.addCallback, this.removeCallback);
-                buildNewRange(oldRange)
+                let newRange = modifyFullRangeSpan(context);
+                buildNewRange(newRange)
             }
         } else {
-            let selection = window.getSelection();
-            selection.removeAllRanges()
-
             let ancestorContainer = range.commonAncestorContainer;
             if (ancestorContainer === range.startContainer && ancestorContainer === range.endContainer) {
                 let completeText = ancestorContainer.textContent
-                let parentElement = ancestorContainer.parentElement;
 
                 if (range.startOffset === 0 && range.endOffset === completeText.length) {
                     if (ancestorContainer.parentElement instanceof HTMLSpanElement) {
-                        modifyFullRangeSpan(value, parentElement, this.addCallback, this.removeCallback);
-                        buildNewRange(oldRange)
+                        let newRange = modifyFullRangeSpan(context);
+                        buildNewRange(newRange)
                     } else {
-                        let newRange = rangeOverBlocks(range, value ? this.addCallback(value) : this.removeCallback(value));
+                        let newRange = rangeOverBlocks(context);
                         buildNewRange(newRange)
                     }
                 }  else {
-                    let newRange = cutMiddleOut(
-                        completeText,
-                        parentElement,
-                        ancestorContainer,
-                        value ? this.addCallback(value) : this.removeCallback(value),
-                        this.inherit,
-                        range
-                    );
+                    let newRange = cutMiddleOut(context);
                     buildNewRange(newRange)
                 }
 
             } else {
-                let newRange = rangeOverBlocks(range, value ? this.addCallback(value) : this.removeCallback(value),);
+                let newRange = rangeOverBlocks(context);
                 buildNewRange(newRange)
             }
         }

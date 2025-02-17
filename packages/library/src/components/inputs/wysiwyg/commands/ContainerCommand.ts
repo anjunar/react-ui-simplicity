@@ -19,8 +19,12 @@ export class ContainerCommand extends AbstractCommand<string> {
             } else {
                 element.appendChild(startContainer)
                 parent.replaceWith(element)
-                buildNewRange(oldRange);
             }
+
+            buildNewRange(oldRange)
+
+        } else {
+
 
 
         }

@@ -48,7 +48,7 @@ export function normalize(element : HTMLElement) {
     element.normalize()
 }
 
-export function modify(childNodes: ChildNode[], callback : (element : HTMLElement) => void) {
+export function modify(childNodes: ChildNode[], callback : (element : HTMLElement) => void, newElement : string = "p") {
     let documentFragment = document.createDocumentFragment();
     for (const node of childNodes) {
         if (node instanceof HTMLSpanElement) {
@@ -57,7 +57,7 @@ export function modify(childNodes: ChildNode[], callback : (element : HTMLElemen
         } else {
             if (node instanceof HTMLParagraphElement) {
                 let fragment = modify(Array.from(node.childNodes), callback);
-                let divElement = document.createElement("p");
+                let divElement = document.createElement(newElement);
                 divElement.appendChild(fragment)
                 documentFragment.appendChild(divElement)
             } else {

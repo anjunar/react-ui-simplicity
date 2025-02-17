@@ -9,21 +9,7 @@ function Select(properties: FontSelectStyle.Attributes) {
 
     const [disabled, setDisabled] = useState(true)
 
-    const memo = useMemo(() => {
-        return {
-            range : null,
-            touched : false
-        }
-    }, []);
-
-
     const click: React.ChangeEventHandler<HTMLSelectElement> = (event) => {
-        if (memo.range) {
-            let selection = window.getSelection();
-            selection.removeAllRanges()
-            selection.addRange(memo.range)
-        }
-
         let htmlElement = event.target
         setValue(htmlElement.value)
         command.execute(htmlElement.value)
@@ -36,17 +22,6 @@ function Select(properties: FontSelectStyle.Attributes) {
         let s = callback(computedStyle, element);
         setValue(s)
     }
-
-    const onFocus = (event : React.FocusEvent)=> {
-        if (memo.touched) {
-            let selection = window.getSelection();
-            if (selection?.rangeCount) {
-                memo.range = selection.getRangeAt(0)
-            }
-            memo.touched = false
-        }
-    }
-
 
     useEffect(() => {
         let listener = () => {
@@ -75,8 +50,6 @@ function Select(properties: FontSelectStyle.Attributes) {
         <select disabled={disabled}
                 value={value}
                 onChange={click}
-                onFocus={onFocus}
-                onMouseDown={(event) => memo.touched = true}
                 {...rest}>
             {children}
         </select>
