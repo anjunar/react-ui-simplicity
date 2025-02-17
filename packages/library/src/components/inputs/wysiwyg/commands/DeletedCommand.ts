@@ -1,19 +1,16 @@
 import {AbstractFormatCommand} from "./AbstractFormatCommand";
 
 export class DeletedCommand extends AbstractFormatCommand<boolean> {
-    get format(): string {
-        return "deleted";
-    }
 
     addCallback(value : boolean) {
         return (element: HTMLElement) => {
-            element.classList.add(this.format)
+            element.classList.add("deleted")
         }
     }
 
     removeCallback(value :boolean){
         return (element: HTMLElement) => {
-            element.classList.remove(this.format)
+            element.classList.remove("deleted")
         }
     }
 

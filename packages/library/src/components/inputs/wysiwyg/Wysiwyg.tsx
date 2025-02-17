@@ -13,9 +13,9 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         <div className={"wysiwyg"}>
             <Toolbar page={page} contentEditable={contentEditable}/>
             <div ref={contentEditable} suppressContentEditableWarning={true} contentEditable={true} style={{flex: 1, padding: "12px", whiteSpace: "pre"}}>
-                <div>
+                <p>
                     <br/>
-                </div>
+                </p>
             </div>
             <Footer page={page} onPage={(value) => setPage(value)}/>
         </div>

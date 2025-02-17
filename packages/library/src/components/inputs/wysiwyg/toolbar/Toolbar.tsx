@@ -17,6 +17,10 @@ import {JustifyFullCommand} from "../commands/JustifyFullCommand";
 import {JustifyLeftCommand} from "../commands/JustifyLeftCommand";
 import {JustifyRightCommand} from "../commands/JustifyRightCommand";
 import {JustifyCenterCommand} from "../commands/JustifyCenterCommand";
+import {ColorCommand} from "../commands/ColorCommand";
+import {BackgroundColorCommand} from "../commands/BackgroundColorCommand";
+import {ContainerCommand} from "../commands/ContainerCommand";
+import FontSelectStyle from "../../editor/toolbar/FontSelectStyle";
 
 function Toolbar(properties: Toolbar.Attributes) {
 
@@ -83,7 +87,20 @@ function Toolbar(properties: Toolbar.Attributes) {
             <Pages page={page}>
                 <Page>
                     <div className={"toolbox"}>
-                        <div className={"flex"}>
+                        <div style={{display : "flex", alignItems : "center"}}>
+                            <Select
+                                editableContent={contentEditable}
+                                command={new ContainerCommand()}
+                                callback={(value, element) => element.closest("h1, h2, h3, h4, h5, h6, p")?.localName || "p"}>
+                                <option value="h1">H1</option>
+                                <option value="h2">H2</option>
+                                <option value="h3">H3</option>
+                                <option value="h4">H4</option>
+                                <option value="h5">H5</option>
+                                <option value="h6">H6</option>
+                                <option value="p">Paragraph</option>
+                            </Select>
+
                             <Button
                                 editableContent={contentEditable}
                                 command={new BoldCommand()}
@@ -160,19 +177,61 @@ function Toolbar(properties: Toolbar.Attributes) {
                 <Page>
                     <div className={"toolbox"}>
 
-                        <Color
-                            placeholder={"Schriftfarbe"}
-                            command={"foreColor"}
-                            editableContent={contentEditable}
-                            callback={value => rgbToHex(value.color)}>
+                        <Color editableContent={contentEditable}
+                                command={new ColorCommand()}
+                                placeholder={"Color"}
+                                list={"presetColors"}
+                                callback={value => rgbToHex(value.color)}>
                         </Color>
+                        <datalist id={"presetColors"}>
+                            <option>var(--color-theme-amber)</option>
+                            <option>var(--color-theme-blue)</option>
+                            <option>var(--color-theme-cyan)</option>
+                            <option>var(--color-theme-emerald)</option>
+                            <option>var(--color-theme-fuchsia)</option>
+                            <option>var(--color-theme-green)</option>
+                            <option>var(--color-theme-indigo)</option>
+                            <option>var(--color-theme-lime)</option>
+                            <option>var(--color-theme-orange)</option>
+                            <option>var(--color-theme-pink)</option>
+                            <option>var(--color-theme-purple)</option>
+                            <option>var(--color-theme-red)</option>
+                            <option>var(--color-theme-rose)</option>
+                            <option>var(--color-theme-skye)</option>
+                            <option>var(--color-theme-slate)</option>
+                            <option>var(--color-theme-teal)</option>
+                            <option>var(--color-theme-violet)</option>
+                            <option>var(--color-theme-yellow)</option>
+                            <option>var(--color-theme-zinc)</option>
+                        </datalist>
 
-                        <Color
-                            placeholder={"Hintergrundfarbe"}
-                            command={"backColor"}
-                            editableContent={contentEditable}
-                            callback={value => rgbToHex(value.backgroundColor)}>
+                        <Color editableContent={contentEditable}
+                               command={new BackgroundColorCommand()}
+                               placeholder={"Background"}
+                               list={"presetBackgroundColors"}
+                               callback={value => rgbToHex(value.backgroundColor)}>
                         </Color>
+                        <datalist id={"presetBackgroundColors"}>
+                            <option>var(--color-theme-amber)</option>
+                            <option>var(--color-theme-blue)</option>
+                            <option>var(--color-theme-cyan)</option>
+                            <option>var(--color-theme-emerald)</option>
+                            <option>var(--color-theme-fuchsia)</option>
+                            <option>var(--color-theme-green)</option>
+                            <option>var(--color-theme-indigo)</option>
+                            <option>var(--color-theme-lime)</option>
+                            <option>var(--color-theme-orange)</option>
+                            <option>var(--color-theme-pink)</option>
+                            <option>var(--color-theme-purple)</option>
+                            <option>var(--color-theme-red)</option>
+                            <option>var(--color-theme-rose)</option>
+                            <option>var(--color-theme-skye)</option>
+                            <option>var(--color-theme-slate)</option>
+                            <option>var(--color-theme-teal)</option>
+                            <option>var(--color-theme-violet)</option>
+                            <option>var(--color-theme-yellow)</option>
+                            <option>var(--color-theme-zinc)</option>
+                        </datalist>
 
                     </div>
                 </Page>

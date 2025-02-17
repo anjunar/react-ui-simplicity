@@ -61,13 +61,14 @@ function Input(properties: FontInputStyle.Attributes) {
             if (editableContent.current) {
                 editableContent.current.removeEventListener("click", clickHandler)
             }
+
         }
     }, [])
 
     return (
         <div style={{display : "flex", alignItems : "center"}}>
             <input ref={inputRef}
-                   onMouseDown={() => memo.touched = true}
+                   onMouseDown={(event) => memo.touched = true}
                    onFocus={onFocus} style={{width : "50px"}}
                    type={"number"}
                    value={state}

@@ -8,6 +8,15 @@ export abstract class AbstractCommand<E> {
         return null
     }
 
+    get oldRange() {
+        return {
+            startOffset : this.range.startOffset,
+            endOffset : this.range.endOffset,
+            startContainer : this.range.startContainer,
+            endContainer : this.range.endContainer
+        }
+    }
+
     abstract execute(value : E) : void
 
 }

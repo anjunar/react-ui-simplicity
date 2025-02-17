@@ -7,30 +7,44 @@ export abstract class AbstractJustifyCommand extends AbstractCommand<boolean> {
     execute(value: boolean): void {
         let range = this.range
 
-        if (range.collapsed) {
+        let ancestorContainer = range.commonAncestorContainer;
+        let parent = ancestorContainer.parentElement
+        let grandParent = parent.parentElement
 
-            let ancestorContainer = range.commonAncestorContainer;
-            let parent = ancestorContainer.parentElement
-            let grandParent = parent.parentElement
+        if (ancestorContainer instanceof HTMLElement) {
 
-            if (parent instanceof HTMLSpanElement) {
+            let iterator = document.createNodeIterator(ancestorContainer, NodeFilter.SHOW_ELEMENT);
+            let cursor = iterator.nextNode()
 
-                if (value) {
-                    grandParent.style.textAlign = this.textAlign
-                } else {
-                    grandParent.style.textAlign = ""
+            while (cursor) {
+                if (cursor instanceof HTMLParagraphElement && cursor instanceof HTMLHeadingElement) {
+                    if (value) {
+                        cursor.style.textAlign = this.textAlign === "start" ? "" : this.textAlign
+                    } else {
+                        cursor.style.textAlign = ""
+                    }
+
                 }
+                cursor = iterator.nextNode()
+            }
 
-            } else {
+        } else {
 
+            if (parent instanceof HTMLParagraphElement || parent instanceof HTMLHeadingElement) {
                 if (value) {
-                    parent.style.textAlign = this.textAlign
+                    parent.style.textAlign = this.textAlign === "start" ? "" : this.textAlign
                 } else {
                     parent.style.textAlign = ""
                 }
-
-
+            } else {
+                if (value) {
+                    grandParent.style.textAlign = this.textAlign === "start" ? "" : this.textAlign
+                } else {
+                    grandParent.style.textAlign = ""
+                }
             }
+
+
 
         }
     }
