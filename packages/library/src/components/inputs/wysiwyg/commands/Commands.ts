@@ -70,5 +70,152 @@ export function rangeState(range : Range) {
             return RangeState.over
         }
     }
+}
 
+export function selectNodeContents(spanElement: HTMLElement) {
+    let newRange = document.createRange();
+    newRange.selectNodeContents(spanElement.firstChild)
+    let selection = window.getSelection();
+    selection.removeAllRanges()
+    selection.addRange(newRange)
+}
+
+export function selectStartAndEnd(start: Node, end: Node, startOffset : number, endOffset : number) {
+    let newRange = document.createRange();
+    newRange.setStart(start, startOffset)
+    newRange.setEnd(end, endOffset)
+
+    let selection = window.getSelection();
+    selection.removeAllRanges()
+    selection.addRange(newRange)
+    return newRange;
+}
+
+export interface Context<E> {
+    range: Range
+    inherit?: (node: HTMLElement, parent: HTMLElement) => void
+    addOrRemove?: (value: E, spanElement: HTMLElement) => void
+    value: E
+}
+
+function splitTextNodeIntoSpans(textNode : Node, startOffset : number, endOffset : number) {
+    let parentSpan : HTMLSpanElement
+    if (textNode instanceof HTMLSpanElement) {
+        parentSpan = textNode
+    } else {
+        parentSpan = textNode.parentElement
+    }
+
+
+    const parent = parentSpan.parentNode;
+    const beforeText = textNode.textContent.slice(0, startOffset);
+    const selectedText = textNode.textContent.slice(startOffset, endOffset);
+    const afterText = textNode.textContent.slice(endOffset);
+
+    const newSpans : HTMLSpanElement[] = [];
+
+    const beforeSpan = document.createElement("span");
+    beforeSpan.textContent = beforeText;
+    newSpans.push(beforeSpan);
+    parent.insertBefore(beforeSpan, parentSpan);
+
+    const selectedSpan = document.createElement("span");
+    selectedSpan.textContent = selectedText;
+    newSpans.push(selectedSpan);
+    parent.insertBefore(selectedSpan, parentSpan);
+
+    const afterSpan = document.createElement("span");
+    afterSpan.textContent = afterText;
+    newSpans.push(afterSpan);
+    parent.insertBefore(afterSpan, parentSpan);
+
+    parent.removeChild(parentSpan);
+
+    return newSpans;
+}
+
+export function collapsed<E>(context : Context<E>) {
+
+    const {value, addOrRemove, inherit, range} = context
+
+    let spanElement = range.startContainer.parentElement;
+    if (addOrRemove) {
+        addOrRemove(value, spanElement);
+    }
+
+    selectStartAndEnd(range.startContainer, range.endContainer, range.startOffset, range.endOffset)
+}
+
+export function over<E>(context : Context<E>) {
+
+    const {value, addOrRemove, inherit, range} = context
+
+    let container = range.commonAncestorContainer as HTMLElement
+    let preParent = range.startContainer.parentElement
+    let postParent = range.endContainer.parentElement
+
+
+    let [preLeft, preMiddle, preRight] = splitTextNodeIntoSpans(range.startContainer, range.startOffset, range.startContainer.textContent.length);
+    let [postLeft, postMiddle, postRight] = splitTextNodeIntoSpans(range.endContainer, 0, range.endOffset)
+
+    if (inherit) {
+        inherit(preLeft, preParent)
+        inherit(preMiddle, preParent)
+        inherit(preRight, preParent)
+
+        inherit(postLeft, postParent)
+        inherit(postMiddle, postParent)
+        inherit(postRight, postParent)
+    }
+
+    let newRange = selectStartAndEnd(preMiddle, postMiddle, 0, 0);
+
+    if (addOrRemove) {
+        let spans = container.getElementsByTagName("span");
+
+        for (const span of spans) {
+            if (newRange.intersectsNode(span)) {
+                addOrRemove(value, span)
+            }
+        }
+    }
+
+    return [
+        [preLeft, preMiddle, preRight],
+        [postLeft, postMiddle, postRight]
+    ]
+
+}
+
+export function full<E>(context : Context<E>) {
+    const {value, addOrRemove, inherit, range} = context
+
+    let spanElement = range.startContainer.parentElement;
+
+    if (addOrRemove) {
+        addOrRemove(value, spanElement)
+    }
+
+    selectNodeContents(spanElement);
+}
+
+export function partial<E>(context : Context<E>) {
+    const {value, addOrRemove, inherit, range} = context
+
+    let parentElement = range.startContainer.parentElement;
+    let [left, middle, right] = splitTextNodeIntoSpans(range.startContainer, range.startOffset, range.endOffset);
+
+    if (inherit) {
+        inherit(left, parentElement)
+        inherit(middle, parentElement)
+        inherit(right, parentElement)
+    }
+
+    if (addOrRemove) {
+        addOrRemove(value, middle)
+    }
+
+    selectNodeContents(middle);
+
+    return [left, middle, right]
 }
