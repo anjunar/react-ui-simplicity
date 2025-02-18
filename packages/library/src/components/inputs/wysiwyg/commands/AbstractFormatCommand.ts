@@ -1,5 +1,5 @@
 import {AbstractCommand} from "./AbstractCommand";
-import {collapsed, Context, full, over, partial, RangeState, rangeState, selectNodeContents, selectStartAndEnd} from "./Commands";
+import {collapsed, Context, findNextTextNode, full, over, partial, RangeState, rangeState, selectNodeContents, selectStartAndEnd} from "./Commands";
 
 export abstract class AbstractFormatCommand<E> extends AbstractCommand<E> {
 
@@ -8,25 +8,50 @@ export abstract class AbstractFormatCommand<E> extends AbstractCommand<E> {
         let range = this.range;
         let state = rangeState(range);
 
-        let context : Context<E> = {
-            range : range,
-            inherit : this.inherit,
-            addOrRemove : this.addOrRemove,
-            value : value
-        }
-
         switch (state) {
             case RangeState.collapsed : {
-                collapsed(context);
+                let result = collapsed(range);
+                this.addOrRemove(value, result);
             } break
             case RangeState.over : {
-                over(context);
+                let {
+                    container : container,
+                    spans : [
+                        [preLeft, preMiddle, preRight, preParent],
+                        [postLeft, postMiddle, postRight, postParent]
+                    ]
+                } = over(range);
+
+                let newRange = selectStartAndEnd(findNextTextNode(preMiddle), findNextTextNode(postMiddle), 0,  0);
+
+                this.inherit(preLeft, preParent)
+                this.inherit(preMiddle, preParent)
+                this.inherit(preRight, preParent)
+
+                this.inherit(postLeft, postParent)
+                this.inherit(postMiddle, postParent)
+                this.inherit(postRight, postParent)
+
+                let spans = container.getElementsByTagName("span");
+
+                for (const span of spans) {
+                    if (newRange.intersectsNode(span)) {
+                        this.addOrRemove(value, span)
+                    }
+                }
+
             } break
             case RangeState.full : {
-                full(context);
+                let result = full(range);
+                this.addOrRemove(value, result)
             } break
             case RangeState.partial : {
-                partial(context);
+                let [left, middle, right, parentElement] = partial(range);
+
+                this.inherit(left, parentElement)
+                this.inherit(middle, parentElement)
+                this.inherit(right, parentElement)
+                this.addOrRemove(value, middle)
             } break
         }
 

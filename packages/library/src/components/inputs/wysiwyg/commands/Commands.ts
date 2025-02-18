@@ -26,12 +26,29 @@ function mergeSpans(container : Element) {
 function normalizeSpan(element : Element) {
     mergeSpans(element)
 
+    for (const child of element.children) {
+        normalizeSpan(child)
+    }
+}
+
+export function removeJunk(element : HTMLElement) {
+
     if (element.childNodes.length === 0 && ! (element instanceof HTMLBRElement)) {
         element.remove()
     }
 
-    if (! element.getAttribute("style")) {
+    let style = element.getAttribute("style");
+    if (! style) {
         element.removeAttribute("style")
+    } else {
+
+        if (element.style.color === "var(--color-text)") {
+            element.style.color = ""
+        }
+
+        if (element.style.backgroundColor === "var(--color-background-primary)") {
+            element.style.backgroundColor = ""
+        }
     }
 
     if (! element.getAttribute("class")) {
@@ -39,13 +56,16 @@ function normalizeSpan(element : Element) {
     }
 
     for (const child of element.children) {
-        normalizeSpan(child)
+        removeJunk(child as HTMLElement)
     }
+
 }
 
 export function normalize(element : HTMLElement) {
+    removeJunk(element)
     normalizeSpan(element)
     element.normalize()
+    removeJunk(element)
 }
 
 export enum RangeState {
@@ -93,8 +113,6 @@ export function selectStartAndEnd(start: Node, end: Node, startOffset : number, 
 
 export interface Context<E> {
     range: Range
-    inherit?: (node: HTMLElement, parent: HTMLElement) => void
-    addOrRemove?: (value: E, spanElement: HTMLElement) => void
     value: E
 }
 
@@ -134,21 +152,16 @@ function splitTextNodeIntoSpans(textNode : Node, startOffset : number, endOffset
     return newSpans;
 }
 
-export function collapsed<E>(context : Context<E>) {
-
-    const {value, addOrRemove, inherit, range} = context
+export function collapsed<E>(range : Range) {
 
     let spanElement = range.startContainer.parentElement;
-    if (addOrRemove) {
-        addOrRemove(value, spanElement);
-    }
 
-    selectStartAndEnd(range.startContainer, range.endContainer, range.startOffset, range.endOffset)
+    selectStartAndEnd(findNextTextNode(range.startContainer), findNextTextNode(range.endContainer), range.startOffset, range.endOffset)
+
+    return spanElement
 }
 
-export function over<E>(context : Context<E>) {
-
-    const {value, addOrRemove, inherit, range} = context
+export function over(range : Range) {
 
     let container = range.commonAncestorContainer as HTMLElement
     let preParent = range.startContainer.parentElement
@@ -158,64 +171,56 @@ export function over<E>(context : Context<E>) {
     let [preLeft, preMiddle, preRight] = splitTextNodeIntoSpans(range.startContainer, range.startOffset, range.startContainer.textContent.length);
     let [postLeft, postMiddle, postRight] = splitTextNodeIntoSpans(range.endContainer, 0, range.endOffset)
 
-    if (inherit) {
-        inherit(preLeft, preParent)
-        inherit(preMiddle, preParent)
-        inherit(preRight, preParent)
-
-        inherit(postLeft, postParent)
-        inherit(postMiddle, postParent)
-        inherit(postRight, postParent)
+    return {
+        container : container,
+        spans : [
+            [preLeft, preMiddle, preRight, preParent],
+            [postLeft, postMiddle, postRight, postParent]
+        ]
     }
-
-    let newRange = selectStartAndEnd(preMiddle, postMiddle, 0, 0);
-
-    if (addOrRemove) {
-        let spans = container.getElementsByTagName("span");
-
-        for (const span of spans) {
-            if (newRange.intersectsNode(span)) {
-                addOrRemove(value, span)
-            }
-        }
-    }
-
-    return [
-        [preLeft, preMiddle, preRight],
-        [postLeft, postMiddle, postRight]
-    ]
 
 }
 
-export function full<E>(context : Context<E>) {
-    const {value, addOrRemove, inherit, range} = context
+export function full(range : Range) {
 
     let spanElement = range.startContainer.parentElement;
 
-    if (addOrRemove) {
-        addOrRemove(value, spanElement)
-    }
-
     selectNodeContents(spanElement);
+
+    return spanElement
 }
 
-export function partial<E>(context : Context<E>) {
-    const {value, addOrRemove, inherit, range} = context
+export function partial(range : Range) {
 
     let parentElement = range.startContainer.parentElement;
     let [left, middle, right] = splitTextNodeIntoSpans(range.startContainer, range.startOffset, range.endOffset);
 
-    if (inherit) {
-        inherit(left, parentElement)
-        inherit(middle, parentElement)
-        inherit(right, parentElement)
-    }
-
-    if (addOrRemove) {
-        addOrRemove(value, middle)
-    }
-
     selectNodeContents(middle);
 
-    return [left, middle, right]
+    return [left, middle, right, parentElement]
+}
+
+export function findNextTextNode(node : Node) {
+
+    if (node.nodeType === Node.TEXT_NODE) {
+        return node
+    }
+
+    let start = document.createTreeWalker(
+       node,
+        NodeFilter.SHOW_TEXT,
+        {
+            acceptNode: (node) => node.textContent.trim().length > 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP
+        }
+    );
+
+    let cursor : Node;
+    while (cursor = start.nextNode()) {
+        if (cursor.nodeType === Node.TEXT_NODE) {
+            return cursor
+        }
+    }
+
+    return node
+
 }

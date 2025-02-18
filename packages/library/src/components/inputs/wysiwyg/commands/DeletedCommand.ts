@@ -4,13 +4,13 @@ export class DeletedCommand extends AbstractFormatCommand<boolean> {
 
     addCallback(value : boolean) {
         return (element: HTMLElement) => {
-            element.classList.add("deleted")
+            element.style.textDecoration = "line-through"
         }
     }
 
     removeCallback(value :boolean){
         return (element: HTMLElement) => {
-            element.classList.remove("deleted")
+            element.style.textDecoration = ""
         }
     }
 

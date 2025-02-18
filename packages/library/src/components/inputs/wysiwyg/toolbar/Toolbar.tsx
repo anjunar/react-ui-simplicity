@@ -82,6 +82,40 @@ function Toolbar(properties: Toolbar.Attributes) {
         throw new Error("Could not parse fontSize")
     }
 
+    function getCssVarValue(variable) {
+        return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+    }
+
+    const colors = [
+        "--color-text",
+        "--color-background-primary",
+        "--color-background-secondary",
+        "--color-background-tertiary",
+        "--color-warning",
+        "--color-error",
+        "--color-selected",
+
+        "--color-theme-amber",
+        "--color-theme-blue",
+        "--color-theme-cyan",
+        "--color-theme-emerald",
+        "--color-theme-fuchsia",
+        "--color-theme-green",
+        "--color-theme-indigo",
+        "--color-theme-lime",
+        "--color-theme-orange",
+        "--color-theme-pink",
+        "--color-theme-purple",
+        "--color-theme-red",
+        "--color-theme-rose",
+        "--color-theme-skye",
+        "--color-theme-slate",
+        "--color-theme-teal",
+        "--color-theme-violet",
+        "--color-theme-yellow",
+        "--color-theme-zinc"
+    ]
+
     return (
         <div className={"editor-toolbar"} {...rest}>
             <Pages page={page}>
@@ -184,25 +218,10 @@ function Toolbar(properties: Toolbar.Attributes) {
                                 callback={value => rgbToHex(value.color)}>
                         </Color>
                         <datalist id={"presetColors"}>
-                            <option>var(--color-theme-amber)</option>
-                            <option>var(--color-theme-blue)</option>
-                            <option>var(--color-theme-cyan)</option>
-                            <option>var(--color-theme-emerald)</option>
-                            <option>var(--color-theme-fuchsia)</option>
-                            <option>var(--color-theme-green)</option>
-                            <option>var(--color-theme-indigo)</option>
-                            <option>var(--color-theme-lime)</option>
-                            <option>var(--color-theme-orange)</option>
-                            <option>var(--color-theme-pink)</option>
-                            <option>var(--color-theme-purple)</option>
-                            <option>var(--color-theme-red)</option>
-                            <option>var(--color-theme-rose)</option>
-                            <option>var(--color-theme-skye)</option>
-                            <option>var(--color-theme-slate)</option>
-                            <option>var(--color-theme-teal)</option>
-                            <option>var(--color-theme-violet)</option>
-                            <option>var(--color-theme-yellow)</option>
-                            <option>var(--color-theme-zinc)</option>
+                            {colors.map((color) => {
+                                const hex = getCssVarValue(color);
+                                return <option key={color} value={hex}>{color.replace("--color-theme-", "")}</option>;
+                            })}
                         </datalist>
 
                         <Color editableContent={contentEditable}
@@ -212,25 +231,10 @@ function Toolbar(properties: Toolbar.Attributes) {
                                callback={value => rgbToHex(value.backgroundColor)}>
                         </Color>
                         <datalist id={"presetBackgroundColors"}>
-                            <option>var(--color-theme-amber)</option>
-                            <option>var(--color-theme-blue)</option>
-                            <option>var(--color-theme-cyan)</option>
-                            <option>var(--color-theme-emerald)</option>
-                            <option>var(--color-theme-fuchsia)</option>
-                            <option>var(--color-theme-green)</option>
-                            <option>var(--color-theme-indigo)</option>
-                            <option>var(--color-theme-lime)</option>
-                            <option>var(--color-theme-orange)</option>
-                            <option>var(--color-theme-pink)</option>
-                            <option>var(--color-theme-purple)</option>
-                            <option>var(--color-theme-red)</option>
-                            <option>var(--color-theme-rose)</option>
-                            <option>var(--color-theme-skye)</option>
-                            <option>var(--color-theme-slate)</option>
-                            <option>var(--color-theme-teal)</option>
-                            <option>var(--color-theme-violet)</option>
-                            <option>var(--color-theme-yellow)</option>
-                            <option>var(--color-theme-zinc)</option>
+                            {colors.map((color) => {
+                                const hex = getCssVarValue(color);
+                                return <option key={color} value={hex}>{color.replace("--color-theme-", "")}</option>;
+                            })}
                         </datalist>
 
                     </div>

@@ -6,20 +6,10 @@
     div[contenteditable=true] {
         outline: 0;
 
+        word-wrap: normal;
+
         .editor-selected {
             border : 1px solid var(--color-selected);
-        }
-
-        span.bold {
-            font-weight: bold;
-        }
-
-        span.italic {
-            font-style: italic;
-        }
-
-        span.deleted {
-            text-decoration: line-through;
         }
 
         span.sub {
