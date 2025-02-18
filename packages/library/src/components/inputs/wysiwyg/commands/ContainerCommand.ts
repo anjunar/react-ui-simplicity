@@ -1,5 +1,4 @@
 import {AbstractCommand} from "./AbstractCommand";
-import {buildNewRange} from "./Commands";
 
 export class ContainerCommand extends AbstractCommand<string> {
     execute(value: string): void {
@@ -20,8 +19,6 @@ export class ContainerCommand extends AbstractCommand<string> {
                 element.appendChild(startContainer)
                 parent.replaceWith(element)
             }
-
-            buildNewRange(oldRange)
 
         } else {
 

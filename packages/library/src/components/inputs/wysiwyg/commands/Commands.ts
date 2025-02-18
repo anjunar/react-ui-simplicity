@@ -1,4 +1,5 @@
 
+
 function mergeSpans(container : Element) {
     let spans = Array.from(container.childNodes) as HTMLElement[];
 
@@ -15,11 +16,10 @@ function mergeSpans(container : Element) {
                 [...currentClasses].every(cls => previousClasses.has(cls)) &&
                 current.style.cssText === previous.style.cssText
             ) {
-                previous.appendChild(current.firstChild);
+                previous.textContent += current.textContent;
                 current.remove();
             }
         }
-
     }
 }
 
@@ -48,34 +48,27 @@ export function normalize(element : HTMLElement) {
     element.normalize()
 }
 
-export function modify(childNodes: ChildNode[], callback : (element : HTMLElement) => void, newElement : string = "p") {
-    let documentFragment = document.createDocumentFragment();
-    for (const node of childNodes) {
-        if (node instanceof HTMLSpanElement) {
-            callback(node)
-            documentFragment.appendChild(node)
-        } else {
-            if (node instanceof HTMLParagraphElement) {
-                let fragment = modify(Array.from(node.childNodes), callback);
-                let divElement = document.createElement(newElement);
-                divElement.appendChild(fragment)
-                documentFragment.appendChild(divElement)
-            } else {
-                let element = document.createElement("span");
-                callback(element)
-                element.appendChild(node)
-                documentFragment.appendChild(element)
-            }
-        }
-    }
-    return documentFragment;
+export enum RangeState {
+    collapsed = "COLLAPSED",
+    full = "FULL",
+    partial = "PARTIAL",
+    over = "OVER"
 }
 
-export function buildNewRange(oldRange: { startOffset: number; endOffset: number; startContainer: Node; endContainer: Node }) {
-    let newRange = document.createRange();
-    newRange.setStart(oldRange.startContainer, oldRange.startOffset)
-    newRange.setEnd(oldRange.endContainer, oldRange.endOffset)
-    let selection = window.getSelection();
-    selection.removeAllRanges()
-    selection.addRange(newRange)
+export function rangeState(range : Range) {
+
+    if (range.collapsed) {
+        return RangeState.collapsed
+    } else {
+        if (range.startContainer === range.endContainer) {
+            if (range.startOffset === 0 && range.endOffset === range.startContainer.textContent.length) {
+                return RangeState.full
+            } else {
+                return RangeState.partial
+            }
+        } else {
+            return RangeState.over
+        }
+    }
+
 }

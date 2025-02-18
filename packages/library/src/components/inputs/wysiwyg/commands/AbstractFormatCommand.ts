@@ -1,84 +1,37 @@
 import {AbstractCommand} from "./AbstractCommand";
-import {buildNewRange, modify} from "./Commands";
+import {RangeState, rangeState} from "./Commands";
 
-interface Context {
-    range : Range
-    oldRange? : any
-    node : Node
+function splitTextNodeIntoSpans(textNode : Node, startOffset : number, endOffset : number) {
+    if (textNode.nodeType !== Node.TEXT_NODE) return null;
 
-    callback :(element : HTMLElement) => void,
-    inherit:(node: HTMLElement, parent: HTMLElement) => void,
-}
+    const parentSpan = textNode.parentElement;
+    if (!parentSpan || parentSpan.tagName !== "SPAN") return null;
 
-function cutMiddleOut(context : Context){
+    const parent = parentSpan.parentNode;
+    const beforeText = textNode.textContent.slice(0, startOffset);
+    const selectedText = textNode.textContent.slice(startOffset, endOffset);
+    const afterText = textNode.textContent.slice(endOffset);
 
-    const {node, range, callback, inherit} = context
+    const newSpans : HTMLSpanElement[] = [];
 
-    let parentElement = node.parentElement
-    let completeText = node.textContent
+    const beforeSpan = document.createElement("span");
+    beforeSpan.textContent = beforeText;
+    newSpans.push(beforeSpan);
+    parent.insertBefore(beforeSpan, parentSpan);
 
-    let left = document.createTextNode(completeText.substring(0, range.startOffset))
-    let middle = document.createTextNode(completeText.substring(range.startOffset, range.endOffset))
-    let right = document.createTextNode(completeText.substring(range.endOffset))
+    const selectedSpan = document.createElement("span");
+    selectedSpan.textContent = selectedText;
+    newSpans.push(selectedSpan);
+    parent.insertBefore(selectedSpan, parentSpan);
 
-    let leftSpan = document.createElement("span")
-    inherit(leftSpan, parentElement)
-    leftSpan.appendChild(left)
+    const afterSpan = document.createElement("span");
+    afterSpan.textContent = afterText;
+    newSpans.push(afterSpan);
+    parent.insertBefore(afterSpan, parentSpan);
 
-    let middleSpan = document.createElement("span")
-    inherit(middleSpan, parentElement)
-    callback(middleSpan)
-    middleSpan.appendChild(middle)
+    parent.removeChild(parentSpan);
 
-    let rightSpan = document.createElement("span")
-    inherit(rightSpan, parentElement)
-    rightSpan.appendChild(right)
-
-    if (parentElement instanceof HTMLSpanElement) {
-        let grandParent = parentElement.parentElement;
-        grandParent.insertBefore(leftSpan, parentElement)
-        grandParent.insertBefore(middleSpan, parentElement)
-        grandParent.insertBefore(rightSpan, parentElement)
-        parentElement.remove()
-        node.textContent = ""
-    } else {
-        parentElement.appendChild(leftSpan)
-        parentElement.appendChild(middleSpan)
-        parentElement.appendChild(rightSpan)
-        node.textContent = ""
-    }
-    return {startContainer : middle, startOffset : 0, endContainer : middle, endOffset : middle.length}
-}
-
-function rangeOverBlocks(context : Context) {
-    const {range, callback} = context
-
-    let contents = range.extractContents();
-    let childNodes = Array.from(contents.childNodes);
-    let documentFragment = modify(childNodes, callback);
-    let firstChild = documentFragment.firstChild
-    let lastChild = documentFragment.lastChild
-    range.insertNode(documentFragment)
-    return {startContainer: firstChild, startOffset: 0, endContainer: lastChild, endOffset: 1}
-}
-
-function modifyFullRangeSpan(context : Context) {
-    const {node, callback} = context
-    callback(node.parentElement)
-    return context.oldRange
-}
-
-
-function firstElement(context : Context) {
-    const {node, range, callback, oldRange} = context
-
-    let parentElement = node.parentElement
-
-    let element = document.createElement("span");
-    element.appendChild(range.startContainer)
-    parentElement.appendChild(element)
-    callback(element)
-    return {startContainer: element.firstChild, startOffset: oldRange.startOffset, endContainer: element.firstChild, endOffset: oldRange.endOffset}
+    return newSpans;
 }
 
 export abstract class AbstractFormatCommand<E> extends AbstractCommand<E> {
@@ -86,58 +39,91 @@ export abstract class AbstractFormatCommand<E> extends AbstractCommand<E> {
     execute(value: E): void {
 
         let range = this.range;
-        let oldRange = this.oldRange
+        let state = rangeState(range);
 
-        let context = {
-            node : range.startContainer,
-            oldRange : oldRange,
-            range : range,
-            callback : value ? this.addCallback(value) : this.removeCallback(value),
-            inherit : this.inherit
-        };
-
-        if (range.collapsed) {
-            if (value) {
-                let parentElement = range.startContainer.parentElement;
-                if (parentElement instanceof HTMLSpanElement) {
-                    modifyFullRangeSpan(context);
-                    buildNewRange(oldRange)
-                } else {
-                    let newRange = firstElement(context);
-                    buildNewRange(newRange)
-                }
-            } else {
-                let newRange = modifyFullRangeSpan(context);
-                buildNewRange(newRange)
-            }
-        } else {
-            let ancestorContainer = range.commonAncestorContainer;
-            if (ancestorContainer === range.startContainer && ancestorContainer === range.endContainer) {
-                let completeText = ancestorContainer.textContent
-
-                if (range.startOffset === 0 && range.endOffset === completeText.length) {
-                    if (ancestorContainer.parentElement instanceof HTMLSpanElement) {
-                        let newRange = modifyFullRangeSpan(context);
-                        buildNewRange(newRange)
-                    } else {
-                        let newRange = rangeOverBlocks(context);
-                        buildNewRange(newRange)
-                    }
-                }  else {
-                    let newRange = cutMiddleOut(context);
-                    buildNewRange(newRange)
-                }
-
-            } else {
-                let newRange = rangeOverBlocks(context);
-                buildNewRange(newRange)
-            }
+        function selectNodeContents(spanElement: HTMLElement) {
+            let newRange = document.createRange();
+            newRange.selectNodeContents(spanElement.firstChild)
+            let selection = window.getSelection();
+            selection.removeAllRanges()
+            selection.addRange(newRange)
         }
+
+        function selectStartAndEnd(start: Node, end: Node, startOffset : number, endOffset : number) {
+            let newRange = document.createRange();
+            newRange.setStart(start, startOffset)
+            newRange.setEnd(end, endOffset)
+
+            let selection = window.getSelection();
+            selection.removeAllRanges()
+            selection.addRange(newRange)
+            return newRange;
+        }
+
+        switch (state) {
+            case RangeState.collapsed : {
+                let spanElement = range.startContainer.parentElement;
+                this.addOrRemove(value, spanElement);
+
+                selectStartAndEnd(range.startContainer, range.endContainer, range.startOffset, range.endOffset)
+            } break
+            case RangeState.over : {
+                let container = range.commonAncestorContainer as HTMLElement
+                let preParent = range.startContainer.parentElement
+                let postParent = range.endContainer.parentElement
+
+
+                let [preLeft, preMiddle, preRight] = splitTextNodeIntoSpans(range.startContainer, range.startOffset, range.startContainer.textContent.length);
+                let [postLeft, postMiddle, postRight] = splitTextNodeIntoSpans(range.endContainer, 0, range.endOffset)
+
+                this.inherit(preLeft, preParent)
+                this.inherit(preMiddle, preParent)
+                this.inherit(preRight, preParent)
+
+                this.inherit(postLeft, postParent)
+                this.inherit(postMiddle, postParent)
+                this.inherit(postRight, postParent)
+
+                let spans = container.getElementsByTagName("span");
+
+                let newRange = selectStartAndEnd(preMiddle, postMiddle, 0 , 1);
+
+                for (const span of spans) {
+                    if (newRange.intersectsNode(span)) {
+                        this.addOrRemove(value, span)
+                    }
+                }
+
+            } break
+            case RangeState.full : {
+                let spanElement = range.startContainer.parentElement;
+                this.addOrRemove(value, spanElement)
+
+                selectNodeContents(spanElement);
+            } break
+            case RangeState.partial : {
+                let parentElement = range.startContainer.parentElement;
+                let [left, middle, right] = splitTextNodeIntoSpans(range.startContainer, range.startOffset, range.endOffset);
+
+                this.inherit(left, parentElement)
+                this.inherit(middle, parentElement)
+                this.inherit(right, parentElement)
+
+                this.addOrRemove(value, middle)
+
+                selectNodeContents(middle);
+            } break
+        }
+
 
     }
 
+    private addOrRemove(value: E, spanElement: HTMLElement) {
+        value ? this.addCallback(value)(spanElement) : this.removeCallback(value)(spanElement)
+    }
+
     inherit(node: HTMLElement, parent: HTMLElement): void {
-        if (! parent.hasAttribute("contentEditable")) {
+        if (!parent.hasAttribute("contentEditable")) {
             let styleAttribute = parent.getAttribute("style");
             if (styleAttribute) {
                 node.setAttribute("style", styleAttribute)
@@ -147,15 +133,15 @@ export abstract class AbstractFormatCommand<E> extends AbstractCommand<E> {
 
             node.className = parent.className
 
-            if (! node.className) {
+            if (!node.className) {
                 node.removeAttribute("class")
             }
         }
     }
 
-    abstract addCallback(value : E) : (element : HTMLElement) => void
+    abstract addCallback(value: E): (element: HTMLElement) => void
 
-    abstract removeCallback(value : E) : (element : HTMLElement) => void
+    abstract removeCallback(value: E): (element: HTMLElement) => void
 
 
 }
