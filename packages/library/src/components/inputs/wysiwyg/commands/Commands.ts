@@ -1,5 +1,3 @@
-
-
 function mergeSpans(container : Element) {
     let spans = Array.from(container.childNodes) as HTMLElement[];
 
@@ -49,6 +47,10 @@ export function removeJunk(element : HTMLElement) {
         if (element.style.backgroundColor === "var(--color-background-primary)") {
             element.style.backgroundColor = ""
         }
+
+        if (element.style.textAlign === "start") {
+            element.style.textAlign = ""
+        }
     }
 
     if (! element.getAttribute("class")) {
@@ -62,10 +64,10 @@ export function removeJunk(element : HTMLElement) {
 }
 
 export function normalize(element : HTMLElement) {
-    removeJunk(element)
-    normalizeSpan(element)
-    element.normalize()
-    removeJunk(element)
+    // removeJunk(element)
+    // normalizeSpan(element)
+    // element.normalize()
+    // removeJunk(element)
 }
 
 export enum RangeState {

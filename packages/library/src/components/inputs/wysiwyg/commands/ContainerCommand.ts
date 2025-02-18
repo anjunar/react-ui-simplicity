@@ -1,10 +1,5 @@
 import {AbstractCommand} from "./AbstractCommand";
 import {findNextTextNode, over, partial, RangeState, rangeState, selectNodeContents, selectStartAndEnd} from "./Commands";
-import {AbstractFormatCommand} from "./AbstractFormatCommand";
-
-function insertAfter(newElement, referenceElement) {
-    referenceElement.parentNode.insertBefore(newElement, referenceElement.nextSibling);
-}
 
 export class ContainerCommand extends AbstractCommand<string> {
     execute(value: string): void {
@@ -24,9 +19,10 @@ export class ContainerCommand extends AbstractCommand<string> {
                 grandParent.after(htmlElement)
 
                 selectStartAndEnd(findNextTextNode(container), findNextTextNode(container), startOffset, startOffset)
-            } break
+            }
+                break
             case RangeState.over : {
-                const {spans : [[preLeft, preMiddle, preRight], [postLeft, postMiddle, postRight]]} = over(range)
+                const {spans: [[preLeft, preMiddle, preRight], [postLeft, postMiddle, postRight]]} = over(range)
 
                 let preParent = preMiddle.parentElement
                 let postParent = postMiddle.parentElement
@@ -48,15 +44,8 @@ export class ContainerCommand extends AbstractCommand<string> {
                 postMiddleElement.appendChild(postMiddle)
                 postParent.before(postMiddleElement)
 
-
-
-
                 let newRange = selectStartAndEnd(findNextTextNode(preMiddle), findNextTextNode(postMiddle), 0, 0);
-
                 let container = newRange.commonAncestorContainer as HTMLElement
-
-
-
                 let elements = container.querySelectorAll("h1, h2, h3, h4, h5, h6, p");
 
                 for (const element of elements) {
@@ -70,9 +59,8 @@ export class ContainerCommand extends AbstractCommand<string> {
                 }
 
                 selectStartAndEnd(findNextTextNode(preMiddle), findNextTextNode(postRight), 0, 0);
-
-
-            } break
+            }
+                break
             case RangeState.full : {
                 let parentElement = range.startContainer.parentElement;
                 let grandParent = parentElement.parentElement
@@ -81,7 +69,8 @@ export class ContainerCommand extends AbstractCommand<string> {
                 grandParent.replaceWith(htmlElement)
 
                 selectNodeContents(parentElement)
-            } break
+            }
+                break
             case RangeState.partial : {
                 let [left, middle, right] = partial(range);
 
@@ -96,9 +85,9 @@ export class ContainerCommand extends AbstractCommand<string> {
                 paragraph.after(middleElement)
 
 
-            } break
+            }
+                break
         }
-
 
 
     }
