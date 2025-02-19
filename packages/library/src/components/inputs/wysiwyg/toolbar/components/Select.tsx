@@ -13,7 +13,6 @@ function Select(properties: FontSelectStyle.Attributes) {
         let htmlElement = event.target
         setValue(htmlElement.value)
         command.execute(htmlElement.value)
-        normalize(editableContent.current)
     }
 
     const handler = (event: Event) => {

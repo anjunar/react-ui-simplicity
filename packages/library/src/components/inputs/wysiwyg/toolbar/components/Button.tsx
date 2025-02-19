@@ -13,7 +13,6 @@ function Button(properties: FontStyle.Attributes) {
     const click = () => {
         if (command instanceof AbstractCommand) {
             command.execute(! selected)
-            normalize(editableContent.current)
         } else {
             document.execCommand(command, false)
         }

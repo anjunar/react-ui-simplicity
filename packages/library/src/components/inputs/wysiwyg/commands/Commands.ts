@@ -31,9 +31,11 @@ function normalizeSpan(element : Element) {
 
 export function removeJunk(element : HTMLElement) {
 
-    if (element.childNodes.length === 0 && ! (element instanceof HTMLBRElement)) {
+/*
+    if (element.childNodes.length === 0 && ! (element.firstChild instanceof HTMLBRElement) && ! element.hasAttribute("contentEditable")) {
         element.remove()
     }
+*/
 
     let style = element.getAttribute("style");
     if (! style) {
@@ -64,10 +66,10 @@ export function removeJunk(element : HTMLElement) {
 }
 
 export function normalize(element : HTMLElement) {
-    // removeJunk(element)
-    // normalizeSpan(element)
-    // element.normalize()
-    // removeJunk(element)
+    removeJunk(element)
+    normalizeSpan(element)
+    element.normalize()
+    removeJunk(element)
 }
 
 export enum RangeState {

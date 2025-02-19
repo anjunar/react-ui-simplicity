@@ -25,7 +25,6 @@ function Input(properties: FontInputStyle.Attributes) {
 
         let htmlElement = event.target
         command.execute(event.target.valueAsNumber + "px")
-        normalize(editableContent.current)
         setState(htmlElement.value)
 
         let selection = window.getSelection();

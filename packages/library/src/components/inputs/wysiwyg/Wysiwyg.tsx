@@ -22,12 +22,17 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         document.addEventListener("selectionchange", (event) => {
             let selection = window.getSelection();
 
-            if (! contentEditable.current.contains(selection.anchorNode)) {
-                event.preventDefault()
+            if (selection?.rangeCount) {
+                let range = selection.getRangeAt(0)
+                if (! contentEditable.current.contains(range.commonAncestorContainer)) {
+                    selection.removeAllRanges()
+                }
+            }
+
+            if (selection.isCollapsed) {
+                normalize(contentEditable.current)
             }
         })
-
-        contentEditable.current.innerHTML = " <p><span><br/></span></p>"
 
     }, []);
 
