@@ -125,14 +125,14 @@ function Toolbar(properties: Toolbar.Attributes) {
                             <Select
                                 editableContent={contentEditable}
                                 command={new ContainerCommand()}
-                                callback={(value, element) => element.closest("h1, h2, h3, h4, h5, h6, p")?.localName || "p"}>
+                                callback={(value, element) => element.closest("h1, h2, h3, h4, h5, h6, div")?.localName || "div"}>
                                 <option value="h1">H1</option>
                                 <option value="h2">H2</option>
                                 <option value="h3">H3</option>
                                 <option value="h4">H4</option>
                                 <option value="h5">H5</option>
                                 <option value="h6">H6</option>
-                                <option value="p">Paragraph</option>
+                                <option value="div">Paragraph</option>
                             </Select>
 
                             <Button

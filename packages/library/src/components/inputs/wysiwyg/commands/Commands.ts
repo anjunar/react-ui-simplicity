@@ -31,11 +31,9 @@ function normalizeSpan(element : Element) {
 
 export function removeJunk(element : HTMLElement) {
 
-/*
-    if (element.childNodes.length === 0 && ! (element.firstChild instanceof HTMLBRElement) && ! element.hasAttribute("contentEditable")) {
+    if (element.childNodes.length === 0 && ! (element instanceof HTMLBRElement) && ! element.hasAttribute("contentEditable")) {
         element.remove()
     }
-*/
 
     let style = element.getAttribute("style");
     if (! style) {

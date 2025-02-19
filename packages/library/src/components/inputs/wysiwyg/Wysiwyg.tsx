@@ -34,6 +34,12 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
             }
         })
 
+        let paragraphElement = document.createElement("p");
+        let spanElement = document.createElement("span");
+        spanElement.appendChild(document.createElement("br"))
+        paragraphElement.appendChild(spanElement)
+        contentEditable.current.appendChild(paragraphElement)
+
     }, []);
 
     return (
