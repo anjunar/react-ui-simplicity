@@ -1,5 +1,5 @@
 import "./Toolbar.css"
-import React, {CSSProperties} from "react"
+import React, {CSSProperties, useEffect, useState} from "react"
 import Select from "./components/Select"
 import Button from "./components/Button"
 import Pages from "../../../layout/pages/Pages";
@@ -20,11 +20,109 @@ import {JustifyCenterCommand} from "../commands/JustifyCenterCommand";
 import {ColorCommand} from "../commands/ColorCommand";
 import {BackgroundColorCommand} from "../commands/BackgroundColorCommand";
 import {ContainerCommand} from "../commands/ContainerCommand";
-import FontSelectStyle from "../../editor/toolbar/FontSelectStyle";
+import {AddListCommand} from "../commands/AddListCommand";
+import {createPortal} from "react-dom";
+import Window from "../../../modal/window/Window";
+import Inspector from "./Inspector";
+
+const colors = [
+    "--color-text",
+    "--color-background-primary",
+    "--color-background-secondary",
+    "--color-background-tertiary",
+    "--color-warning",
+    "--color-error",
+    "--color-selected",
+
+    "--color-theme-amber",
+    "--color-theme-blue",
+    "--color-theme-cyan",
+    "--color-theme-emerald",
+    "--color-theme-fuchsia",
+    "--color-theme-green",
+    "--color-theme-indigo",
+    "--color-theme-lime",
+    "--color-theme-orange",
+    "--color-theme-pink",
+    "--color-theme-purple",
+    "--color-theme-red",
+    "--color-theme-rose",
+    "--color-theme-skye",
+    "--color-theme-slate",
+    "--color-theme-teal",
+    "--color-theme-violet",
+    "--color-theme-yellow",
+    "--color-theme-zinc"
+]
 
 function Toolbar(properties: Toolbar.Attributes) {
 
     const {contentEditable, page, ...rest} = properties
+
+    const [open, setOpen] = useState(false)
+
+    const [element, setElement] = useState<HTMLElement>(null)
+
+    const [elements, setElements] = useState<HTMLElement[]>([])
+
+    useEffect(() => {
+        let onClickHandler = (event: Event) => {
+
+            if (page === 6) {
+                if (contentEditable.current.contains(event.target as HTMLElement)) {
+                    let composedPath = event.composedPath();
+                    let indexOf = composedPath.indexOf(contentEditable.current);
+                    let eventTargets = composedPath.slice(1, indexOf);
+                    setElements(eventTargets as HTMLElement[])
+                    if (eventTargets.length > 0) {
+                        setElement(eventTargets[0] as HTMLElement)
+                        setOpen(true)
+                    } else {
+                        setOpen(false)
+                    }
+                }
+            }
+
+        };
+
+        contentEditable.current.addEventListener("click", onClickHandler)
+
+        return () => {
+            contentEditable.current.removeEventListener("click", onClickHandler)
+        }
+
+    }, []);
+
+    useEffect(() => {
+
+        let iterator = document.createNodeIterator(contentEditable.current, NodeFilter.SHOW_ELEMENT);
+
+        let cursor: Node = null
+        while (cursor = iterator.nextNode()) {
+            if (cursor instanceof HTMLElement) {
+                cursor.classList.remove("editor-selected")
+            }
+        }
+
+        if (element) {
+            element.className = "editor-selected"
+        }
+    }, [element]);
+
+    useEffect(() => {
+        return () => {
+            setOpen(false)
+
+            let iterator = document.createNodeIterator(contentEditable.current, NodeFilter.SHOW_ELEMENT);
+
+            let cursor: Node = null
+            while (cursor = iterator.nextNode()) {
+                if (cursor instanceof HTMLElement) {
+                    cursor.classList.remove("editor-selected")
+                }
+            }
+        }
+    }, [page]);
 
     function rgbToHex(color: string) {
         color = "" + color
@@ -57,71 +155,32 @@ function Toolbar(properties: Toolbar.Attributes) {
         return ""
     }
 
-    function fontSizeTranslate(css: CSSStyleDeclaration) {
-        let regex = /(\d+).*/
-        let execArray = regex.exec(css.fontSize as string)
-        if (execArray) {
-            let number = Number.parseInt(execArray[1])
-            switch (number) {
-                case 9:
-                    return "0"
-                case 10:
-                    return "1"
-                case 13:
-                    return "2"
-                case 16:
-                    return "3"
-                case 18:
-                    return "4"
-                case 32:
-                    return "5"
-                default:
-                    return "none"
-            }
-        }
-        throw new Error("Could not parse fontSize")
-    }
-
     function getCssVarValue(variable) {
         return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
     }
 
-    const colors = [
-        "--color-text",
-        "--color-background-primary",
-        "--color-background-secondary",
-        "--color-background-tertiary",
-        "--color-warning",
-        "--color-error",
-        "--color-selected",
-
-        "--color-theme-amber",
-        "--color-theme-blue",
-        "--color-theme-cyan",
-        "--color-theme-emerald",
-        "--color-theme-fuchsia",
-        "--color-theme-green",
-        "--color-theme-indigo",
-        "--color-theme-lime",
-        "--color-theme-orange",
-        "--color-theme-pink",
-        "--color-theme-purple",
-        "--color-theme-red",
-        "--color-theme-rose",
-        "--color-theme-skye",
-        "--color-theme-slate",
-        "--color-theme-teal",
-        "--color-theme-violet",
-        "--color-theme-yellow",
-        "--color-theme-zinc"
-    ]
-
     return (
         <div className={"editor-toolbar"} {...rest}>
+            {
+                open && createPortal(
+                    <Window style={{top: element?.offsetTop + 24, left: element?.offsetLeft + 24}} draggable={true}>
+                        <Window.Header>
+                            <div style={{textAlign: "right"}}>
+                                <button type={"button"} className={"material-icons"} onClick={() => setOpen(false)}>close</button>
+                            </div>
+                        </Window.Header>
+                        <Window.Content>
+                            <div style={{padding: "12px"}}>
+                                <Inspector element={element} elements={elements}/>
+                            </div>
+                        </Window.Content>
+                    </Window>
+                    , document.getElementById("viewport"))
+            }
             <Pages page={page}>
                 <Page>
                     <div className={"toolbox"}>
-                        <div style={{display : "flex", alignItems : "center"}}>
+                        <div style={{display: "flex", alignItems: "center"}}>
                             <Select
                                 editableContent={contentEditable}
                                 command={new ContainerCommand()}
@@ -200,7 +259,7 @@ function Toolbar(properties: Toolbar.Attributes) {
                             callback={node => {
                                 let regex = /(\d+)px/
                                 let exec = regex.exec(node.fontSize);
-                                return  exec[1]
+                                return exec[1]
                             }}
                             placeholder={"px"}
                         >
@@ -212,10 +271,10 @@ function Toolbar(properties: Toolbar.Attributes) {
                     <div className={"toolbox"}>
 
                         <Color editableContent={contentEditable}
-                                command={new ColorCommand()}
-                                placeholder={"Color"}
-                                list={"presetColors"}
-                                callback={value => rgbToHex(value.color)}>
+                               command={new ColorCommand()}
+                               placeholder={"Color"}
+                               list={"presetColors"}
+                               callback={value => rgbToHex(value.color)}>
                         </Color>
                         <datalist id={"presetColors"}>
                             {colors.map((color) => {
@@ -300,18 +359,9 @@ function Toolbar(properties: Toolbar.Attributes) {
                         </Button>
                     </div>
                 </Page>
-
                 <Page>
                     <div className={"toolbox"}>
-                        <button type={"button"} className={"material-icons"}
-                                onClick={() => contentEditable.current.dispatchEvent(new CustomEvent("action", {detail: {command : "default"}}))}>css
-                        </button>
-                        <button type={"button"} className={"material-icons"}
-                                onClick={() => contentEditable.current.dispatchEvent(new CustomEvent("action", {detail: {command : "attributes"}}))}>edit_attributes
-                        </button>
-                        <button type={"button"} className={"material-icons"}
-                                onClick={() => contentEditable.current.dispatchEvent(new CustomEvent("action", {detail: {command : "insert"}}))}>variable_insert
-                        </button>
+                        <button type={"button"} onClick={() => new AddListCommand()}>list</button>
                     </div>
                 </Page>
 

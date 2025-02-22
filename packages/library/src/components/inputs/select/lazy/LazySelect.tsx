@@ -87,9 +87,9 @@ function LazySelectRenderer(properties: LazySelectRenderer.Attributes) {
         event.preventDefault()
     }
 
-    const onOptionClick: React.MouseEventHandler<HTMLInputElement> = option1 => {
+    const onOptionClick: React.MouseEventHandler<HTMLInputElement> = event => {
 
-        let option = getValue(option1)
+        let option = getValue(event)
 
         if (multiSelect) {
             const find = state.findIndex((element: any) => getId(element) === getId(option))
@@ -100,11 +100,20 @@ function LazySelectRenderer(properties: LazySelectRenderer.Attributes) {
             }
             model.validate()
             model.fireCallbacks(true)
+            if (onChange) {
+                onChange(state)
+            }
         } else {
             if (state !== null && getId(option) === getId(state)) {
                 setState(null)
+                if (onChange) {
+                    onChange(null)
+                }
             } else {
                 setState(option)
+                if (onChange) {
+                    onChange(option)
+                }
             }
         }
 
@@ -120,9 +129,6 @@ function LazySelectRenderer(properties: LazySelectRenderer.Attributes) {
 
         if (onModel) {
             onModel(model)
-        }
-        if (onChange) {
-            onChange(state)
         }
 
     }
@@ -212,14 +218,14 @@ function LazySelectRenderer(properties: LazySelectRenderer.Attributes) {
     }
 
     return (
-        <div className={(className ? className + " " : "") + "lazy-select"} {...rest}>
+        <div className={(className ? className + " " : "") + `lazy-select ${model.dirty ? "dirty" : ""} ${model.valid ? "valid" : "error"} ${document.activeElement === input.current ? "focus" : "blur"}`} {...rest}>
             <div tabIndex={0}
                  ref={input}
                  onClick={onInputClickListener}
-                 className={`text-base input ${model.dirty ? "dirty" : ""} ${model.valid ? "valid" : "error"} ${document.activeElement === input.current ? "focus" : "blur"}`}
+                 className={`text-base`}
                  onBlur={onBlur}
                  onFocus={onFocus}>
-                {state == null || state.length === 0 && (
+                {(state == null || state.length === 0) && (
                     <div>{placeholder}</div>
                 )}
                 {content}
@@ -231,7 +237,7 @@ function LazySelectRenderer(properties: LazySelectRenderer.Attributes) {
                             arrow_drop_up
                         </button>
                     </div>
-                    <input type={"text"} value={search} onChange={(event) => setSearch(event.target.value)}/>
+                    <input style={{width : "100%"}} type={"text"} value={search} onChange={(event) => setSearch(event.target.value)}/>
                     <table style={{width: "calc(100% - 32px)"}}>
                         <tbody>
                         {window.map((option, index) => (
@@ -290,6 +296,7 @@ namespace LazySelect {
         name?: string
         onChange?: any
         onRowClick?: any
+        placeholder?: React.ReactNode
         selectable? : boolean
         standalone? : boolean
         style? : CSSProperties,
@@ -342,7 +349,7 @@ namespace LazySelectRenderer {
         onFocus: any
         onModel: any
         onRowClick: any,
-        placeholder: string
+        placeholder: React.ReactNode
         selectable : boolean
         size: number
         skipNext: any

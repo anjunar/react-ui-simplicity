@@ -3,9 +3,20 @@ import React, {useEffect, useState} from "react"
 
 function Tab(properties: Tab.Attributes) {
 
-    const {className, children, tab, selected, ...rest} = properties
+    const {className, children, tab, selected, onClick, ...rest} = properties
 
     const [isSelected, setSelected] = useState(selected)
+
+    function onClickHandler(event : React.MouseEvent) : void {
+        event.preventDefault()
+
+        tab.onSelect()
+
+        if (onClick) {
+            onClick()
+        }
+
+    }
 
     useEffect(() => {
         if (tab) {
@@ -17,7 +28,7 @@ function Tab(properties: Tab.Attributes) {
 
     return (
         <div
-            onClick={() => tab?.onSelect()}
+            onMouseDown={onClickHandler}
             className={
                 (className ? className + " " : "") +
                 "tab" +
@@ -36,6 +47,7 @@ namespace Tab {
         children : React.ReactNode
         tab? : any
         selected? : boolean
+        onClick? : () => void
     }
 }
 

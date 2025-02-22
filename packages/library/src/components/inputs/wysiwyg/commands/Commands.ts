@@ -154,13 +154,13 @@ function splitTextNodeIntoSpans(textNode : Node, startOffset : number, endOffset
     return newSpans;
 }
 
-export function collapsed<E>(range : Range) {
+export function collapsed(range : Range) {
 
-    let spanElement = range.startContainer.parentElement;
+    let parentElement = range.startContainer.parentElement;
 
     selectStartAndEnd(findNextTextNode(range.startContainer), findNextTextNode(range.endContainer), range.startOffset, range.endOffset)
 
-    return spanElement
+    return parentElement
 }
 
 export function over(range : Range) {

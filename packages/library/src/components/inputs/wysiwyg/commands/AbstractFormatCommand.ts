@@ -1,5 +1,5 @@
 import {AbstractCommand} from "./AbstractCommand";
-import {collapsed, Context, findNextTextNode, full, over, partial, RangeState, rangeState, selectNodeContents, selectStartAndEnd} from "./Commands";
+import {collapsed, findNextTextNode, full, over, partial, RangeState, rangeState, selectStartAndEnd} from "./Commands";
 
 export abstract class AbstractFormatCommand<E> extends AbstractCommand<E> {
 

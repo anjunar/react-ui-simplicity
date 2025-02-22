@@ -91,7 +91,7 @@ export class Model {
     readonly validators: Validator[] = []
     readonly asyncValidators: AsyncValidator[] = []
 
-    readonly oldValue : string
+    readonly oldValue : string | Node
 
     asyncValidate: () => void
 
@@ -110,7 +110,12 @@ export class Model {
             if (this.value instanceof ActiveObject) {
                 this.oldValue = JSON.stringify(JSONSerializer(this.value))
             } else {
-                this.oldValue = JSON.stringify(this.value)
+                if (this.value instanceof Node) {
+                    this.oldValue = this.value.cloneNode(true)
+                } else {
+                    this.oldValue = JSON.stringify(this.value)
+                }
+
             }
         } else {
             this.oldValue = this.value
@@ -178,7 +183,12 @@ export class Model {
             if (this.value instanceof ActiveObject) {
                 return this.oldValue === JSON.stringify(JSONSerializer(this.value))
             } else {
-                return this.oldValue === JSON.stringify(this.value)
+                if (this.value instanceof Node) {
+                    this.value.isEqualNode(this.oldValue as Node)
+                } else {
+                    return this.oldValue === JSON.stringify(this.value)
+                }
+
             }
         } else {
             return this.oldValue === this.value

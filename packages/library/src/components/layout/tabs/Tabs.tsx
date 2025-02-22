@@ -1,12 +1,12 @@
 import "./Tabs.css"
-import React, {CSSProperties, useState} from "react"
+import React, {CSSProperties, useMemo, useState} from "react"
 import {v4} from "uuid";
 
 function Tabs(properties: Tabs.Attributes) {
 
     const {page, onPage, className, children, ...rest} = properties
 
-    const [tabs, setTabs] = useState(() => {
+    const tabs = useMemo(() => {
         const tabModel = children.map(
             child =>
                 new (class CustomTab extends Tab {
@@ -26,10 +26,10 @@ function Tabs(properties: Tabs.Attributes) {
                 // @ts-ignore
                 selected: page === index,
                 tab: tabModel[index],
-                key: v4()
+                key: tabModel[index].id
             })
         })
-    })
+    }, [children])
 
     return (
         <div className={(className ? className + " " : "") + "tabs"} {...rest}>
@@ -41,6 +41,8 @@ function Tabs(properties: Tabs.Attributes) {
 }
 
 export abstract class Tab {
+
+    id = v4()
 
     listeners : any[] = []
     selected : boolean = false
