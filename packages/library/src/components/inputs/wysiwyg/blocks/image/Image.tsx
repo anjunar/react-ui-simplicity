@@ -61,7 +61,7 @@ function Image(properties: Image.Attributes) {
 }
 
 namespace Image {
-    export interface Attributes extends HTMLAttributes<HTMLDivElement> {
+    export interface Attributes {
         node : ImageNode
         ref : React.RefObject<HTMLDivElement>
     }

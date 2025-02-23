@@ -1,5 +1,5 @@
 import "./Header.css"
-import React, {Attributes, forwardRef, useEffect, useState} from "react"
+import React, {useEffect, useState} from "react"
 import {HeaderBlock, HeaderNode} from "./HeaderNode";
 
 function Header(properties: Header.Attributes) {
@@ -10,7 +10,9 @@ function Header(properties: Header.Attributes) {
 
     function onChange(event: React.FocusEvent) {
         let target = event.target as HTMLDivElement;
-        setText(target.innerHTML)
+        if (text !== target.innerHTML) {
+            setText(target.innerHTML)
+        }
     }
 
     useEffect(() => {
@@ -22,14 +24,14 @@ function Header(properties: Header.Attributes) {
     }, [node]);
 
     return (
-        <h1 ref={ref} contentEditable={true} dangerouslySetInnerHTML={{__html: text}} onBlur={onChange} {...rest}></h1>
+        <h1 className={"header"} ref={ref} contentEditable={true} dangerouslySetInnerHTML={{__html: text}} onBlur={onChange} {...rest}></h1>
     )
 }
 
 namespace Header {
-    export interface Attributes extends React.HTMLAttributes<HTMLDivElement> {
+    export interface Attributes {
         node: HeaderNode
-        ref : React.RefObject<HTMLHeadingElement>
+        ref: React.RefObject<HTMLHeadingElement>
     }
 }
 

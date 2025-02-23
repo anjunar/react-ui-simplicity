@@ -10,7 +10,9 @@ function Paragraph(properties: Paragraph.Attributes) {
 
     function onChange(event : React.FocusEvent<HTMLDivElement>) {
         let target = event.target as HTMLDivElement;
-        setText(target.innerHTML)
+        if (text !== target.innerHTML) {
+            setText(target.innerHTML)
+        }
     }
 
     useEffect(() => {
@@ -22,12 +24,12 @@ function Paragraph(properties: Paragraph.Attributes) {
     }, [node]);
 
     return (
-        <div ref={ref} contentEditable={true} dangerouslySetInnerHTML={{__html : text}} onBlur={onChange} {...rest}></div>
+        <div className={"paragraph"} ref={ref} contentEditable={true} dangerouslySetInnerHTML={{__html : text}} onBlur={onChange} {...rest}></div>
     )
 }
 
 namespace Paragraph {
-    export interface Attributes extends React.HTMLAttributes<HTMLDivElement>{
+    export interface Attributes {
         node : ParagraphNode
         ref : React.RefObject<HTMLDivElement>
     }
