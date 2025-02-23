@@ -1,113 +1,42 @@
 import "./Wysiwyg.css"
-import React, {useLayoutEffect, useMemo, useRef, useState} from "react"
-import Toolbar from "./toolbar/Toolbar";
-import Footer from "./footer/Footer";
-import {normalize, removeJunk, selectStartAndEnd} from "./commands/Commands";
+import React, {useState} from "react"
+import {RootNode} from "./blocks/RootNode";
+import NodeFactory from "./blocks/NodeFactory";
+import {ParagraphNode, TextBlock} from "./blocks/paragraph/ParagraphNode";
+import MenuButton from "./components/MenuButton";
+import {AbstractProvider} from "./blocks/AbstractProvider";
+import {Context} from "./context/Context";
+import Block from "./components/Block";
 
 function Wysiwyg(properties: Wysiwyg.Attributes) {
 
-    const [page, setPage] = useState(0)
+    const {providers} = properties
 
-    const memo = useMemo<{range : Range}>(() => {
+    const [ast, setAst] = useState<{root : RootNode}>(() => {
         return {
-            range : null
+            root : new RootNode([new ParagraphNode(new TextBlock(""))])
         }
-    }, []);
-
-    const contentEditable = useRef<HTMLDivElement>(null);
-
-    useLayoutEffect(() => {
-
-        let inputHandler = (e : Event) => {
-            let event = e as InputEvent
-            if (event.inputType === "deleteContentBackward" || event.inputType === "deleteContentForward") {
-                normalize(contentEditable.current)
-            }
-        };
-
-        let selectionChangeHandler = (event) => {
-            let selection = window.getSelection();
-
-/*
-            if (selection?.rangeCount) {
-                let range = selection.getRangeAt(0)
-                if (! contentEditable.current.contains(range.commonAncestorContainer)) {
-                    selection.removeAllRanges()
-                }
-            }
-*/
-
-            if (selection.isCollapsed) {
-                normalize(contentEditable.current)
-            } else {
-
-            }
-        };
-
-        let contextMenuHandler = (event) => {
-            let selection = window.getSelection();
-
-            if (selection?.rangeCount && ! selection.isCollapsed) {
-                event.preventDefault()
-            }
-        };
-
-/*
-        let paragraphElement = document.createElement("p");
-        let spanElement = document.createElement("span");
-        spanElement.appendChild(document.createElement("br"))
-        paragraphElement.appendChild(spanElement)
-        contentEditable.current.appendChild(paragraphElement)
-*/
-
-        contentEditable.current.addEventListener("input", inputHandler)
-        contentEditable.current.addEventListener("contextmenu", contextMenuHandler);
-        document.addEventListener("selectionchange", selectionChangeHandler)
-
-        return () => {
-            contentEditable.current.removeEventListener("input", inputHandler)
-            contentEditable.current.removeEventListener("contextmenu", contextMenuHandler);
-            document.removeEventListener("selectionchange", selectionChangeHandler)
-        }
-    }, []);
-
-    useLayoutEffect(() => {
-
-        if (memo.range) {
-            selectStartAndEnd(memo.range.startContainer, memo.range.endContainer, memo.range.startOffset, memo.range.endOffset)
-        }
-
-
-    }, [page]);
-
-    function onPage(value : number) {
-
-        let selection = window.getSelection();
-        if (selection?.rangeCount) {
-            memo.range = selection.getRangeAt(0)
-        }
-
-        setPage(value)
-    }
+    })
 
     return (
-        <div className={"wysiwyg"}>
-            <Toolbar page={page} contentEditable={contentEditable}/>
-            <div ref={contentEditable} contentEditable={true} style={{flex: 1, padding: "12px", whiteSpace: "pre"}}></div>
-            <Footer page={page} onPage={onPage}/>
+        <div className={"wysiwyg"} id={"editor"}>
+            <Context value={{providers: providers, ast : ast.root, trigger() {setAst({...ast})}}}>
+                {
+                    ast.root.blocks.map(node => (
+                            <div key={node.id}>
+                                <Block node={node}/>
+                            </div>
+                        )
+                    )
+                }
+            </Context>
         </div>
-
     )
 }
 
 namespace Wysiwyg {
     export interface Attributes {
-    }
-
-    export interface EventHolder {
-        handled: boolean
-        event: KeyboardEvent,
-        trigger: () => void
+        providers: AbstractProvider<any, any>[]
     }
 }
 

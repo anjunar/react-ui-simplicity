@@ -1,32 +1,8 @@
 .wysiwyg {
     height : calc(100% - 4px);
-    display: flex;
-    flex-direction: column;
 
-    div[contenteditable=true] {
+    [contenteditable=true] {
         outline: 0;
-
-        word-wrap: normal;
-
-        .editor-selected {
-            border : 1px solid var(--color-selected);
-        }
-
-        span.sub {
-            font-size: 75%;
-            line-height: 0;
-            position: relative;
-            vertical-align: baseline;
-            bottom: -0.25em;
-        }
-
-        span.sup {
-            font-size: 75%;
-            line-height: 0;
-            position: relative;
-            vertical-align: baseline;
-            top: -0.5em;
-        }
-
+        line-height: 1.6em;
     }
 }

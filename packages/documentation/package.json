@@ -19,7 +19,8 @@
     "react-dom": "^19.0.0",
     "react-ui-simplicity": "^1.2.8",
     "url": "^0.11.4",
-    "uuid": "^11.0.5"
+    "uuid": "^11.0.5",
+    "@editorjs/editorjs": "^2.30.8"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",

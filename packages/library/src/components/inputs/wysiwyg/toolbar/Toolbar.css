@@ -1,9 +1,0 @@
-.editor-toolbar {
-    min-height: 34px;
-
-    .toolbox {
-        display: flex;
-        justify-content: center;
-        gap: 12px;
-    }
-}
