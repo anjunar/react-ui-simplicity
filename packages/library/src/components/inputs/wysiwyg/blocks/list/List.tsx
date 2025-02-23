@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react"
+import React, {useEffect, useLayoutEffect, useRef, useState} from "react"
 import {AbstractNode} from "../AbstractNode";
 import {ListData} from "./ListNode";
 
@@ -46,9 +46,13 @@ function List(properties: List.Attributes) {
 
     }, [node]);
 
+    useLayoutEffect(() => {
+        ref.current.innerHTML = content
+    }, []);
+
 
     return (
-        <div ref={ref} contentEditable={true} dangerouslySetInnerHTML={{__html: content}} onBlur={onChange}></div>
+        <div ref={ref} contentEditable={true} onBlur={onChange}></div>
     )
 }
 

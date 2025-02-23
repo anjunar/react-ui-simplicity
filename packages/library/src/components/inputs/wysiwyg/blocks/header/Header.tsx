@@ -1,5 +1,5 @@
 import "./Header.css"
-import React, {useEffect, useState} from "react"
+import React, {useEffect, useLayoutEffect, useState} from "react"
 import {HeaderBlock, HeaderNode} from "./HeaderNode";
 
 function Header(properties: Header.Attributes) {
@@ -23,8 +23,12 @@ function Header(properties: Header.Attributes) {
         setText(node.data.text)
     }, [node]);
 
+    useLayoutEffect(() => {
+        ref.current.innerHTML = text
+    }, []);
+
     return (
-        <h1 className={"header"} ref={ref} contentEditable={true} dangerouslySetInnerHTML={{__html: text}} onBlur={onChange} {...rest}></h1>
+        <h1 className={"header"} ref={ref} contentEditable={true} onBlur={onChange} {...rest}></h1>
     )
 }
 

@@ -1,5 +1,5 @@
 import "./Paragraph.css"
-import React, {FormEvent, useEffect, useState} from "react"
+import React, {FormEvent, useEffect, useLayoutEffect, useState} from "react"
 import {ParagraphNode, TextBlock} from "./ParagraphNode";
 
 function Paragraph(properties: Paragraph.Attributes) {
@@ -23,8 +23,12 @@ function Paragraph(properties: Paragraph.Attributes) {
         setText(node.data.text)
     }, [node]);
 
+    useLayoutEffect(() => {
+        ref.current.innerHTML = text
+    }, []);
+
     return (
-        <div className={"paragraph"} ref={ref} contentEditable={true} dangerouslySetInnerHTML={{__html : text}} onBlur={onChange} {...rest}></div>
+        <div className={"paragraph"} ref={ref} contentEditable={true} onBlur={onChange} {...rest}></div>
     )
 }
 

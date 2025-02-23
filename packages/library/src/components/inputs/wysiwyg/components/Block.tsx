@@ -17,26 +17,8 @@ function Block(properties: Block.Attributes) {
         const handleFocus = () => {
             let contentFocus = document.activeElement && ref.current?.contains(document.activeElement);
 
-/*
-            let rangeAt : Range;
-            let selection = window.getSelection();
-            if (contentFocus) {
-                if (selection?.rangeCount) {
-                    rangeAt = selection.getRangeAt(0);
-                }
-            }
-*/
-
-
             setTimeout(() => {
                 setIsFocused(contentFocus);
-
-/*
-                if (rangeAt) {
-                    selection.removeAllRanges()
-                    selection.addRange(rangeAt)
-                }
-*/
             }, 200)
         };
 
