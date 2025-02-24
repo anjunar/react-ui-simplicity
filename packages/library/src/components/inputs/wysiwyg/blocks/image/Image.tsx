@@ -1,10 +1,10 @@
-import React, {HTMLAttributes, useContext, useEffect, useRef, useState} from "react"
+import React, {CSSProperties, HTMLAttributes, useContext, useEffect, useRef, useState} from "react"
 import {ImageData, ImageNode} from "./ImageNode";
 import {Context} from "../../context/Context";
 
 function Image(properties: Image.Attributes) {
 
-    const {node, ref, ...rest} = properties
+    const {node, ref, style} = properties
 
     const [image, setImage] = useState("")
 
@@ -51,7 +51,7 @@ function Image(properties: Image.Attributes) {
     }, []);
 
     return (
-        <div {...rest} ref={ref} tabIndex={0}>
+        <div ref={ref} tabIndex={0} style={style}>
             <input ref={inputRef} onChange={onLoad} type={"file"} style={{visibility : "hidden"}}/>
             {
                 image && (<img src={image} style={{width : "100%"}}/>)
@@ -64,6 +64,7 @@ namespace Image {
     export interface Attributes {
         node : ImageNode
         ref : React.RefObject<HTMLDivElement>
+        style? : CSSProperties
     }
 }
 

@@ -3,7 +3,7 @@ import React, {CSSProperties, useState} from "react"
 import {RootNode} from "./blocks/RootNode";
 import NodeFactory from "./blocks/NodeFactory";
 import {ParagraphNode, TextBlock} from "./blocks/paragraph/ParagraphNode";
-import MenuButton from "./components/MenuButton";
+import Providers from "./components/Providers";
 import {AbstractProvider} from "./blocks/AbstractProvider";
 import {Context} from "./context/Context";
 import Block from "./components/Block";
@@ -19,16 +19,18 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     })
 
     return (
-        <div className={"wysiwyg"} id={"editor"} style={style}>
+        <div className={"wysiwyg"} style={style}>
             <Context value={{providers: providers, ast : ast.root, trigger() {setAst({...ast})}}}>
-                {
-                    ast.root.blocks.map(node => (
-                            <div key={node.id}>
-                                <Block node={node}/>
-                            </div>
+                <div>
+                    {
+                        ast.root.blocks.map(node => (
+                                <div key={node.id}>
+                                    <Block node={node}/>
+                                </div>
+                            )
                         )
-                    )
-                }
+                    }
+                </div>
             </Context>
         </div>
     )
@@ -37,7 +39,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 namespace Wysiwyg {
     export interface Attributes {
         providers: AbstractProvider<any, any>[]
-        style : CSSProperties
+        style? : CSSProperties
     }
 }
 

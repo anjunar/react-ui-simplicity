@@ -1,10 +1,10 @@
 import "./Paragraph.css"
-import React, {FormEvent, useEffect, useLayoutEffect, useState} from "react"
+import React, {CSSProperties, FormEvent, useEffect, useLayoutEffect, useState} from "react"
 import {ParagraphNode, TextBlock} from "./ParagraphNode";
 
 function Paragraph(properties: Paragraph.Attributes) {
 
-    const {node, ref, ...rest} = properties
+    const {node, ref, style} = properties
 
     const [text, setText] = useState("")
 
@@ -28,7 +28,7 @@ function Paragraph(properties: Paragraph.Attributes) {
     }, []);
 
     return (
-        <div className={"paragraph"} ref={ref} contentEditable={true} onBlur={onChange} {...rest}></div>
+        <div className={"paragraph"} ref={ref} contentEditable={true} onBlur={onChange} style={style}></div>
     )
 }
 
@@ -36,6 +36,7 @@ namespace Paragraph {
     export interface Attributes {
         node : ParagraphNode
         ref : React.RefObject<HTMLDivElement>
+        style? : CSSProperties
     }
 }
 

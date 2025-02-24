@@ -1,7 +1,9 @@
-import React, {useEffect, useRef, useState} from "react"
+import React, {useEffect, useMemo, useRef, useState} from "react"
 import NodeFactory from "../blocks/NodeFactory";
-import MenuButton from "./MenuButton";
+import Providers from "./Providers";
 import {AbstractNode} from "../blocks/AbstractNode";
+import {useMatchMedia} from "../../../../hooks/UseMatchMedia";
+import Actions from "./Actions";
 
 function Block(properties: Block.Attributes) {
 
@@ -12,6 +14,10 @@ function Block(properties: Block.Attributes) {
     const [isFocused, setIsFocused] = useState(false);
 
     const [isMenuClicked, setIsMenuClicked] = useState(false)
+
+    const [isMouseOver, setIsMouseOver] = useState(false)
+
+    let matchMedia = useMatchMedia("(max-width: 600px)");
 
     useEffect(() => {
         const handleFocus = () => {
@@ -32,10 +38,18 @@ function Block(properties: Block.Attributes) {
     }, []);
 
 
+    const menuButton = <div style={{display : "flex"}}>
+        <Providers onProviderClick={() => setIsMenuClicked(false)} onClick={() => setIsMenuClicked(true)} node={node}>add</Providers>
+        <Actions onProviderClick={() => setIsMenuClicked(false)} onClick={() => setIsMenuClicked(true)} node={node}>toc</Actions>
+    </div>
+
     return (
-        <div>
-            <NodeFactory node={node} ref={ref}/>
-            {(isFocused || isMenuClicked) && <MenuButton onProviderClick={() => setIsMenuClicked(false)} onClick={() => setIsMenuClicked(true)} node={node}>add</MenuButton>}
+        <div onMouseOver={() => setIsMouseOver(true)} onMouseLeave={() => setIsMouseOver(false)}>
+            <div style={{display : ! matchMedia ? "flex" : "block", alignItems : "center"}}>
+                {! matchMedia && (isMouseOver || (window.ontouchstart && isFocused) || isMenuClicked) ? menuButton : <div style={{width : 72}}></div>}
+                <NodeFactory node={node} ref={ref}/>
+                {matchMedia && (isMouseOver || (window.ontouchstart && isFocused) || isMenuClicked) ? menuButton : ""}
+            </div>
         </div>
     )
 }

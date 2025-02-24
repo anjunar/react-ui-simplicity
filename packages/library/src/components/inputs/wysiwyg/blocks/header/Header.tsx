@@ -1,10 +1,10 @@
 import "./Header.css"
-import React, {useEffect, useLayoutEffect, useState} from "react"
+import React, {CSSProperties, useEffect, useLayoutEffect, useState} from "react"
 import {HeaderBlock, HeaderNode} from "./HeaderNode";
 
 function Header(properties: Header.Attributes) {
 
-    const {node, ref, ...rest} = properties
+    const {node, ref, style} = properties
 
     const [text, setText] = useState("")
 
@@ -28,7 +28,7 @@ function Header(properties: Header.Attributes) {
     }, []);
 
     return (
-        <h1 className={"header"} ref={ref} contentEditable={true} onBlur={onChange} {...rest}></h1>
+        <h1 className={"header"} ref={ref} contentEditable={true} onBlur={onChange} style={style}></h1>
     )
 }
 
@@ -36,6 +36,7 @@ namespace Header {
     export interface Attributes {
         node: HeaderNode
         ref: React.RefObject<HTMLHeadingElement>
+        style? : CSSProperties
     }
 }
 

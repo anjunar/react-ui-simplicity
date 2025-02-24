@@ -1,10 +1,11 @@
-import React, {useEffect, useLayoutEffect, useRef, useState} from "react"
+import "./List.css"
+import React, {CSSProperties, useEffect, useLayoutEffect, useRef, useState} from "react"
 import {AbstractNode} from "../AbstractNode";
 import {ListData} from "./ListNode";
 
 function List(properties: List.Attributes) {
 
-    const {node, ref} = properties
+    const {node, ref, style} = properties
 
     const [content, setContent] = useState("<ul><li><br/></li></ul>")
 
@@ -52,7 +53,7 @@ function List(properties: List.Attributes) {
 
 
     return (
-        <div ref={ref} contentEditable={true} onBlur={onChange}></div>
+        <div className={"list"} ref={ref} contentEditable={true} onBlur={onChange} style={style}></div>
     )
 }
 
@@ -60,6 +61,7 @@ namespace List {
     export interface Attributes {
         node : AbstractNode<ListData>
         ref : React.RefObject<HTMLDivElement>
+        style? : CSSProperties
     }
 }
 
