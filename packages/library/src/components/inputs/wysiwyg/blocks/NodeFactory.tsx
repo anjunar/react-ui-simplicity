@@ -1,32 +1,22 @@
-import React, {CSSProperties} from "react"
+import {CSSProperties, useContext} from "react"
 import {AbstractNode} from "./AbstractNode";
-import Paragraph from "./paragraph/Paragraph";
-import Header from "./header/Header";
-import Image from "./image/Image";
-import List from "./list/List";
+import {Context} from "../context/Context";
 
 function NodeFactory(properties: NodeFactory.Attributes) {
 
-    const {node, ref, style} = properties
+    const {node, style} = properties
 
-    switch (node.type) {
-        case "paragraph" :
-            return <Paragraph node={node} ref={ref} style={style}/>
-        case "header" :
-            return <Header node={node} ref={ref} style={style}/>
-        case "image" :
-            return <Image node={node} ref={ref} style={{maxWidth : 400, ...style}}/>
-        case "list" :
-            return <List node={node} ref={ref} style={style}/>
-    }
+    const {providers} = useContext(Context)
 
+    let provider = providers.find(provider => node instanceof provider.factory);
+
+    return provider.component({node: node, style: style})
 }
 
 namespace NodeFactory {
-    export interface Attributes  {
+    export interface Attributes {
         node: AbstractNode<any>
-        ref : React.RefObject<any>
-        style? : CSSProperties
+        style?: CSSProperties
     }
 }
 

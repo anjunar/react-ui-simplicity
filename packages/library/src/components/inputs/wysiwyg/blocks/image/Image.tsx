@@ -4,13 +4,26 @@ import {Context} from "../../context/Context";
 
 function Image(properties: Image.Attributes) {
 
-    const {node, ref, style} = properties
+    const {node, style} = properties
 
     const [image, setImage] = useState("")
 
-    const context = useContext(Context)
+    const {ast, providers, trigger} = useContext(Context)
 
     const inputRef = useRef<HTMLInputElement>(null)
+
+    function onFocus() {
+        node.selected = true
+
+        trigger()
+    }
+
+    function onBlur() {
+        setTimeout(() => {
+            node.selected = false
+            trigger()
+        }, 200)
+    }
 
     const onLoad = (event: any) => {
         let input = event.target
@@ -27,7 +40,7 @@ function Image(properties: Image.Attributes) {
 
                         setImage(result)
 
-                        context.trigger()
+                        trigger()
                     }
                 })
 
@@ -51,11 +64,13 @@ function Image(properties: Image.Attributes) {
     }, []);
 
     return (
-        <div ref={ref} tabIndex={0} style={style}>
-            <input ref={inputRef} onChange={onLoad} type={"file"} style={{visibility : "hidden"}}/>
-            {
-                image && (<img src={image} style={{width : "100%"}}/>)
-            }
+        <div tabIndex={0} style={style} onFocus={onFocus} onBlur={onBlur}>
+            <div>
+                <input ref={inputRef} onChange={onLoad} type={"file"} style={{visibility : "hidden"}}/>
+                {
+                    image && (<img src={image} style={{width : "100%"}}/>)
+                }
+            </div>
         </div>
     )
 }
@@ -63,7 +78,6 @@ function Image(properties: Image.Attributes) {
 namespace Image {
     export interface Attributes {
         node : ImageNode
-        ref : React.RefObject<HTMLDivElement>
         style? : CSSProperties
     }
 }

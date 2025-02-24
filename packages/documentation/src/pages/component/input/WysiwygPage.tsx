@@ -7,8 +7,8 @@ import {ListProvider} from "react-ui-simplicity/src/components/inputs/wysiwyg/bl
 
 export default function WysiwygPage() {
     return (
-        <div className={"wysiwyg-page"}>
-            <Wysiwyg providers={[new ParagraphProvider(), new HeaderProvider(), new ImageProvider(), new ListProvider()]}/>
+        <div className={"wysiwyg-page"} style={{height : "100%"}}>
+            <Wysiwyg style={{height : "100%"}} providers={[new ParagraphProvider(), new HeaderProvider(), new ImageProvider(), new ListProvider()]}/>
         </div>
     )
 }

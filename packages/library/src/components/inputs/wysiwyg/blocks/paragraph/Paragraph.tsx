@@ -1,18 +1,34 @@
 import "./Paragraph.css"
-import React, {CSSProperties, FormEvent, useEffect, useLayoutEffect, useState} from "react"
+import React, {CSSProperties, FormEvent, useContext, useEffect, useLayoutEffect, useRef, useState} from "react"
 import {ParagraphNode, TextBlock} from "./ParagraphNode";
+import {Context} from "../../context/Context";
 
 function Paragraph(properties: Paragraph.Attributes) {
 
-    const {node, ref, style} = properties
+    const {node, style} = properties
 
     const [text, setText] = useState("")
 
-    function onChange(event : React.FocusEvent<HTMLDivElement>) {
+    const {ast, providers, trigger} = useContext(Context)
+
+    const ref = useRef<HTMLDivElement>(null);
+
+    function onFocus() {
+        node.selected = true
+
+        trigger()
+    }
+
+
+    function onBlur(event : React.FocusEvent<HTMLDivElement>) {
         let target = event.target as HTMLDivElement;
         if (text !== target.innerHTML) {
             setText(target.innerHTML)
         }
+        setTimeout(() => {
+            node.selected = false
+            trigger()
+        }, 200)
     }
 
     useEffect(() => {
@@ -28,14 +44,13 @@ function Paragraph(properties: Paragraph.Attributes) {
     }, []);
 
     return (
-        <div className={"paragraph"} ref={ref} contentEditable={true} onBlur={onChange} style={style}></div>
+        <div className={"paragraph"} ref={ref} contentEditable={true} onBlur={onBlur} onFocus={onFocus} style={style}></div>
     )
 }
 
 namespace Paragraph {
     export interface Attributes {
         node : ParagraphNode
-        ref : React.RefObject<HTMLDivElement>
         style? : CSSProperties
     }
 }

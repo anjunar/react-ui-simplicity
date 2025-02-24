@@ -1,18 +1,34 @@
 import "./Header.css"
-import React, {CSSProperties, useEffect, useLayoutEffect, useState} from "react"
+import React, {CSSProperties, useContext, useEffect, useLayoutEffect, useRef, useState} from "react"
 import {HeaderBlock, HeaderNode} from "./HeaderNode";
+import {Context} from "../../context/Context";
 
 function Header(properties: Header.Attributes) {
 
-    const {node, ref, style} = properties
+    const {node, style} = properties
 
     const [text, setText] = useState("")
 
-    function onChange(event: React.FocusEvent) {
+    const {ast, providers, trigger} = useContext(Context)
+
+    const ref = useRef<HTMLHeadingElement>(null);
+
+    function onFocus() {
+        node.selected = true
+
+        trigger()
+    }
+
+    function onBlur(event: React.FocusEvent) {
         let target = event.target as HTMLDivElement;
         if (text !== target.innerHTML) {
             setText(target.innerHTML)
         }
+
+        setTimeout(() => {
+            node.selected = false
+            trigger()
+        }, 200)
     }
 
     useEffect(() => {
@@ -28,14 +44,13 @@ function Header(properties: Header.Attributes) {
     }, []);
 
     return (
-        <h1 className={"header"} ref={ref} contentEditable={true} onBlur={onChange} style={style}></h1>
+        <h1 ref={ref} className={"header"} contentEditable={true} onBlur={onBlur} style={style} onFocus={onFocus}></h1>
     )
 }
 
 namespace Header {
     export interface Attributes {
         node: HeaderNode
-        ref: React.RefObject<HTMLHeadingElement>
         style? : CSSProperties
     }
 }

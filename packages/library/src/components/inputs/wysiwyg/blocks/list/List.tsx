@@ -1,19 +1,34 @@
 import "./List.css"
-import React, {CSSProperties, useEffect, useLayoutEffect, useRef, useState} from "react"
+import React, {CSSProperties, useContext, useEffect, useLayoutEffect, useRef, useState} from "react"
 import {AbstractNode} from "../AbstractNode";
 import {ListData} from "./ListNode";
+import {Context} from "../../context/Context";
 
 function List(properties: List.Attributes) {
 
-    const {node, ref, style} = properties
+    const {node, style} = properties
 
     const [content, setContent] = useState("<ul><li><br/></li></ul>")
 
-    function onChange(event: React.FocusEvent) {
+    const ref = useRef<HTMLDivElement>(null);
+
+    const {ast, providers, trigger} = useContext(Context)
+
+    function onFocus() {
+        node.selected = true
+
+        trigger()
+    }
+
+    function onBlur(event: React.FocusEvent) {
         let target = event.target as HTMLDivElement;
         if (content !== target.innerHTML) {
             setContent(target.innerHTML)
         }
+        setTimeout(() => {
+            node.selected = false
+            trigger()
+        }, 200)
     }
 
     useEffect(() => {
@@ -53,14 +68,13 @@ function List(properties: List.Attributes) {
 
 
     return (
-        <div className={"list"} ref={ref} contentEditable={true} onBlur={onChange} style={style}></div>
+        <div className={"list"} ref={ref} contentEditable={true} onBlur={onBlur} onFocus={onFocus} style={style}></div>
     )
 }
 
 namespace List {
     export interface Attributes {
         node : AbstractNode<ListData>
-        ref : React.RefObject<HTMLDivElement>
         style? : CSSProperties
     }
 }
