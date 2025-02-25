@@ -1,5 +1,5 @@
 import "./Header.css"
-import React, {CSSProperties, useContext, useEffect, useLayoutEffect, useRef, useState} from "react"
+import React, {CSSProperties, JSX, useContext, useEffect, useLayoutEffect, useRef, useState} from "react"
 import {HeaderBlock, HeaderNode} from "./HeaderNode";
 import {Context} from "../../context/Context";
 
@@ -41,10 +41,14 @@ function Header(properties: Header.Attributes) {
 
     useLayoutEffect(() => {
         ref.current.innerHTML = text
-    }, []);
+        node.dom = ref.current
+    }, [node.data?.level]);
+
+
+    const CustomTag = node.data?.level || "h1" as React.ElementType
 
     return (
-        <h1 ref={ref} className={"header"} contentEditable={true} onBlur={onBlur} style={style} onFocus={onFocus}></h1>
+        <CustomTag ref={ref} className={"header"} contentEditable={true} onBlur={onBlur} style={style} onFocus={onFocus}></CustomTag>
     )
 }
 

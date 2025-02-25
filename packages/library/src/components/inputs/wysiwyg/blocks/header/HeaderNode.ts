@@ -4,6 +4,8 @@ export class HeaderBlock {
 
     text : string
 
+    level : string = "h1"
+
     constructor(text: string) {
         this.text = text;
     }

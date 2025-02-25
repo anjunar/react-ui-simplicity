@@ -6,6 +6,8 @@ export abstract class AbstractNode<D> {
 
     selected : boolean = false
 
+    dom : HTMLElement
+
     abstract type : string
 
     abstract data : D

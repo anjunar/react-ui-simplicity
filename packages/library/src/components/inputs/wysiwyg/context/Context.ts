@@ -8,4 +8,4 @@ export interface WysiwygContext {
     trigger() : void
 }
 
-export const Context = React.createContext<WysiwygContext>(null)
+export const Context = React.createContext<WysiwygContext>({ast : null, trigger: null, providers : []})

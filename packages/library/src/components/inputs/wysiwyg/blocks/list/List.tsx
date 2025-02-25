@@ -64,6 +64,7 @@ function List(properties: List.Attributes) {
 
     useLayoutEffect(() => {
         ref.current.innerHTML = content
+        node.dom = ref.current
     }, []);
 
 

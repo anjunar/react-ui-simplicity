@@ -1,4 +1,4 @@
-import {CSSProperties, useContext} from "react"
+import React, {CSSProperties, useContext} from "react"
 import {AbstractNode} from "./AbstractNode";
 import {Context} from "../context/Context";
 
@@ -10,7 +10,7 @@ function NodeFactory(properties: NodeFactory.Attributes) {
 
     let provider = providers.find(provider => node instanceof provider.factory);
 
-    return provider.component({node: node, style: style})
+    return React.createElement(provider.component, {node: node, style: style})
 }
 
 namespace NodeFactory {

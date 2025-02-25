@@ -41,6 +41,7 @@ function Paragraph(properties: Paragraph.Attributes) {
 
     useLayoutEffect(() => {
         ref.current.innerHTML = text
+        node.dom = ref.current
     }, []);
 
     return (

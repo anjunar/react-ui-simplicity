@@ -12,6 +12,8 @@ function Image(properties: Image.Attributes) {
 
     const inputRef = useRef<HTMLInputElement>(null)
 
+    const ref = useRef<HTMLImageElement>(null)
+
     function onFocus() {
         node.selected = true
 
@@ -61,6 +63,9 @@ function Image(properties: Image.Attributes) {
 
         inputRef.current.click()
 
+        node.dom = ref.current
+
+
     }, []);
 
     return (
@@ -68,7 +73,7 @@ function Image(properties: Image.Attributes) {
             <div>
                 <input ref={inputRef} onChange={onLoad} type={"file"} style={{visibility : "hidden"}}/>
                 {
-                    image && (<img src={image} style={{width : "100%"}}/>)
+                    image && (<img ref={ref} src={image} style={{width : "100%"}}/>)
                 }
             </div>
         </div>

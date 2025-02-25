@@ -50,9 +50,9 @@ function Toolbar(properties: Toolbar.Attributes) {
         let block = ast.blocks.find(block => block.selected);
         let provider = providers.find(provider => block instanceof provider.factory);
         if (provider) {
-            return provider.tool({})
+            return React.createElement(provider.tool)
         }
-        return <div>Select a Block</div>
+        return <div style={{lineHeight : "28px", verticalAlign : "middle"}}>Select a Block</div>
     }
 
     const isArrowDownDisabled = ast.blocks[ast.blocks.length - 1].selected
