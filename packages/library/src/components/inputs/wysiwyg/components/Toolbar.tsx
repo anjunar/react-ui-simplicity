@@ -2,7 +2,7 @@ import React, {useContext} from "react"
 import Pages from "../../../layout/pages/Pages";
 import Page from "../../../layout/pages/Page";
 import {Context} from "../context/Context";
-import {AbstractProvider} from "../blocks/AbstractProvider";
+import {AbstractProvider} from "../blocks/shared/AbstractProvider";
 
 function Toolbar(properties: Toolbar.Attributes) {
 
@@ -14,7 +14,11 @@ function Toolbar(properties: Toolbar.Attributes) {
 
         let index = ast.blocks.findIndex(node => node.selected);
 
-        ast.blocks.splice(index + 1, 0, new provider.factory())
+        if (ast.blocks[index].isEmpty) {
+            ast.blocks.splice(index, 1, new provider.factory())
+        } else {
+            ast.blocks.splice(index + 1, 0, new provider.factory())
+        }
 
         trigger()
 
@@ -55,6 +59,12 @@ function Toolbar(properties: Toolbar.Attributes) {
         return <div style={{lineHeight : "28px", verticalAlign : "middle"}}>Select a Block</div>
     }
 
+    function isActive(provider : AbstractProvider<any, any, any>) {
+        let block = ast.blocks.find(block => block.selected);
+
+        return block instanceof provider.factory ? " active" : ""
+    }
+
     const isArrowDownDisabled = ast.blocks[ast.blocks.length - 1].selected
     const isArrowUpDisabled = ast.blocks[0].selected
     const isDeleteDisabled = ast.blocks.length === 1
@@ -68,7 +78,7 @@ function Toolbar(properties: Toolbar.Attributes) {
                             providers.map(provider => (
                                 <button key={provider.title}
                                         onClick={() => onProviderClick(provider)}
-                                        className={"material-icons"}>
+                                        className={`material-icons${isActive(provider)}`}>
                                     {provider.icon}
                                 </button>
                             ))

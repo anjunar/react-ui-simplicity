@@ -14,17 +14,20 @@ function Image(properties: Image.Attributes) {
 
     const ref = useRef<HTMLImageElement>(null)
 
-    function onFocus() {
-        node.selected = true
+    const contentEditableRef = useRef<HTMLDivElement>(null);
 
-        trigger()
-    }
+    function onImageClick(event : React.MouseEvent) {
 
-    function onBlur() {
-        setTimeout(() => {
-            node.selected = false
-            trigger()
-        }, 200)
+        let selection = window.getSelection();
+
+        if (selection?.rangeCount) {
+            let rangeAt = selection.getRangeAt(0);
+
+            rangeAt.selectNode(event.target as HTMLElement)
+
+            selection.removeAllRanges()
+            selection.addRange(rangeAt)
+        }
     }
 
     const onLoad = (event: any) => {
@@ -63,17 +66,39 @@ function Image(properties: Image.Attributes) {
 
         inputRef.current.click()
 
-        node.dom = ref.current
+        if (ref.current) {
+            ref.current.addEventListener("beforeinput", (event) => {
+                event.preventDefault()
+            })
+        }
 
+        let listener = () => {
+            let selection = window.getSelection();
+            node.selected = contentEditableRef.current.contains(selection.anchorNode)
+            trigger()
+        };
 
+        document.addEventListener("selectionchange", listener)
+
+        return () => {
+            document.removeEventListener("selectionchange", listener)
+        }
     }, []);
 
+    useEffect(() => {
+        node.dom = ref.current
+    }, [ref.current]);
+
     return (
-        <div tabIndex={0} style={style} onFocus={onFocus} onBlur={onBlur}>
-            <div>
-                <input ref={inputRef} onChange={onLoad} type={"file"} style={{visibility : "hidden"}}/>
+        <div style={style}>
+            <input ref={inputRef} onChange={onLoad} type={"file"} style={{display : "none"}}/>
+            <div tabIndex={0} ref={contentEditableRef} contentEditable={true} suppressContentEditableWarning={true}>
                 {
-                    image && (<img ref={ref} src={image} style={{width : "100%"}}/>)
+                    image && (
+                        <div style={{display : "flex", justifyContent : "center"}}>
+                            <img ref={ref} onClick={onImageClick} src={image} style={{width : "100%", maxWidth : "360px"}}/>
+                        </div>
+                    )
                 }
             </div>
         </div>

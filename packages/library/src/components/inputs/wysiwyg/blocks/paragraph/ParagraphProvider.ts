@@ -1,9 +1,9 @@
 import Paragraph from "./Paragraph";
-import {AbstractProvider} from "../AbstractProvider";
+import {AbstractProvider} from "../shared/AbstractProvider";
 import {ParagraphNode} from "./ParagraphNode";
-import ParagraphTool from "./ParagraphTool";
+import TextTool from "../shared/TextTool";
 
-export class ParagraphProvider extends AbstractProvider<Paragraph.Attributes, ParagraphTool.Attributes, typeof ParagraphNode> {
+export class ParagraphProvider extends AbstractProvider<Paragraph.Attributes, TextTool.Attributes, typeof ParagraphNode> {
 
     title = "Text"
 
@@ -11,7 +11,7 @@ export class ParagraphProvider extends AbstractProvider<Paragraph.Attributes, Pa
 
     component = Paragraph
 
-    tool = ParagraphTool
+    tool = TextTool
 
     get factory(): typeof ParagraphNode {
         return ParagraphNode

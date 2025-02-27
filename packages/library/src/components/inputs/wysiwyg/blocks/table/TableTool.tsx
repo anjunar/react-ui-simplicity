@@ -1,18 +1,18 @@
 import React from "react"
 
-function ListTool(properties: ListTool.Attributes) {
+function TableTool(properties: TableTool.Attributes) {
 
     const {} = properties
 
     return (
-        <div>test</div>
+        <div></div>
     )
 }
 
-namespace ListTool {
+namespace TableTool {
     export interface Attributes {
 
     }
 }
 
-export default ListTool
+export default TableTool

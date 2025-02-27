@@ -1,5 +1,5 @@
 import "./Header.css"
-import React, {CSSProperties, JSX, useContext, useEffect, useLayoutEffect, useRef, useState} from "react"
+import React, {CSSProperties, useContext, useEffect, useLayoutEffect, useRef, useState} from "react"
 import {HeaderBlock, HeaderNode} from "./HeaderNode";
 import {Context} from "../../context/Context";
 
@@ -13,22 +13,11 @@ function Header(properties: Header.Attributes) {
 
     const ref = useRef<HTMLHeadingElement>(null);
 
-    function onFocus() {
-        node.selected = true
-
-        trigger()
-    }
-
     function onBlur(event: React.FocusEvent) {
         let target = event.target as HTMLDivElement;
         if (text !== target.innerHTML) {
             setText(target.innerHTML)
         }
-
-        setTimeout(() => {
-            node.selected = false
-            trigger()
-        }, 200)
     }
 
     useEffect(() => {
@@ -44,11 +33,25 @@ function Header(properties: Header.Attributes) {
         node.dom = ref.current
     }, [node.data?.level]);
 
+    useEffect(() => {
+        let listener = () => {
+            let selection = window.getSelection();
+            node.selected = node.dom.contains(selection.anchorNode)
+            trigger()
+        };
+
+        document.addEventListener("selectionchange", listener)
+
+        return () => {
+            document.removeEventListener("selectionchange", listener)
+        }
+    }, []);
+
 
     const CustomTag = node.data?.level || "h1" as React.ElementType
 
     return (
-        <CustomTag ref={ref} className={"header"} contentEditable={true} onBlur={onBlur} style={style} onFocus={onFocus}></CustomTag>
+        <CustomTag ref={ref} className={"header"} contentEditable={true} onBlur={onBlur} style={style}></CustomTag>
     )
 }
 

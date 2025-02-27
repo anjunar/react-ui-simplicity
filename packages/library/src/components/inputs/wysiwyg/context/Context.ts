@@ -1,6 +1,6 @@
 import React from "react";
-import {AbstractProvider} from "../blocks/AbstractProvider";
-import {RootNode} from "../blocks/RootNode";
+import {AbstractProvider} from "../blocks/shared/AbstractProvider";
+import {RootNode} from "../blocks/shared/RootNode";
 
 export interface WysiwygContext {
     providers : AbstractProvider<any, any, any>[]

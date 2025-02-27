@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react"
+import {AbstractCommand} from "../commands/AbstractCommand";
 
 function ToolButton(properties: ToolButton.Attributes) {
 
@@ -7,15 +8,14 @@ function ToolButton(properties: ToolButton.Attributes) {
     const [selected, setSelected] = useState(false)
 
     const click = () => {
-        document.execCommand("styleWithCSS", false, "true")
-        document.execCommand(command, false, "")
+        command.execute(! selected)
         let selection = document.getSelection()
         if (selection) {
             let anchorNode = selection.anchorNode
             if (anchorNode?.parentElement) {
                 if (callback) {
                     let computedStyle = window.getComputedStyle(anchorNode.parentElement)
-                    let selected = callback(computedStyle);
+                    let selected = callback(computedStyle)
                     if (selected) {
                         setSelected(false)
                     } else {
@@ -60,7 +60,7 @@ namespace ToolButton {
     export interface Attributes {
         children: React.ReactNode
         editableContent: HTMLElement
-        command: any
+        command: AbstractCommand<boolean>
         callback?: (css : CSSStyleDeclaration) => boolean
     }
 }

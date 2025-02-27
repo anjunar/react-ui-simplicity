@@ -1,6 +1,6 @@
 import React, {CSSProperties, useContext} from "react"
 import {AbstractNode} from "./AbstractNode";
-import {Context} from "../context/Context";
+import {Context} from "../../context/Context";
 
 function NodeFactory(properties: NodeFactory.Attributes) {
 

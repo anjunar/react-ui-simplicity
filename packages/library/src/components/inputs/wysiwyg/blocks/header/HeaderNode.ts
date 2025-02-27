@@ -1,4 +1,4 @@
-import {AbstractNode} from "../AbstractNode";
+import {AbstractNode} from "../shared/AbstractNode";
 
 export class HeaderBlock {
 

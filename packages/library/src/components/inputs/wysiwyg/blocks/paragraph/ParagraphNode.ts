@@ -1,4 +1,4 @@
-import {AbstractNode} from "../AbstractNode";
+import {AbstractNode} from "../shared/AbstractNode";
 
 export class TextBlock {
 
@@ -16,7 +16,7 @@ export class ParagraphNode extends AbstractNode<TextBlock> {
     data: TextBlock
 
     get isEmpty() {
-        return this.data.text.length === 0
+        return this.data.text === "<p><span><br></span></p>"
     }
 
     constructor(data: TextBlock) {

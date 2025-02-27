@@ -1,9 +1,9 @@
 import "./Wysiwyg.css"
-import React, {CSSProperties, useState} from "react"
-import {RootNode} from "./blocks/RootNode";
-import NodeFactory from "./blocks/NodeFactory";
+import React, {CSSProperties, useEffect, useState} from "react"
+import {RootNode} from "./blocks/shared/RootNode";
+import NodeFactory from "./blocks/shared/NodeFactory";
 import {ParagraphNode, TextBlock} from "./blocks/paragraph/ParagraphNode";
-import {AbstractProvider} from "./blocks/AbstractProvider";
+import {AbstractProvider} from "./blocks/shared/AbstractProvider";
 import {Context} from "./context/Context";
 import Footer from "./components/Footer";
 import Toolbar from "./components/Toolbar";
@@ -20,12 +20,35 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
         }
     })
 
+    useEffect(() => {
+        let listener = (event) => {
+            event.preventDefault()
+            let data = event.clipboardData.getData("text/plain");
+
+            let selection = window.getSelection();
+            let rangeAt = selection.getRangeAt(0);
+            rangeAt.insertNode(document.createTextNode(data))
+
+            let brElement = selection.anchorNode.parentElement.querySelector("br");
+
+            if (brElement) {
+                brElement.remove()
+            }
+        };
+
+        document.addEventListener("paste", listener)
+
+        return () => {
+            document.removeEventListener("paste", listener)
+        }
+    }, []);
+
     return (
         <div className={"wysiwyg"} style={style}>
             <Context value={{providers: providers, ast : ast.root, trigger() {setAst({...ast})}}}>
                 <div style={{display : "flex", flexDirection : "column", height : "100%"}}>
                     <Toolbar page={page}/>
-                    <div style={{flex : 1}}>
+                    <div style={{flex : 1, overflow : "auto"}}>
                         {
                             ast.root.blocks.map(node => (
                                     <div key={node.id}>

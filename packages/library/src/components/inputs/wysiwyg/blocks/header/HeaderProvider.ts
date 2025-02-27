@@ -1,4 +1,4 @@
-import {AbstractProvider} from "../AbstractProvider";
+import {AbstractProvider} from "../shared/AbstractProvider";
 import Header from "./Header";
 import {HeaderNode} from "./HeaderNode";
 import HeaderTool from "./HeaderTool";

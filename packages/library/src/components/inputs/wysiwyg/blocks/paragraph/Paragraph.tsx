@@ -7,28 +7,17 @@ function Paragraph(properties: Paragraph.Attributes) {
 
     const {node, style} = properties
 
-    const [text, setText] = useState("")
+    const [text, setText] = useState("<p><span><br/></span></p>")
 
     const {ast, providers, trigger} = useContext(Context)
 
     const ref = useRef<HTMLDivElement>(null);
-
-    function onFocus() {
-        node.selected = true
-
-        trigger()
-    }
-
 
     function onBlur(event : React.FocusEvent<HTMLDivElement>) {
         let target = event.target as HTMLDivElement;
         if (text !== target.innerHTML) {
             setText(target.innerHTML)
         }
-        setTimeout(() => {
-            node.selected = false
-            trigger()
-        }, 200)
     }
 
     useEffect(() => {
@@ -42,10 +31,22 @@ function Paragraph(properties: Paragraph.Attributes) {
     useLayoutEffect(() => {
         ref.current.innerHTML = text
         node.dom = ref.current
+
+        let listener = () => {
+            let selection = window.getSelection();
+            node.selected = node.dom.contains(selection.anchorNode)
+            trigger()
+        };
+
+        document.addEventListener("selectionchange", listener)
+
+        return () => {
+            document.removeEventListener("selectionchange", listener)
+        }
     }, []);
 
     return (
-        <div className={"paragraph"} ref={ref} contentEditable={true} onBlur={onBlur} onFocus={onFocus} style={style}></div>
+        <div className={"paragraph"} ref={ref} contentEditable={true} onBlur={onBlur} style={style}></div>
     )
 }
 

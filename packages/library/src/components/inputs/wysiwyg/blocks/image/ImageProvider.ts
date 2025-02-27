@@ -1,4 +1,4 @@
-import {AbstractProvider} from "../AbstractProvider";
+import {AbstractProvider} from "../shared/AbstractProvider";
 import Image from "./Image";
 import {ImageNode} from "./ImageNode";
 import ImageTool from "./ImageTool";

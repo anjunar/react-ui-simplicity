@@ -1,16 +1,16 @@
-import {AbstractProvider} from "../AbstractProvider";
+import {AbstractProvider} from "../shared/AbstractProvider";
 import List from "./List";
 import {ListNode} from "./ListNode";
-import ListTool from "./ListTool";
+import TextTool from "../shared/TextTool";
 
-export class ListProvider extends AbstractProvider<List.Attributes, ListTool.Attributes, typeof ListNode> {
+export class ListProvider extends AbstractProvider<List.Attributes, TextTool.Attributes, typeof ListNode> {
 
     title: string = "List"
     icon: string = "list"
 
     component = List
 
-    tool = ListTool
+    tool = TextTool
 
     get factory(): typeof ListNode {
         return ListNode

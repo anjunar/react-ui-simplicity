@@ -1,4 +1,4 @@
-ul li:has(> br):before {
+ul > li > p > span:has(> br):before {
     content: 'Write Text here...';
     color: var(--color-background-secondary);
 }
