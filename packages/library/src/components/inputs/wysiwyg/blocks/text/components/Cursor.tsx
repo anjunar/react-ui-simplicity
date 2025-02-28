@@ -1,12 +1,15 @@
 import "./Cursor.css"
-import React from "react"
+import React, {useContext} from "react"
+import EditorContext from "./EditorContext";
 
 function Cursor(properties: Cursor.Attributes) {
 
     const {ref} = properties
 
+    const {cursor : {current : {container}}} = useContext(EditorContext)
+
     return (
-        <div className={"cursor"} ref={ref}>|</div>
+        <div className={"cursor"} ref={ref}>|{container?.dom?.localName}</div>
     )
 }
 

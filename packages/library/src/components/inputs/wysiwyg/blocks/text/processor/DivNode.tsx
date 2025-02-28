@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from "react"
-import {ParagraphTreeNode} from "../AST";
+import {ParagraphTreeNode} from "../ast/TreeNode";
 import TextFactory from "../TextFactory";
 
 function DivNode(properties: DivNode.Attributes) {

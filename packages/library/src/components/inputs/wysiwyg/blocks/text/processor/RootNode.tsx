@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from "react"
-import {RootTreeNode} from "../AST";
+import {RootTreeNode} from "../ast/TreeNode";
 import TextFactory from "../TextFactory";
 
 function RootNode(properties: RootNode.Attributes) {

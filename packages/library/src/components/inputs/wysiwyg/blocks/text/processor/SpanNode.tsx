@@ -1,12 +1,13 @@
 import React, {useContext, useEffect, useRef} from "react"
-import {TextTreeNode} from "../AST";
+import {ParagraphTreeNode, TextTreeNode} from "../ast/TreeNode";
 import EditorContext from "../components/EditorContext";
+import DivNode from "./DivNode";
 
 function SpanNode(properties: SpanNode.Attributes) {
 
     const {node} = properties
 
-    const {ast : {root, triggerAST}, cursor : {container, offset, triggerCursor} , event : {handled, instance}} = useContext(EditorContext)
+    const {ast : {root, triggerAST}, cursor : {current, triggerCursor}, event} = useContext(EditorContext)
 
     const spanRef = useRef<HTMLDivElement>(null);
 
@@ -16,31 +17,74 @@ function SpanNode(properties: SpanNode.Attributes) {
 
     useEffect(() => {
 
-        if (instance) {
-            let event = instance
+        if (event.instance && node === current.container && ! event.handled) {
+            let e = event.instance
+            let node = current.container as TextTreeNode
 
-            switch (event.inputType) {
+            switch (e.type) {
                 case "insertCompositionText" :
                 case "insertText" : {
+                    let start = node.text.substring(0, current.offset)
+                    let end = node.text.substring(current.offset)
 
-                    let node = container as TextTreeNode
+                    node.text = start + e.data + end
+                    current.offset += e.data.length;
 
-                    let start = node.text.substring(0, offset)
-                    let end = node.text.substring(offset)
-
-                    node.text = start + event.data + end
-                    let newOffset = offset + event.data.length;
+                    event.handled = true
 
                     triggerAST()
-                    triggerCursor({container : node, offset : newOffset})
+                    triggerCursor()
 
                 }
                     break
+                case "insertLineBreak" : {
+                    let parent = node.parent;
+                    let grandParent = parent.parent
+
+                    let index = parent.parentIndex;
+                    let newTextNode = new TextTreeNode("");
+                    let newDivNode = new ParagraphTreeNode([newTextNode])
+
+                    grandParent.insertChild(index + 1, newDivNode)
+
+                    current.container = newTextNode
+                    current.offset = 0
+
+                    event.handled = true
+
+                    triggerAST()
+                    triggerCursor()
+                } break
+                case "keydown" : {
+
+                    switch (e.data) {
+                        case "ArrowLeft" : {
+                            if (current.offset === 0) {
+
+                            } else {
+                                current.offset--
+                            }
+
+                            triggerCursor()
+
+                        } break
+                        case "ArrowRight" : {
+                            if (current.offset === node.text.length) {
+
+                            } else {
+                                current.offset++
+                            }
+
+                            triggerCursor()
+                        }
+                    }
+
+                } break
             }
 
         }
 
-    }, [instance]);
+    }, [event.instance]);
 
     return (
         <span ref={spanRef}>{node.text.length === 0 ? <br/> : node.text}</span>

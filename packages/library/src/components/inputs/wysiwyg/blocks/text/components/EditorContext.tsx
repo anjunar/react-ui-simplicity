@@ -1,5 +1,10 @@
 import React from "react"
-import {AbstractTreeNode, RootTreeNode} from "../AST";
+import {AbstractTreeNode, RootTreeNode} from "../ast/TreeNode";
+
+export interface GeneralEvent {
+    type : string
+    data : string
+}
 
 export interface Context {
     ast: {
@@ -7,13 +12,15 @@ export interface Context {
         triggerAST() : void
     }
     cursor: {
-        container: AbstractTreeNode,
-        offset: number
-        triggerCursor(value : {container : AbstractTreeNode, offset : number}) : void
+        current : {
+            container: AbstractTreeNode,
+            offset: number
+        }
+        triggerCursor() : void
     }
     event : {
         handled : boolean
-        instance : InputEvent
+        instance : GeneralEvent
     }
 }
 
