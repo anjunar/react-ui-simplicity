@@ -18,7 +18,7 @@ export function findNode(node: AbstractTreeNode, callback: (node: AbstractTreeNo
 
 export function flatten(node : AbstractTreeNode) : AbstractTreeNode[] {
     if (node instanceof AbstractContainerTreeNode) {
-        return node.children.flatMap(child => flatten(child))
+        return [node, ...node.children.flatMap(child => flatten(child))]
     } else {
         return [node]
     }

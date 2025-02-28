@@ -1,5 +1,5 @@
 import {v4} from "uuid";
-import {flatten} from "./TreeNodes";
+import {flatten, flattenRight} from "./TreeNodes";
 
 export abstract class AbstractTreeNode {
     id : string = v4()
@@ -62,6 +62,7 @@ export class RootTreeNode extends AbstractContainerTreeNode {
     get flatten() : AbstractTreeNode[] {
         return flatten(this)
     }
+
 }
 
 

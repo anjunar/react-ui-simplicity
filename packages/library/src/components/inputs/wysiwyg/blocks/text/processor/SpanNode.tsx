@@ -60,20 +60,34 @@ function SpanNode(properties: SpanNode.Attributes) {
                     switch (e.data) {
                         case "ArrowLeft" : {
                             if (current.offset === 0) {
-
+                                let flattened = root.flatten
+                                let indexOf = flattened.indexOf(current.container);
+                                if (indexOf > 0) {
+                                    current.container = flattened[indexOf - 1]
+                                    current.offset = 0
+                                }
                             } else {
                                 current.offset--
                             }
+
+                            event.handled = true
 
                             triggerCursor()
 
                         } break
                         case "ArrowRight" : {
                             if (current.offset === node.text.length) {
-
+                                let flattened = root.flatten
+                                let indexOf = flattened.lastIndexOf(current.container);
+                                if (indexOf < flattened.length - 1) {
+                                    current.container = flattened[indexOf + 1]
+                                    current.offset = 1
+                                }
                             } else {
                                 current.offset++
                             }
+
+                            event.handled = true
 
                             triggerCursor()
                         }

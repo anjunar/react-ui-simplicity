@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react"
+import React, {useCallback, useEffect, useRef, useState} from "react"
 import TextFactory from "./TextFactory";
 import Cursor from "./components/Cursor";
 import {AbstractTreeNode, ParagraphTreeNode, RootTreeNode, TextTreeNode} from "./ast/TreeNode";
@@ -11,16 +11,16 @@ function TextEditor(properties: TextEditor.Attributes) {
 
     const [ast, setAst] = useState(() => {
         return {
-            root: new RootTreeNode([new ParagraphTreeNode([new TextTreeNode("")])])
+            root: new RootTreeNode([new ParagraphTreeNode([])])
         }
     })
 
     const [cursor, setCursor] = useState<{ current: { container: AbstractTreeNode, offset: number } }>(() => {
         let pNode = ast.root.children[0] as ParagraphTreeNode
-        let textNode = pNode.children[0]
+        // let textNode = pNode.children[0]
         return {
             current: {
-                container: textNode,
+                container: pNode,
                 offset: 0
             }
         }
@@ -34,6 +34,21 @@ function TextEditor(properties: TextEditor.Attributes) {
     let inputRef = useRef<HTMLTextAreaElement>(null);
 
     let cursorRef = useRef<HTMLDivElement>(null)
+
+    const eventQueue = useRef<GeneralEvent[]>([]);
+
+    const processQueue = useCallback(() => {
+        if (eventQueue.current.length > 0) {
+            const lastEvent = eventQueue.current[eventQueue.current.length - 1];
+            setEvent({ handled: false, instance: lastEvent });
+            eventQueue.current = [];
+        }
+    }, []);
+
+    useEffect(() => {
+        const interval = setInterval(processQueue, 50); // Batch alle 50ms
+        return () => clearInterval(interval);
+    }, [processQueue]);
 
     function onContentClick(event: React.MouseEvent) {
         let selection = window.getSelection();
@@ -64,27 +79,22 @@ function TextEditor(properties: TextEditor.Attributes) {
     }
 
     function onInput(e: React.FormEvent<HTMLTextAreaElement>) {
-        let event = e.nativeEvent as InputEvent
-        setEvent({
-            handled: false,
-            instance: {
-                type: event.inputType,
-                data: event.data
-            }
-        })
+        let inputEvent = e.nativeEvent as InputEvent;
+        eventQueue.current.push({
+            type: inputEvent.inputType,
+            data: inputEvent.data
+        });
     }
+
 
     function onKeyDown(event: React.KeyboardEvent) {
         const whiteList = ["ArrowLeft", "ArrowRight"]
 
         if (whiteList.indexOf(event.key) > -1) {
-            setEvent({
-                handled: false,
-                instance: {
-                    type: event.type,
-                    data: event.key
-                }
-            })
+            eventQueue.current.push({
+                type: event.type,
+                data: event.key
+            });
         }
     }
 
@@ -97,26 +107,32 @@ function TextEditor(properties: TextEditor.Attributes) {
     }
 
     useEffect(() => {
+        function extracted() {
+            let clientRect = range.getBoundingClientRect();
+
+            const editorRect = ref.current.getBoundingClientRect();
+            const topOffset = clientRect.top - editorRect.top + ref.current.scrollTop;
+            const leftOffset = clientRect.left - editorRect.left + ref.current.scrollLeft;
+
+            cursorRef.current.style.left = leftOffset + "px"
+            cursorRef.current.style.top = topOffset + "px"
+            cursorRef.current.style.height = clientRect.height + "px"
+        }
+
         let range = document.createRange();
 
-        let startFirstChild = cursor.current.container.dom.firstChild;
-        let endFistChild = cursor.current.container.dom.firstChild;
+        let containerFirstChild = cursor.current.container.dom.firstChild;
 
-        if (startFirstChild instanceof HTMLBRElement && endFistChild instanceof HTMLBRElement) {
+        if (containerFirstChild instanceof HTMLElement || containerFirstChild === null) {
             range.selectNode(cursor.current.container.dom)
+            extracted()
         } else {
-            range.setStart(startFirstChild, cursor.current.offset)
+            range.setStart(containerFirstChild, cursor.current.offset)
             range.collapse(true)
+            extracted()
         }
-        let clientRect = range.getBoundingClientRect();
 
-        const editorRect = ref.current.getBoundingClientRect();
-        const topOffset = clientRect.top - editorRect.top + ref.current.scrollTop;
-        const leftOffset = clientRect.left - editorRect.left + ref.current.scrollLeft;
 
-        cursorRef.current.style.left = leftOffset + "px"
-        cursorRef.current.style.top = topOffset + "px"
-        cursorRef.current.style.height = clientRect.height + "px"
     }, [cursor]);
 
     let value = {
