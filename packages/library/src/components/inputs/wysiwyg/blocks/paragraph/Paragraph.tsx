@@ -2,34 +2,18 @@ import "./Paragraph.css"
 import React, {CSSProperties, FormEvent, useContext, useEffect, useLayoutEffect, useRef, useState} from "react"
 import {ParagraphNode, TextBlock} from "./ParagraphNode";
 import {Context} from "../../context/Context";
+import TextEditor from "../text/TextEditor";
 
 function Paragraph(properties: Paragraph.Attributes) {
 
     const {node, style} = properties
 
-    const [text, setText] = useState("<p><span><br/></span></p>")
-
     const {ast, providers, trigger} = useContext(Context)
 
     const ref = useRef<HTMLDivElement>(null);
 
-    function onBlur(event : React.FocusEvent<HTMLDivElement>) {
-        let target = event.target as HTMLDivElement;
-        if (text !== target.innerHTML) {
-            setText(target.innerHTML)
-        }
-    }
-
-    useEffect(() => {
-        node.data = new TextBlock(text)
-    }, [text]);
-
-    useEffect(() => {
-        setText(node.data.text)
-    }, [node]);
-
     useLayoutEffect(() => {
-        ref.current.innerHTML = text
+
         node.dom = ref.current
 
         let listener = () => {
@@ -46,7 +30,7 @@ function Paragraph(properties: Paragraph.Attributes) {
     }, []);
 
     return (
-        <div className={"paragraph"} ref={ref} contentEditable={true} onBlur={onBlur} style={style}></div>
+        <TextEditor ref={ref}/>
     )
 }
 
