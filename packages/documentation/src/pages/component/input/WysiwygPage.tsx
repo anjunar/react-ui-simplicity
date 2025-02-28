@@ -4,6 +4,7 @@ import {ParagraphProvider} from "react-ui-simplicity/src/components/inputs/wysiw
 import {HeaderProvider} from "react-ui-simplicity/src/components/inputs/wysiwyg/blocks/header/HeaderProvider";
 import {ImageProvider} from "react-ui-simplicity/src/components/inputs/wysiwyg/blocks/image/ImageProvider";
 import {ListProvider} from "react-ui-simplicity/src/components/inputs/wysiwyg/blocks/list/ListProvider";
+import EditorContext from "react-ui-simplicity/src/components/inputs/wysiwyg/blocks/text/components/EditorContext";
 
 export default function WysiwygPage() {
     return (

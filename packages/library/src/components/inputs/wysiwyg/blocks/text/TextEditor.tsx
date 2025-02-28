@@ -1,9 +1,10 @@
-import React, {useEffect, useMemo, useRef, useState} from "react"
-import {AbstractContainerTreeNode, AbstractTreeNode, ParagraphTreeNode, RootTreeNode, TextTreeNode} from "./AST";
+import React, {useEffect, useRef, useState} from "react"
 import TextFactory from "./TextFactory";
 import Cursor from "./components/Cursor";
+import {AbstractContainerTreeNode, AbstractTreeNode, ParagraphTreeNode, RootTreeNode, TextTreeNode} from "./AST";
+import EditorContext from "./components/EditorContext";
 
-function findNode(node : AbstractTreeNode, callback : (node : AbstractTreeNode) => boolean) {
+function findNode(node: AbstractTreeNode, callback: (node: AbstractTreeNode) => boolean) {
 
     if (callback(node)) {
         return node
@@ -19,34 +20,38 @@ function findNode(node : AbstractTreeNode, callback : (node : AbstractTreeNode) 
     }
 }
 
-
 function TextEditor(properties: TextEditor.Attributes) {
 
     const {ref} = properties
 
     const [ast, setAst] = useState(() => {
         return {
-            root : new RootTreeNode([new ParagraphTreeNode([new TextTreeNode("")])])
+            root: new RootTreeNode([new ParagraphTreeNode([new TextTreeNode("")])])
         }
     })
 
-    const [cursor, setCursor] = useState(() => {
+    const [cursor, setCursor] = useState<{ container: AbstractTreeNode, offset: number }>(() => {
         let pNode = ast.root.children[0] as ParagraphTreeNode
         let textNode = pNode.children[0]
         return {
-            container : textNode,
-            offset : 0
+            container: textNode,
+            offset: 0
         }
+    })
+
+    const [event, setEvent] = useState<{handled : boolean, instance : InputEvent}>({
+        handled : false,
+        instance : null
     })
 
     let inputRef = useRef<HTMLInputElement>(null);
 
     let cursorRef = useRef<HTMLDivElement>(null)
 
-    function onContentClick(event : React.MouseEvent) {
+    function onContentClick(event: React.MouseEvent) {
         let selection = window.getSelection();
 
-        if (selection && ! selection.isCollapsed) {
+        if (selection && !selection.isCollapsed) {
             return
         } else {
             let caretPosition = document.caretPositionFromPoint(event.clientX, event.clientY);
@@ -69,6 +74,14 @@ function TextEditor(properties: TextEditor.Attributes) {
 
     }
 
+    function onInput(e: React.FormEvent<HTMLInputElement>) {
+        let event = e.nativeEvent as InputEvent
+        setEvent({
+            handled : false,
+            instance : event
+        })
+    }
+
     useEffect(() => {
         let range = document.createRange();
 
@@ -78,7 +91,7 @@ function TextEditor(properties: TextEditor.Attributes) {
         if (startFirstChild instanceof HTMLBRElement && endFistChild instanceof HTMLBRElement) {
             range.selectNode(cursor.container.dom)
         } else {
-            range.setStart(startFirstChild , cursor.offset)
+            range.setStart(startFirstChild, cursor.offset)
             range.collapse(true)
         }
         let clientRect = range.getBoundingClientRect();
@@ -90,30 +103,9 @@ function TextEditor(properties: TextEditor.Attributes) {
         cursorRef.current.style.left = leftOffset + "px"
         cursorRef.current.style.top = topOffset + "px"
         cursorRef.current.style.height = clientRect.height + "px"
-    }, [ast]);
+    }, [cursor]);
 
     useEffect(() => {
-        inputRef.current.addEventListener("beforeinput", (event : InputEvent) => {
-
-            switch (event.inputType) {
-                case "insertCompositionText" :
-                case "insertText" : {
-
-                    let node = cursor.container as TextTreeNode
-
-                    let start = node.text.substring(0, cursor.offset)
-                    let end = node.text.substring(cursor.offset)
-
-                    node.text = start + event.data + end
-
-                    setAst({root: ast.root})
-                    setCursor({container: node, offset: cursor.offset += event.data.length})
-
-                } break
-            }
-
-        })
-
         inputRef.current.addEventListener("focus", () => {
             cursorRef.current.style.display = "block"
         })
@@ -121,22 +113,39 @@ function TextEditor(properties: TextEditor.Attributes) {
         inputRef.current.addEventListener("blur", () => {
             cursorRef.current.style.display = "none"
         })
+    }, [inputRef]);
 
-
-    }, []);
+    let value = {
+        ast: {
+            root: ast.root,
+            triggerAST() {
+                setAst({...ast})
+            }
+        },
+        cursor: {
+            container: cursor.container,
+            offset: cursor.offset,
+            triggerCursor(value : {container : AbstractTreeNode, offset : number}) {
+                setCursor(value)
+            }
+        },
+        event : event
+    };
 
     return (
-        <div ref={ref} style={{position : "relative"}} onClick={onContentClick}>
-            <Cursor ref={cursorRef}/>
-            <TextFactory node={ast.root}/>
-            <input ref={inputRef} type={"text"} style={{opacity : 0}}/>
+        <div ref={ref} style={{position: "relative"}} onClick={onContentClick}>
+            <EditorContext value={value}>
+                <Cursor ref={cursorRef}/>
+                <TextFactory node={ast.root}/>
+            </EditorContext>
+            <input ref={inputRef} onInput={onInput} type={"text"} style={{opacity: 0}}/>
         </div>
     )
 }
 
 namespace TextEditor {
     export interface Attributes {
-        ref : React.RefObject<HTMLDivElement>
+        ref: React.RefObject<HTMLDivElement>
     }
 }
 
