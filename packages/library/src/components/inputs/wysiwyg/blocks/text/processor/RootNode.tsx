@@ -47,11 +47,7 @@ function RootNode(properties: RootNode.Attributes) {
                             let indexOf = flattened.indexOf(current.container);
                             if (indexOf > 0) {
                                 current.container = flattened[indexOf - 1]
-                                if (current.container instanceof TextTreeNode) {
-                                    current.offset = current.container.text.length
-                                } else {
-                                    current.offset = 0
-                                }
+                                current.offset = 0
                             }
 
                             event.handled = true

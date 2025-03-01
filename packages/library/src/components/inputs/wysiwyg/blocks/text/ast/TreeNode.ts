@@ -1,5 +1,5 @@
 import {v4} from "uuid";
-import {flatten, flattenRight} from "./TreeNodes";
+import {flatten} from "./TreeNodes";
 
 export abstract class AbstractTreeNode {
     id : string = v4()
