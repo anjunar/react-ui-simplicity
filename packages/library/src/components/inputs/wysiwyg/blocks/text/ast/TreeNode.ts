@@ -1,5 +1,6 @@
 import {v4} from "uuid";
 import {flatten} from "./TreeNodes";
+import {node} from "webpack";
 
 export abstract class AbstractTreeNode {
     id : string = v4()
@@ -26,6 +27,8 @@ export abstract class AbstractTreeNode {
         return -1
     }
 
+    abstract get length() : number
+
 }
 
 export abstract class AbstractContainerTreeNode extends AbstractTreeNode {
@@ -50,6 +53,9 @@ export abstract class AbstractContainerTreeNode extends AbstractTreeNode {
         return this._children;
     }
 
+    get length(): number {
+        return this._children.length
+    }
 }
 
 export class RootTreeNode extends AbstractContainerTreeNode {
@@ -94,5 +100,11 @@ export class TextTreeNode extends AbstractTreeNode {
         super();
         this.text = text;
     }
+
+    get length(): number {
+        return this.text.length;
+    }
+
+
 }
 

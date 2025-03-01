@@ -39,15 +39,14 @@ function TextEditor(properties: TextEditor.Attributes) {
 
     const processQueue = useCallback(() => {
         if (eventQueue.current.length > 0) {
-            const lastEvent = eventQueue.current[eventQueue.current.length - 1];
+            const lastEvent = eventQueue.current.pop()
             setEvent({ handled: false, instance: lastEvent });
-            eventQueue.current = [];
         }
     }, []);
 
     useEffect(() => {
-        const interval = setInterval(processQueue, 50); // Batch alle 50ms
-        return () => clearInterval(interval);
+        const interval = setInterval(processQueue, 50)
+        return () => clearInterval(interval)
     }, [processQueue]);
 
     function onContentClick(event: React.MouseEvent) {
@@ -86,9 +85,8 @@ function TextEditor(properties: TextEditor.Attributes) {
         });
     }
 
-
     function onKeyDown(event: React.KeyboardEvent) {
-        const whiteList = ["ArrowLeft", "ArrowRight"]
+        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab"]
 
         if (whiteList.indexOf(event.key) > -1) {
             eventQueue.current.push({
@@ -157,7 +155,7 @@ function TextEditor(properties: TextEditor.Attributes) {
                 <Cursor ref={cursorRef}/>
                 <TextFactory node={ast.root}/>
             </EditorContext>
-            <textarea ref={inputRef} onKeyDown={onKeyDown} onInput={onInput} onFocus={onFocus} onBlur={onBlur} style={{opacity: 0}}/>
+            <textarea ref={inputRef} onKeyDown={onKeyDown} onInput={onInput} onFocus={onFocus} onBlur={onBlur} style={{position : "absolute", left : "-9999px", opacity: 0}}/>
         </div>
     )
 }

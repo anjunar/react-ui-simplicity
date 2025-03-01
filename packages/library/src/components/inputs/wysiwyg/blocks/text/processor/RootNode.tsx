@@ -3,6 +3,7 @@ import {ParagraphTreeNode, RootTreeNode, TextTreeNode} from "../ast/TreeNode";
 import TextFactory from "../TextFactory";
 import EditorContext from "../components/EditorContext";
 import DivNode from "./DivNode";
+import {onArrowLeft, onArrowRight} from "./Nodes";
 
 function RootNode(properties: RootNode.Attributes) {
 
@@ -43,12 +44,7 @@ function RootNode(properties: RootNode.Attributes) {
 
                     switch (e.data) {
                         case "ArrowLeft" : {
-                            let flattened = root.flatten
-                            let indexOf = flattened.indexOf(current.container);
-                            if (indexOf > 0) {
-                                current.container = flattened[indexOf - 1]
-                                current.offset = 0
-                            }
+                            onArrowLeft(root, current);
 
                             event.handled = true
 
@@ -56,12 +52,7 @@ function RootNode(properties: RootNode.Attributes) {
 
                         } break
                         case "ArrowRight" : {
-                            let flattened = root.flatten
-                            let indexOf = flattened.lastIndexOf(current.container);
-                            if (indexOf < flattened.length) {
-                                current.container = flattened[indexOf + 1]
-                                current.offset = 0
-                            }
+                            onArrowRight(root, current);
 
                             event.handled = true
 

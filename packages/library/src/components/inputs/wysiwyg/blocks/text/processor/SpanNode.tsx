@@ -1,7 +1,8 @@
 import React, {useContext, useEffect, useRef} from "react"
-import {ParagraphTreeNode, TextTreeNode} from "../ast/TreeNode";
-import EditorContext from "../components/EditorContext";
+import {AbstractTreeNode, ParagraphTreeNode, RootTreeNode, TextTreeNode} from "../ast/TreeNode";
+import EditorContext, {GeneralEvent} from "../components/EditorContext";
 import DivNode from "./DivNode";
+import {arrowDown, arrowUp, onArrowLeft, onArrowRight} from "./Nodes";
 
 function SpanNode(properties: SpanNode.Attributes) {
 
@@ -60,38 +61,31 @@ function SpanNode(properties: SpanNode.Attributes) {
                     switch (e.data) {
                         case "ArrowLeft" : {
                             if (current.offset === 0) {
-                                let flattened = root.flatten
-                                let indexOf = flattened.indexOf(current.container);
-                                if (indexOf > 0) {
-                                    current.container = flattened[indexOf - 1]
-                                    current.offset = 0
-                                }
+                                onArrowLeft(root, current);
                             } else {
                                 current.offset--
                             }
-
-                            event.handled = true
-
-                            triggerCursor()
-
                         } break
                         case "ArrowRight" : {
                             if (current.offset === node.text.length) {
-                                let flattened = root.flatten
-                                let indexOf = flattened.lastIndexOf(current.container);
-                                if (indexOf < flattened.length - 1) {
-                                    current.container = flattened[indexOf + 1]
-                                    current.offset = 1
-                                }
+                                onArrowRight(root, current);
                             } else {
                                 current.offset++
                             }
-
-                            event.handled = true
-
-                            triggerCursor()
-                        }
+                        } break
+                        case "ArrowUp" : {
+                            arrowUp(node, current)
+                        } break
+                        case "ArrowDown" : {
+                            arrowDown(node, current)
+                        } break
                     }
+
+
+                    event.handled = true
+
+                    triggerCursor()
+
 
                 } break
             }

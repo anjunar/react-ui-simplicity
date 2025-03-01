@@ -3,6 +3,7 @@ import {ParagraphTreeNode, TextTreeNode} from "../ast/TreeNode";
 import TextFactory from "../TextFactory";
 import EditorContext from "../components/EditorContext";
 import cursor from "../components/Cursor";
+import {onArrowLeft, onArrowRight} from "./Nodes";
 
 function DivNode(properties: DivNode.Attributes) {
 
@@ -46,16 +47,7 @@ function DivNode(properties: DivNode.Attributes) {
 
                     switch (e.data) {
                         case "ArrowLeft" : {
-                            let flattened = root.flatten
-                            let indexOf = flattened.indexOf(current.container);
-                            if (indexOf > 0) {
-                                current.container = flattened[indexOf - 1]
-                                if (current.container instanceof TextTreeNode) {
-                                    current.offset = current.container.text.length
-                                } else {
-                                    current.offset = 0
-                                }
-                            }
+                            onArrowLeft(root, current);
 
                             event.handled = true
 
@@ -63,12 +55,7 @@ function DivNode(properties: DivNode.Attributes) {
 
                         } break
                         case "ArrowRight" : {
-                            let flattened = root.flatten
-                            let indexOf = flattened.lastIndexOf(current.container);
-                            if (indexOf < flattened.length) {
-                                current.container = flattened[indexOf + 1]
-                                current.offset = 0
-                            }
+                            onArrowRight(root, current);
 
                             event.handled = true
 
@@ -87,6 +74,7 @@ function DivNode(properties: DivNode.Attributes) {
 
     return (
         <div ref={divRef}>
+            {node.children.length === 0 ? <br/> : ""}
             {
                 node.children.map(node => <TextFactory key={node.id} node={node}/>)
             }
