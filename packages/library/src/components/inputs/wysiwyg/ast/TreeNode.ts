@@ -30,7 +30,9 @@ export abstract class AbstractTreeNode {
     abstract get length() : number
 
     remove() {
-        return this.parent.removeChild(this)
+        if (this.parent) {
+            return this.parent.removeChild(this)
+        }
     }
 
 }
@@ -40,7 +42,10 @@ export abstract class AbstractContainerTreeNode extends AbstractTreeNode {
 
     constructor(children: AbstractTreeNode[]) {
         super();
-        children.forEach(child => this.appendChild(child))
+        children.forEach(child => {
+            child.remove()
+            this.appendChild(child)
+        })
     }
 
     appendChild(node: AbstractTreeNode) {

@@ -8,6 +8,8 @@ import Toolbar from "./components/Toolbar";
 
 function Editor(properties: Editor.Attributes) {
 
+    const {style} = properties
+
     const [astState, setAstState] = useState(() => {
         return {
             root: new RootTreeNode([new ParagraphTreeNode([])])
@@ -212,7 +214,7 @@ function Editor(properties: Editor.Attributes) {
     };
 
     return (
-        <div ref={ref} style={{position: "relative"}} onClick={onContentClick}>
+        <div ref={ref} style={{position: "relative", ...style}} onClick={onContentClick}>
             <EditorContext value={value}>
                 <Toolbar/>
                 <Cursor ref={cursorRef}/>
@@ -225,6 +227,7 @@ function Editor(properties: Editor.Attributes) {
 
 namespace Editor {
     export interface Attributes {
+        style?: React.CSSProperties,
     }
 }
 

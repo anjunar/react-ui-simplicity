@@ -26,9 +26,20 @@ function partial(currentSelection: { startContainer: AbstractTreeNode; startOffs
     let middleText = splitIntoText(container, currentSelection.startOffset, currentSelection.endOffset);
     let endText = splitIntoText(container, currentSelection.endOffset);
 
-    container.parent.appendChild(startText)
-    container.parent.appendChild(middleText)
-    container.parent.appendChild(endText)
+    let parentIndex = currentSelection.startContainer.parentIndex;
+
+    if (endText) {
+        container.parent.insertChild(parentIndex, endText)
+    }
+
+    if (middleText) {
+        container.parent.insertChild(parentIndex, middleText)
+    }
+
+    if (startText) {
+        container.parent.insertChild(parentIndex, startText)
+    }
+
 
     container.remove()
 
@@ -49,17 +60,19 @@ function over(currentSelection: { startContainer: AbstractTreeNode; startOffset:
     let preEnd = splitIntoText(endContainer as TextTreeNode, 0, currentSelection.endOffset)
     let postEnd = splitIntoText(endContainer as TextTreeNode, currentSelection.endOffset)
 
-    if (preBegin) {
-        startContainer.parent.insertChild(startContainer.parentIndex, preBegin)
-    }
+    let startIndex = startContainer.parentIndex;
     if (postBegin) {
-        startContainer.parent.insertChild(startContainer.parentIndex + 1, postBegin)
+        startContainer.parent.insertChild(startIndex, postBegin)
+    }
+    if (preBegin) {
+        startContainer.parent.insertChild(startIndex, preBegin)
+    }
+    let endIndex = endContainer.parentIndex;
+    if (postEnd) {
+        endContainer.parent.insertChild(endIndex, postEnd)
     }
     if (preEnd) {
-        endContainer.parent.insertChild(endContainer.parentIndex, preEnd)
-    }
-    if (postEnd) {
-        endContainer.parent.insertChild(endContainer.parentIndex + 1, postEnd)
+        endContainer.parent.insertChild(endIndex, preEnd)
     }
 
     startContainer.remove()
@@ -71,7 +84,7 @@ function over(currentSelection: { startContainer: AbstractTreeNode; startOffset:
     currentSelection.endOffset = preEnd.text.length
 
     let flattened = root.flatten
-    return flattened.slice(flattened.indexOf(postBegin), flattened.indexOf(postEnd))
+    return flattened.slice(flattened.indexOf(postBegin), flattened.indexOf(postEnd || preEnd))
 }
 
 function Toolbar(properties: Toolbar.Attributes) {

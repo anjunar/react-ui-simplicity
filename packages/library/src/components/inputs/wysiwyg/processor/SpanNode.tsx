@@ -17,20 +17,23 @@ const deleteContentBackward =  {
 
         } else if (node.parent && node.parent.parent) {
             let parent = node.parent;
-            let grandParent = parent.parent;
             let index = parent.parentIndex;
 
             if (index > 0) {
-                let sibling = grandParent.children[index - 1] as ParagraphTreeNode;
-                let lastTextNode = sibling.children[sibling.children.length - 1] as TextTreeNode;
+                let sibling = parent.prevSibling as ParagraphTreeNode;
 
-                lastTextNode.text += node.text;
+                let lastNode = sibling.children[sibling.length - 1] as TextTreeNode;
+                let lastNodeLength = lastNode.text.length;
+                lastNode.text += node.text;
+
+                parent.children
+                    .slice(node.parentIndex + 1)
+                    .forEach(node => sibling.appendChild(node))
 
                 parent.remove()
 
-                current.container = lastTextNode;
-                current.offset = lastTextNode.text.length;
-
+                current.container = lastNode;
+                current.offset = lastNodeLength;
             }
         }
     }
@@ -63,10 +66,17 @@ const insertLineBreak =  {
         const textAfter = node.text.substring(current.offset);
 
         const newTextNode = new TextTreeNode(textAfter);
+        newTextNode.bold = node.bold;
+        newTextNode.italic = node.italic;
+        newTextNode.deleted = node.deleted;
+        newTextNode.sub = node.sub;
+        newTextNode.sup = node.sup;
+
+        let treeNodes = parent.children.slice(node.parentIndex + 1);
 
         node.text = textBefore;
 
-        const newDivNode = new ParagraphTreeNode([newTextNode]);
+        const newDivNode = new ParagraphTreeNode([newTextNode, ...treeNodes]);
 
         grandParent.insertChild(index + 1, newDivNode);
 
@@ -138,6 +148,7 @@ const deleteKey = {
                 let sibling = grandParent.children[index + 1] as ParagraphTreeNode;
                 let firstTextNode = sibling.children[0] as TextTreeNode;
 
+                let nodeLength = node.text.length;
                 node.text += firstTextNode.text;
 
                 sibling.removeChild(firstTextNode);
@@ -147,7 +158,7 @@ const deleteKey = {
                 }
 
                 current.container = node;
-                current.offset = node.text.length;
+                current.offset = nodeLength;
             }
         }
     }

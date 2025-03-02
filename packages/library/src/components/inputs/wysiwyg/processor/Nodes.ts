@@ -28,11 +28,15 @@ export function onArrowUp(node: TextTreeNode, current: { container: AbstractTree
         let grandParent = parent.parent;
         if (grandParent) {
             const parentIndex = parent.parentIndex;
-            if (parentIndex > 0) {
+            if (parentIndex > -1) {
                 const siblingAbove = grandParent.children[parentIndex - 1];
                 if (siblingAbove instanceof AbstractContainerTreeNode) {
 
-                    let remainingOffset = current.offset;
+                    let remainingOffset = parent
+                        .children
+                        .slice(0, node.parentIndex)
+                        .reduce((acc, child) => acc + child.length, 0) + current.offset;
+
                     for (const child of siblingAbove.children) {
                         const textLength = child.length;
 
@@ -66,7 +70,11 @@ export function onArrowDown(node: TextTreeNode, current: { container: AbstractTr
                 const siblingBelow = grandParent.children[parentIndex + 1];
                 if (siblingBelow instanceof AbstractContainerTreeNode) {
 
-                    let remainingOffset = current.offset;
+                    let remainingOffset = parent
+                        .children
+                        .slice(0, node.parentIndex)
+                        .reduce((acc, child) => acc + child.length, 0) + current.offset;
+
                     for (const child of siblingBelow.children) {
                         const textLength = child.length;
 
