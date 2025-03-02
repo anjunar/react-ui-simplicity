@@ -1,5 +1,5 @@
 import React from "react"
-import {AbstractTreeNode, RootTreeNode} from "../ast/TreeNode";
+import {AbstractNode, RootNode} from "../ast/TreeNode";
 
 export interface GeneralEvent {
     type : string
@@ -8,21 +8,21 @@ export interface GeneralEvent {
 
 export interface Context {
     ast: {
-        root : RootTreeNode,
+        root : RootNode,
         triggerAST() : void
     }
     cursor: {
         currentCursor : {
-            container: AbstractTreeNode,
+            container: AbstractNode,
             offset: number
         }
         triggerCursor() : void
     },
     selection : {
         currentSelection : {
-            startContainer: AbstractTreeNode,
+            startContainer: AbstractNode,
             startOffset: number,
-            endContainer: AbstractTreeNode,
+            endContainer: AbstractNode,
             endOffset: number,
         },
         triggerSelection() : void

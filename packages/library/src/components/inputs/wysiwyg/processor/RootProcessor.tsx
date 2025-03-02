@@ -1,11 +1,11 @@
 import React, {useContext, useEffect, useRef} from "react"
-import {ParagraphTreeNode, RootTreeNode, TextTreeNode} from "../ast/TreeNode";
+import {ParagraphNode, RootNode, TextNode} from "../ast/TreeNode";
 import EditorFactory from "./EditorFactory";
 import EditorContext from "../components/EditorContext";
-import DivNode from "./DivNode";
-import {onArrowLeft, onArrowRight} from "./Nodes";
+import DivProcessor from "./DivProcessor";
+import {onArrowLeft, onArrowRight} from "./Processors";
 
-function RootNode(properties: RootNode.Attributes) {
+function RootProcessor(properties: RootNode.Attributes) {
 
     const {node} = properties
 
@@ -17,15 +17,15 @@ function RootNode(properties: RootNode.Attributes) {
 
         if (event.instance && node === currentCursor.container && ! event.handled) {
             let e = event.instance
-            let node = currentCursor.container as ParagraphTreeNode
+            let node = currentCursor.container as ParagraphNode
 
             switch (e.type) {
                 case "insertCompositionText" :
                 case "insertText" : {
 
                     if (node.children.length === 0) {
-                        let textNode = new TextTreeNode(e.data)
-                        let paragraphNode = new ParagraphTreeNode([textNode])
+                        let textNode = new TextNode(e.data)
+                        let paragraphNode = new ParagraphNode([textNode])
                         node.appendChild(paragraphNode)
 
                         currentCursor.container = textNode
@@ -82,8 +82,8 @@ function RootNode(properties: RootNode.Attributes) {
 
 namespace RootNode {
     export interface Attributes {
-        node: RootTreeNode
+        node: RootNode
     }
 }
 
-export default RootNode
+export default RootProcessor

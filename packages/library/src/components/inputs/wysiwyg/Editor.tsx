@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from "react"
 import EditorFactory from "./processor/EditorFactory";
 import Cursor from "./components/Cursor";
-import {AbstractTreeNode, ParagraphTreeNode, RootTreeNode} from "./ast/TreeNode";
+import {AbstractNode, ParagraphNode, RootNode} from "./ast/TreeNode";
 import EditorContext, {GeneralEvent} from "./components/EditorContext";
 import {findNode} from "./ast/TreeNodes";
 import Toolbar from "./components/Toolbar";
@@ -12,11 +12,11 @@ function Editor(properties: Editor.Attributes) {
 
     const [astState, setAstState] = useState(() => {
         return {
-            root: new RootTreeNode([new ParagraphTreeNode([])])
+            root: new RootNode([new ParagraphNode([])])
         }
     })
 
-    const [cursorState, setCursorState] = useState<{ currentCursor: { container: AbstractTreeNode, offset: number } }>(() => {
+    const [cursorState, setCursorState] = useState<{ currentCursor: { container: AbstractNode, offset: number } }>(() => {
         return {
             currentCursor: null
         }
@@ -24,9 +24,9 @@ function Editor(properties: Editor.Attributes) {
 
     const [selectionState, setSelectionState] = useState<{
         currentSelection: {
-            startContainer: AbstractTreeNode,
+            startContainer: AbstractNode,
             startOffset: number,
-            endContainer: AbstractTreeNode,
+            endContainer: AbstractNode,
             endOffset: number
         }
     }>(() => {
@@ -68,7 +68,7 @@ function Editor(properties: Editor.Attributes) {
         } else {
             let caretPosition = document.caretPositionFromPoint(event.clientX, event.clientY);
 
-            let selectedNode: AbstractTreeNode;
+            let selectedNode: AbstractNode;
             if (caretPosition.offsetNode instanceof HTMLElement) {
                 selectedNode = findNode(astState.root, (node) => node.dom === caretPosition.offsetNode);
             } else {

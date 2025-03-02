@@ -1,20 +1,19 @@
 import {v4} from "uuid";
 import {flatten} from "./TreeNodes";
-import {node} from "webpack";
 
-export abstract class AbstractTreeNode {
+export abstract class AbstractNode {
     id : string = v4()
     abstract type : string
     dom : HTMLElement
-    parent: AbstractContainerTreeNode;
+    parent: AbstractContainerNode;
 
-    get nextSibling(): AbstractTreeNode {
+    get nextSibling(): AbstractNode {
         if (!this.parent) return null;
         const index = this.parent.children.indexOf(this);
         return index >= 0 && index < this.parent.children.length - 1 ? this.parent.children[index + 1] : null;
     }
 
-    get prevSibling(): AbstractTreeNode {
+    get prevSibling(): AbstractNode {
         if (!this.parent) return null;
         const index = this.parent.children.indexOf(this);
         return index > 0 ? this.parent.children[index - 1] : null;
@@ -27,8 +26,6 @@ export abstract class AbstractTreeNode {
         return -1
     }
 
-    abstract get length() : number
-
     remove() {
         if (this.parent) {
             return this.parent.removeChild(this)
@@ -37,23 +34,23 @@ export abstract class AbstractTreeNode {
 
 }
 
-export abstract class AbstractContainerTreeNode extends AbstractTreeNode {
-    private readonly _children : AbstractTreeNode[] = []
+export abstract class AbstractContainerNode extends AbstractNode {
+    private readonly _children : AbstractNode[] = []
 
-    protected constructor(children: AbstractTreeNode[]) {
+    protected constructor(children: AbstractNode[]) {
         super();
         children.forEach(child => {
             this.appendChild(child)
         })
     }
 
-    appendChild(node: AbstractTreeNode) {
+    appendChild(node: AbstractNode) {
         node.remove()
         node.parent = this;
         this._children.push(node);
     }
 
-    removeChild(node: AbstractTreeNode) {
+    removeChild(node: AbstractNode) {
         node.parent = null;
         const index = this._children.indexOf(node)
         if (index >= 0) {
@@ -61,44 +58,51 @@ export abstract class AbstractContainerTreeNode extends AbstractTreeNode {
         }
     }
 
-    insertChild(index: number, node: AbstractTreeNode) {
+    insertChild(index: number, node: AbstractNode) {
         node.remove()
         node.parent = this
         this._children.splice(index, 0, node)
     }
 
-    get children(): ReadonlyArray<AbstractTreeNode> {
+    get children(): ReadonlyArray<AbstractNode> {
         return this._children;
     }
 
-    get length(): number {
-        return this._children.length
-    }
 }
 
-export class RootTreeNode extends AbstractContainerTreeNode {
+export class RootNode extends AbstractContainerNode {
     readonly type: string = "root"
 
-    constructor(children: AbstractTreeNode[] = []) {
+    constructor(children: AbstractNode[] = []) {
         super(children);
     }
 
-    get flatten() : AbstractTreeNode[] {
+    get flatten() : AbstractNode[] {
         return flatten(this)
     }
 
 }
 
-
-export class ParagraphTreeNode extends AbstractContainerTreeNode {
+export class ParagraphNode extends AbstractContainerNode {
     readonly type: string = "p"
 
-    constructor(children: AbstractTreeNode[]= []) {
+    constructor(children: AbstractNode[]= []) {
         super(children);
     }
 }
 
-export class TextTreeNode extends AbstractTreeNode {
+export class BoldNode extends AbstractContainerNode {
+    readonly type: string = "bold"
+
+
+    constructor(children: AbstractNode[] = []) {
+        super(children);
+    }
+}
+
+
+
+export class TextNode extends AbstractNode {
 
     readonly type: string = "text"
 
@@ -118,11 +122,6 @@ export class TextTreeNode extends AbstractTreeNode {
         super();
         this.text = text;
     }
-
-    get length(): number {
-        return this.text.length;
-    }
-
 
 }
 

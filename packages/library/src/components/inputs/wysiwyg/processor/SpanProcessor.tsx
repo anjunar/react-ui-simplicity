@@ -1,13 +1,13 @@
 import React, {useContext, useEffect, useRef} from "react"
-import {AbstractTreeNode, ParagraphTreeNode, RootTreeNode, TextTreeNode} from "../ast/TreeNode";
+import {AbstractNode, ParagraphNode, RootNode, TextNode} from "../ast/TreeNode";
 import EditorContext, {GeneralEvent} from "../components/EditorContext";
-import {onArrowDown, onArrowLeft, onArrowRight, onArrowUp} from "./Nodes";
+import {onArrowDown, onArrowLeft, onArrowRight, onArrowUp} from "./Processors";
 
 const deleteContentBackward =  {
     test(value : GeneralEvent) : boolean {
         return value.type === "deleteContentBackward"
     },
-    process(current: { container: AbstractTreeNode; offset: number }, node: TextTreeNode, e: GeneralEvent, root: RootTreeNode) {
+    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
         if (current.offset > 0) {
             let start = node.text.substring(0, current.offset - 1);
             let end = node.text.substring(current.offset);
@@ -20,9 +20,9 @@ const deleteContentBackward =  {
             let index = parent.parentIndex;
 
             if (index > 0) {
-                let sibling = parent.prevSibling as ParagraphTreeNode;
+                let sibling = parent.prevSibling as ParagraphNode;
 
-                let lastNode = sibling.children[sibling.length - 1] as TextTreeNode;
+                let lastNode = sibling.children[sibling.children.length - 1] as TextNode;
                 let lastNodeLength = lastNode.text.length;
                 lastNode.text += node.text;
 
@@ -43,7 +43,7 @@ const insertText =  {
     test(value : GeneralEvent) : boolean {
         return value.type === "insertText" || value.type === "insertCompositionText"
     },
-    process(current: { container: AbstractTreeNode; offset: number }, node: TextTreeNode, e: GeneralEvent, root: RootTreeNode) {
+    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
         let start = node.text.substring(0, current.offset)
         let end = node.text.substring(current.offset)
 
@@ -56,7 +56,7 @@ const insertLineBreak =  {
     test(value : GeneralEvent) : boolean {
         return value.type === "insertLineBreak"
     },
-    process(current: { container: AbstractTreeNode; offset: number }, node: TextTreeNode, e: GeneralEvent, root: RootTreeNode) {
+    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
         const parent = node.parent;
         const grandParent = parent.parent;
 
@@ -70,13 +70,13 @@ const insertLineBreak =  {
         node.text = textBefore;
 
         if (textAfter || treeNodes.length === 0) {
-            const newTextNode = new TextTreeNode(textAfter);
+            const newTextNode = new TextNode(textAfter);
             newTextNode.bold = node.bold;
             newTextNode.italic = node.italic;
             newTextNode.deleted = node.deleted;
             newTextNode.sub = node.sub;
             newTextNode.sup = node.sup;
-            const newDivNode = new ParagraphTreeNode([newTextNode, ...treeNodes]);
+            const newDivNode = new ParagraphNode([newTextNode, ...treeNodes]);
 
             grandParent.insertChild(index + 1, newDivNode);
 
@@ -84,7 +84,7 @@ const insertLineBreak =  {
             current.offset = 0;
 
         } else {
-            const newDivNode = new ParagraphTreeNode(treeNodes);
+            const newDivNode = new ParagraphNode(treeNodes);
 
             grandParent.insertChild(index + 1, newDivNode);
 
@@ -101,7 +101,7 @@ const arrowLeft = {
     test(value : GeneralEvent) {
         return value.data === "ArrowLeft" && value.type === "keydown"
     },
-    process(current: { container: AbstractTreeNode; offset: number }, node: TextTreeNode, e: GeneralEvent, root: RootTreeNode) {
+    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
         if (current.offset === 0) {
             onArrowLeft(root, current);
         } else {
@@ -114,7 +114,7 @@ const arrowRight = {
     test(value : GeneralEvent) {
         return value.data === "ArrowRight" && value.type === "keydown"
     },
-    process(current: { container: AbstractTreeNode; offset: number }, node: TextTreeNode, e: GeneralEvent, root: RootTreeNode) {
+    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
         if (current.offset === node.text.length) {
             onArrowRight(root, current);
         } else {
@@ -127,7 +127,7 @@ const arrowUp = {
     test(value : GeneralEvent) {
         return value.data === "ArrowUp" && value.type === "keydown"
     },
-    process(current: { container: AbstractTreeNode; offset: number }, node: TextTreeNode, e: GeneralEvent, root: RootTreeNode) {
+    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
         onArrowUp(node, current)
     }
 }
@@ -136,7 +136,7 @@ const arrowDown = {
     test(value : GeneralEvent) {
         return value.data === "ArrowDown" && value.type === "keydown"
     },
-    process(current: { container: AbstractTreeNode; offset: number }, node: TextTreeNode, e: GeneralEvent, root: RootTreeNode) {
+    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
         onArrowDown(node, current)
     }
 }
@@ -145,7 +145,7 @@ const deleteKey = {
     test(value : GeneralEvent) {
         return value.data === "Delete" && value.type === "keydown"
     },
-    process(current: { container: AbstractTreeNode; offset: number }, node: TextTreeNode, e: GeneralEvent, root: RootTreeNode) {
+    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
         if (current.offset < node.text.length) {
             let start = node.text.substring(0, current.offset);
             let end = node.text.substring(current.offset + 1);
@@ -157,8 +157,8 @@ const deleteKey = {
             let index = parent.parentIndex;
 
             if (index < grandParent.children.length - 1) {
-                let sibling = parent.nextSibling as ParagraphTreeNode;
-                let firstTextNode = sibling.children[0] as TextTreeNode;
+                let sibling = parent.nextSibling as ParagraphNode;
+                let firstTextNode = sibling.children[0] as TextNode;
 
                 let nodeLength = node.text.length;
                 node.text += firstTextNode.text;
@@ -191,7 +191,7 @@ const registry = [
     deleteKey
 ]
 
-function SpanNode(properties: SpanNode.Attributes) {
+function SpanProcessor(properties: SpanNode.Attributes) {
 
     const {node} = properties
 
@@ -228,8 +228,8 @@ function SpanNode(properties: SpanNode.Attributes) {
 
 namespace SpanNode {
     export interface Attributes {
-        node : TextTreeNode
+        node : TextNode
     }
 }
 
-export default SpanNode
+export default SpanProcessor

@@ -1,12 +1,12 @@
 import "./Toolbar.css"
 import React, {useContext} from "react"
 import EditorContext from "./EditorContext";
-import {AbstractTreeNode, RootTreeNode, TextTreeNode} from "../ast/TreeNode";
+import {AbstractNode, RootNode, TextNode} from "../ast/TreeNode";
 
-function splitIntoText(container: TextTreeNode, startOffset : number = 0, endOffset : number = container.text.length) {
+function splitIntoText(container: TextNode, startOffset : number = 0, endOffset : number = container.text.length) {
     let {bold, italic, deleted, sup, sub} = container
     let start = container.text.substring(startOffset, endOffset);
-    let textNode = new TextTreeNode(start);
+    let textNode = new TextNode(start);
     textNode.bold = bold;
     textNode.italic = italic;
     textNode.deleted = deleted;
@@ -20,8 +20,8 @@ function splitIntoText(container: TextTreeNode, startOffset : number = 0, endOff
     return null
 }
 
-function partial(currentSelection: { startContainer: AbstractTreeNode; startOffset: number; endContainer: AbstractTreeNode; endOffset: number }) {
-    let container = currentSelection.startContainer as TextTreeNode;
+function partial(currentSelection: { startContainer: AbstractNode; startOffset: number; endContainer: AbstractNode; endOffset: number }) {
+    let container = currentSelection.startContainer as TextNode;
 
     let startText = splitIntoText(container, 0, currentSelection.startOffset);
     let middleText = splitIntoText(container, currentSelection.startOffset, currentSelection.endOffset);
@@ -52,14 +52,14 @@ function partial(currentSelection: { startContainer: AbstractTreeNode; startOffs
     return middleText
 }
 
-function over(currentSelection: { startContainer: AbstractTreeNode; startOffset: number; endContainer: AbstractTreeNode; endOffset: number }, root: RootTreeNode) {
+function over(currentSelection: { startContainer: AbstractNode; startOffset: number; endContainer: AbstractNode; endOffset: number }, root: RootNode) {
     let startContainer = currentSelection.startContainer;
     let endContainer = currentSelection.endContainer;
 
-    let preBegin = splitIntoText(startContainer as TextTreeNode, 0, currentSelection.startOffset)
-    let postBegin = splitIntoText(startContainer as TextTreeNode, currentSelection.startOffset)
-    let preEnd = splitIntoText(endContainer as TextTreeNode, 0, currentSelection.endOffset)
-    let postEnd = splitIntoText(endContainer as TextTreeNode, currentSelection.endOffset)
+    let preBegin = splitIntoText(startContainer as TextNode, 0, currentSelection.startOffset)
+    let postBegin = splitIntoText(startContainer as TextNode, currentSelection.startOffset)
+    let preEnd = splitIntoText(endContainer as TextNode, 0, currentSelection.endOffset)
+    let postEnd = splitIntoText(endContainer as TextNode, currentSelection.endOffset)
 
     let startIndex = startContainer.parentIndex;
     if (postBegin) {
@@ -100,7 +100,7 @@ function Toolbar(properties: Toolbar.Attributes) {
             if (currentSelection.startContainer === currentSelection.endContainer) {
                 let container = currentSelection.startContainer;
 
-                if (container instanceof TextTreeNode) {
+                if (container instanceof TextNode) {
                     let textNode = partial(currentSelection);
                     textNode.bold = true;
                 }
@@ -108,7 +108,7 @@ function Toolbar(properties: Toolbar.Attributes) {
                 let nodes = over(currentSelection, root);
 
                 for (const node of nodes) {
-                    if (node instanceof TextTreeNode) {
+                    if (node instanceof TextNode) {
                         node.bold = true;
                     }
                 }
@@ -118,7 +118,7 @@ function Toolbar(properties: Toolbar.Attributes) {
             triggerSelection()
 
         } else {
-            if (currentCursor && currentCursor.container instanceof TextTreeNode) {
+            if (currentCursor && currentCursor.container instanceof TextNode) {
                 currentCursor.container.bold = ! currentCursor.container.bold
             }
         }

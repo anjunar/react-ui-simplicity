@@ -1,24 +1,24 @@
 import React from "react"
-import {AbstractTreeNode, ParagraphTreeNode, RootTreeNode, TextTreeNode} from "../ast/TreeNode";
-import SpanNode from "./SpanNode";
-import DivNode from "./DivNode";
-import RootNode from "./RootNode";
+import {AbstractNode, ParagraphNode, RootNode, TextNode} from "../ast/TreeNode";
+import SpanProcessor from "./SpanProcessor";
+import DivProcessor from "./DivProcessor";
+import RootProcessor from "./RootProcessor";
 
 function EditorFactory(properties: TextFactory.Attributes) {
 
     const {node} = properties
 
     switch (node.type) {
-        case "text" : return <SpanNode node={node as TextTreeNode}/>
-        case "p" : return <DivNode node={node as ParagraphTreeNode}/>
-        case "root" : return <RootNode node={node as RootTreeNode}/>
+        case "text" : return <SpanProcessor node={node as TextNode}/>
+        case "p" : return <DivProcessor node={node as ParagraphNode}/>
+        case "root" : return <RootProcessor node={node as RootNode}/>
     }
 
 }
 
 namespace TextFactory {
     export interface Attributes {
-        node : AbstractTreeNode
+        node : AbstractNode
     }
 }
 

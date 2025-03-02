@@ -1,11 +1,11 @@
 import React, {useContext, useEffect, useRef} from "react"
-import {ParagraphTreeNode, TextTreeNode} from "../ast/TreeNode";
+import {ParagraphNode, TextNode} from "../ast/TreeNode";
 import EditorFactory from "./EditorFactory";
 import EditorContext from "../components/EditorContext";
 import cursor from "../components/Cursor";
-import {onArrowLeft, onArrowRight} from "./Nodes";
+import {onArrowLeft, onArrowRight} from "./Processors";
 
-function DivNode(properties: DivNode.Attributes) {
+function DivProcessor(properties: DivNode.Attributes) {
 
     const {node} = properties
 
@@ -21,14 +21,14 @@ function DivNode(properties: DivNode.Attributes) {
 
         if (event.instance && node === currentCursor.container && ! event.handled) {
             let e = event.instance
-            let node = currentCursor.container as ParagraphTreeNode
+            let node = currentCursor.container as ParagraphNode
 
             switch (e.type) {
                 case "insertCompositionText" :
                 case "insertText" : {
 
                     if (node.children.length === 0) {
-                        let textNode = new TextTreeNode(e.data)
+                        let textNode = new TextNode(e.data)
                         node.appendChild(textNode)
 
                         currentCursor.container = textNode
@@ -84,8 +84,8 @@ function DivNode(properties: DivNode.Attributes) {
 
 namespace DivNode {
     export interface Attributes {
-        node : ParagraphTreeNode
+        node : ParagraphNode
     }
 }
 
-export default DivNode
+export default DivProcessor
