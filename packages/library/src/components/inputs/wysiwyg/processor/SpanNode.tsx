@@ -65,23 +65,35 @@ const insertLineBreak =  {
         const textBefore = node.text.substring(0, current.offset);
         const textAfter = node.text.substring(current.offset);
 
-        const newTextNode = new TextTreeNode(textAfter);
-        newTextNode.bold = node.bold;
-        newTextNode.italic = node.italic;
-        newTextNode.deleted = node.deleted;
-        newTextNode.sub = node.sub;
-        newTextNode.sup = node.sup;
 
         let treeNodes = parent.children.slice(node.parentIndex + 1);
-
         node.text = textBefore;
 
-        const newDivNode = new ParagraphTreeNode([newTextNode, ...treeNodes]);
+        if (textAfter || treeNodes.length === 0) {
+            const newTextNode = new TextTreeNode(textAfter);
+            newTextNode.bold = node.bold;
+            newTextNode.italic = node.italic;
+            newTextNode.deleted = node.deleted;
+            newTextNode.sub = node.sub;
+            newTextNode.sup = node.sup;
+            const newDivNode = new ParagraphTreeNode([newTextNode, ...treeNodes]);
 
-        grandParent.insertChild(index + 1, newDivNode);
+            grandParent.insertChild(index + 1, newDivNode);
 
-        current.container = newTextNode;
-        current.offset = 0;
+            current.container = newTextNode;
+            current.offset = 0;
+
+        } else {
+            const newDivNode = new ParagraphTreeNode(treeNodes);
+
+            grandParent.insertChild(index + 1, newDivNode);
+
+            current.container = treeNodes[0];
+            current.offset = 0;
+        }
+
+
+
     }
 }
 
@@ -145,13 +157,17 @@ const deleteKey = {
             let index = parent.parentIndex;
 
             if (index < grandParent.children.length - 1) {
-                let sibling = grandParent.children[index + 1] as ParagraphTreeNode;
+                let sibling = parent.nextSibling as ParagraphTreeNode;
                 let firstTextNode = sibling.children[0] as TextTreeNode;
 
                 let nodeLength = node.text.length;
                 node.text += firstTextNode.text;
 
                 sibling.removeChild(firstTextNode);
+
+                for (const child of Array.from(sibling.children)) {
+                    parent.appendChild(child);
+                }
 
                 if (sibling.children.length === 0) {
                     sibling.remove();

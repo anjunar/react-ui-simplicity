@@ -40,15 +40,15 @@ export abstract class AbstractTreeNode {
 export abstract class AbstractContainerTreeNode extends AbstractTreeNode {
     private readonly _children : AbstractTreeNode[] = []
 
-    constructor(children: AbstractTreeNode[]) {
+    protected constructor(children: AbstractTreeNode[]) {
         super();
         children.forEach(child => {
-            child.remove()
             this.appendChild(child)
         })
     }
 
     appendChild(node: AbstractTreeNode) {
+        node.remove()
         node.parent = this;
         this._children.push(node);
     }
@@ -62,6 +62,7 @@ export abstract class AbstractContainerTreeNode extends AbstractTreeNode {
     }
 
     insertChild(index: number, node: AbstractTreeNode) {
+        node.remove()
         node.parent = this
         this._children.splice(index, 0, node)
     }
