@@ -6,7 +6,7 @@ function Cursor(properties: Cursor.Attributes) {
 
     const {ref} = properties
 
-    const {cursor : {current : {container}}} = useContext(EditorContext)
+    const {cursor : {currentCursor : {container}}} = useContext(EditorContext)
 
     const style : CSSProperties = {position : "absolute", top : "24px", backgroundColor : "var(--color-background-primary)"};
 

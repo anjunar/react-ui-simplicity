@@ -1,5 +1,4 @@
-import {AbstractContainerTreeNode, AbstractTreeNode, ParagraphTreeNode, RootTreeNode, TextTreeNode} from "../ast/TreeNode";
-import {GeneralEvent} from "../components/EditorContext";
+import {AbstractContainerTreeNode, AbstractTreeNode, RootTreeNode, TextTreeNode} from "../ast/TreeNode";
 
 export function onArrowLeft(root: RootTreeNode, current: { container: AbstractTreeNode; offset: number }) {
     let flattened = root.flatten
@@ -23,7 +22,7 @@ export function onArrowRight(root: RootTreeNode, current: { container: AbstractT
     }
 }
 
-export function arrowUp(node: TextTreeNode, current: { container: AbstractTreeNode; offset: number }) {
+export function onArrowUp(node: TextTreeNode, current: { container: AbstractTreeNode; offset: number }) {
     let parent = node.parent;
     if (parent) {
         let grandParent = parent.parent;
@@ -57,7 +56,7 @@ export function arrowUp(node: TextTreeNode, current: { container: AbstractTreeNo
     }
 }
 
-export function arrowDown(node: TextTreeNode, current: { container: AbstractTreeNode; offset: number }) {
+export function onArrowDown(node: TextTreeNode, current: { container: AbstractTreeNode; offset: number }) {
     let parent = node.parent;
     if (parent) {
         let grandParent = parent.parent;

@@ -9,15 +9,15 @@ function RootNode(properties: RootNode.Attributes) {
 
     const {node} = properties
 
-    const {ast : {root, triggerAST}, cursor : {current, triggerCursor}, event} = useContext(EditorContext)
+    const {ast : {root, triggerAST}, cursor : {currentCursor, triggerCursor}, event} = useContext(EditorContext)
 
     const divRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
 
-        if (event.instance && node === current.container && ! event.handled) {
+        if (event.instance && node === currentCursor.container && ! event.handled) {
             let e = event.instance
-            let node = current.container as ParagraphTreeNode
+            let node = currentCursor.container as ParagraphTreeNode
 
             switch (e.type) {
                 case "insertCompositionText" :
@@ -28,8 +28,8 @@ function RootNode(properties: RootNode.Attributes) {
                         let paragraphNode = new ParagraphTreeNode([textNode])
                         node.appendChild(paragraphNode)
 
-                        current.container = textNode
-                        current.offset = e.data.length
+                        currentCursor.container = textNode
+                        currentCursor.offset = e.data.length
 
                         event.handled = true
 
@@ -44,7 +44,7 @@ function RootNode(properties: RootNode.Attributes) {
 
                     switch (e.data) {
                         case "ArrowLeft" : {
-                            onArrowLeft(root, current);
+                            onArrowLeft(root, currentCursor);
 
                             event.handled = true
 
@@ -52,7 +52,7 @@ function RootNode(properties: RootNode.Attributes) {
 
                         } break
                         case "ArrowRight" : {
-                            onArrowRight(root, current);
+                            onArrowRight(root, currentCursor);
 
                             event.handled = true
 

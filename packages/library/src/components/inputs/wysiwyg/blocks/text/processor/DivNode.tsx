@@ -9,7 +9,7 @@ function DivNode(properties: DivNode.Attributes) {
 
     const {node} = properties
 
-    const {ast : {root, triggerAST}, cursor : {current, triggerCursor}, event} = useContext(EditorContext)
+    const {ast : {root, triggerAST}, cursor : {currentCursor, triggerCursor}, event} = useContext(EditorContext)
 
     const divRef = useRef<HTMLDivElement>(null);
 
@@ -19,9 +19,9 @@ function DivNode(properties: DivNode.Attributes) {
 
     useEffect(() => {
 
-        if (event.instance && node === current.container && ! event.handled) {
+        if (event.instance && node === currentCursor.container && ! event.handled) {
             let e = event.instance
-            let node = current.container as ParagraphTreeNode
+            let node = currentCursor.container as ParagraphTreeNode
 
             switch (e.type) {
                 case "insertCompositionText" :
@@ -31,8 +31,8 @@ function DivNode(properties: DivNode.Attributes) {
                         let textNode = new TextTreeNode(e.data)
                         node.appendChild(textNode)
 
-                        current.container = textNode
-                        current.offset = e.data.length
+                        currentCursor.container = textNode
+                        currentCursor.offset = e.data.length
 
                         event.handled = true
 
@@ -47,7 +47,7 @@ function DivNode(properties: DivNode.Attributes) {
 
                     switch (e.data) {
                         case "ArrowLeft" : {
-                            onArrowLeft(root, current);
+                            onArrowLeft(root, currentCursor);
 
                             event.handled = true
 
@@ -55,7 +55,7 @@ function DivNode(properties: DivNode.Attributes) {
 
                         } break
                         case "ArrowRight" : {
-                            onArrowRight(root, current);
+                            onArrowRight(root, currentCursor);
 
                             event.handled = true
 

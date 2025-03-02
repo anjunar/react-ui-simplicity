@@ -12,11 +12,20 @@ export interface Context {
         triggerAST() : void
     }
     cursor: {
-        current : {
+        currentCursor : {
             container: AbstractTreeNode,
             offset: number
         }
         triggerCursor() : void
+    },
+    selection : {
+        currentSelection : {
+            startContainer: AbstractTreeNode,
+            startOffset: number,
+            endContainer: AbstractTreeNode,
+            endOffset: number,
+        },
+        triggerSelection() : void
     }
     event : {
         handled : boolean

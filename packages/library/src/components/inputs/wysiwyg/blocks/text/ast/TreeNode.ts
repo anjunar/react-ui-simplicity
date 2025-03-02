@@ -29,6 +29,10 @@ export abstract class AbstractTreeNode {
 
     abstract get length() : number
 
+    remove() {
+        return this.parent.removeChild(this)
+    }
+
 }
 
 export abstract class AbstractContainerTreeNode extends AbstractTreeNode {
@@ -42,6 +46,14 @@ export abstract class AbstractContainerTreeNode extends AbstractTreeNode {
     appendChild(node: AbstractTreeNode) {
         node.parent = this;
         this._children.push(node);
+    }
+
+    removeChild(node: AbstractTreeNode) {
+        node.parent = null;
+        const index = this._children.indexOf(node)
+        if (index >= 0) {
+            this._children.splice(index, 1)
+        }
     }
 
     insertChild(index: number, node: AbstractTreeNode) {

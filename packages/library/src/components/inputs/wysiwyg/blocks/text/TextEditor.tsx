@@ -9,20 +9,30 @@ function TextEditor(properties: TextEditor.Attributes) {
 
     const {ref} = properties
 
-    const [ast, setAst] = useState(() => {
+    const [astState, setAstState] = useState(() => {
         return {
             root: new RootTreeNode([new ParagraphTreeNode([])])
         }
     })
 
-    const [cursor, setCursor] = useState<{ current: { container: AbstractTreeNode, offset: number } }>(() => {
-        let pNode = ast.root.children[0] as ParagraphTreeNode
-        // let textNode = pNode.children[0]
+    const [cursorState, setCursorState] = useState<{ currentCursor: { container: AbstractTreeNode, offset: number } }>(() => {
+        let pNode = astState.root.children[0] as ParagraphTreeNode
         return {
-            current: {
+            currentCursor: {
                 container: pNode,
                 offset: 0
             }
+        }
+    })
+
+    const [selectionState, setSelectionState] = useState<{currentSelection : {
+        startContainer : AbstractTreeNode,
+            startOffset : number,
+            endContainer : AbstractTreeNode,
+            endOffset : number}
+    }>(() => {
+        return {
+            currentSelection : null
         }
     })
 
@@ -59,14 +69,14 @@ function TextEditor(properties: TextEditor.Attributes) {
 
             let selectedNode: AbstractTreeNode;
             if (caretPosition.offsetNode instanceof HTMLElement) {
-                selectedNode = findNode(ast.root, (node) => node.dom === caretPosition.offsetNode);
+                selectedNode = findNode(astState.root, (node) => node.dom === caretPosition.offsetNode);
             } else {
-                selectedNode = findNode(ast.root, (node) => node.dom.firstChild === caretPosition.offsetNode);
+                selectedNode = findNode(astState.root, (node) => node.dom.firstChild === caretPosition.offsetNode);
             }
 
             if (selectedNode) {
-                setCursor({
-                    current: {
+                setCursorState({
+                    currentCursor: {
                         container: selectedNode,
                         offset: caretPosition.offset
                     }
@@ -86,7 +96,7 @@ function TextEditor(properties: TextEditor.Attributes) {
     }
 
     function onKeyDown(event: React.KeyboardEvent) {
-        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab"]
+        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete"]
 
         if (whiteList.indexOf(event.key) > -1) {
             eventQueue.current.push({
@@ -119,31 +129,71 @@ function TextEditor(properties: TextEditor.Attributes) {
 
         let range = document.createRange();
 
-        let containerFirstChild = cursor.current.container.dom.firstChild;
+        let containerFirstChild = cursorState.currentCursor.container.dom.firstChild;
 
         if (containerFirstChild instanceof HTMLElement || containerFirstChild === null) {
-            range.selectNode(cursor.current.container.dom)
+            range.selectNode(cursorState.currentCursor.container.dom)
             extracted()
         } else {
-            range.setStart(containerFirstChild, cursor.current.offset)
+            range.setStart(containerFirstChild, cursorState.currentCursor.offset)
             range.collapse(true)
             extracted()
         }
 
 
-    }, [cursor]);
+    }, [cursorState]);
+
+    useEffect(() => {
+
+        let onSelectionChange = () => {
+
+            let selection = window.getSelection();
+            if (selection && !selection.isCollapsed) {
+                let rangeAt = selection.getRangeAt(0);
+
+                let start = findNode(astState.root, (node) => node.dom.firstChild === rangeAt.startContainer)
+                let end = findNode(astState.root, (node) => node.dom.firstChild === rangeAt.endContainer)
+
+                setSelectionState({
+                    currentSelection: {
+                        startContainer: start,
+                        startOffset: rangeAt.startOffset,
+                        endContainer: end,
+                        endOffset: rangeAt.endOffset
+                    }
+                })
+            } else {
+                setSelectionState({
+                    currentSelection: null
+                })
+            }
+
+        }
+
+        document.addEventListener("selectionchange", onSelectionChange)
+
+        return () => {
+            return document.removeEventListener("selectionchange", onSelectionChange)
+        }
+    }, []);
 
     let value = {
         ast: {
-            root: ast.root,
+            root: astState.root,
             triggerAST() {
-                setAst({...ast})
+                setAstState({...astState})
             }
         },
         cursor: {
-            ...cursor,
+            ...cursorState,
             triggerCursor() {
-                setCursor({...cursor})
+                setCursorState({...cursorState})
+            }
+        },
+        selection : {
+            ...selectionState,
+            triggerSelection() {
+                setSelectionState({...selectionState})
             }
         },
         event: event
@@ -153,7 +203,7 @@ function TextEditor(properties: TextEditor.Attributes) {
         <div ref={ref} style={{position: "relative"}} onClick={onContentClick}>
             <EditorContext value={value}>
                 <Cursor ref={cursorRef}/>
-                <TextFactory node={ast.root}/>
+                <TextFactory node={astState.root}/>
             </EditorContext>
             <textarea ref={inputRef} onKeyDown={onKeyDown} onInput={onInput} onFocus={onFocus} onBlur={onBlur} style={{position : "absolute", left : "-9999px", opacity: 0}}/>
         </div>
