@@ -1,3 +1,4 @@
+import "./Toolbar.css"
 import React, {useContext} from "react"
 import EditorContext from "./EditorContext";
 import {AbstractTreeNode, RootTreeNode, TextTreeNode} from "../ast/TreeNode";
@@ -127,7 +128,7 @@ function Toolbar(properties: Toolbar.Attributes) {
     }
 
     return (
-        <div>
+        <div className={"editor-toolbar"}>
             <button className={"material-icons"} onClick={onBoldClick}>format_bold</button>
         </div>
     )

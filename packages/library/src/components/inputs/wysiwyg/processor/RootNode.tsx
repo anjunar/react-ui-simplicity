@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useRef} from "react"
 import {ParagraphTreeNode, RootTreeNode, TextTreeNode} from "../ast/TreeNode";
-import EditorFactory from "../EditorFactory";
+import EditorFactory from "./EditorFactory";
 import EditorContext from "../components/EditorContext";
 import DivNode from "./DivNode";
 import {onArrowLeft, onArrowRight} from "./Nodes";

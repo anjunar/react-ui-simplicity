@@ -1,8 +1,8 @@
 import React from "react"
-import {AbstractTreeNode, ParagraphTreeNode, RootTreeNode, TextTreeNode} from "./ast/TreeNode";
-import SpanNode from "./processor/SpanNode";
-import DivNode from "./processor/DivNode";
-import RootNode from "./processor/RootNode";
+import {AbstractTreeNode, ParagraphTreeNode, RootTreeNode, TextTreeNode} from "../ast/TreeNode";
+import SpanNode from "./SpanNode";
+import DivNode from "./DivNode";
+import RootNode from "./RootNode";
 
 function EditorFactory(properties: TextFactory.Attributes) {
 

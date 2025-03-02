@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from "react"
-import EditorFactory from "./EditorFactory";
+import EditorFactory from "./processor/EditorFactory";
 import Cursor from "./components/Cursor";
 import {AbstractTreeNode, ParagraphTreeNode, RootTreeNode} from "./ast/TreeNode";
 import EditorContext, {GeneralEvent} from "./components/EditorContext";
