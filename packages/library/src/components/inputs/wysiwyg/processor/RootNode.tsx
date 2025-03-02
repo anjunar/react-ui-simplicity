@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useRef} from "react"
 import {ParagraphTreeNode, RootTreeNode, TextTreeNode} from "../ast/TreeNode";
-import TextFactory from "../TextFactory";
+import EditorFactory from "../EditorFactory";
 import EditorContext from "../components/EditorContext";
 import DivNode from "./DivNode";
 import {onArrowLeft, onArrowRight} from "./Nodes";
@@ -74,7 +74,7 @@ function RootNode(properties: RootNode.Attributes) {
     return (
         <div ref={divRef}>
             {
-                node.children.map(node => (<TextFactory key={node.id} node={node}/>))
+                node.children.map(node => (<EditorFactory key={node.id} node={node}/>))
             }
         </div>
     )

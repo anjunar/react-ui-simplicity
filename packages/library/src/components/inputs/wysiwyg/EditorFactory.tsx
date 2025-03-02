@@ -4,7 +4,7 @@ import SpanNode from "./processor/SpanNode";
 import DivNode from "./processor/DivNode";
 import RootNode from "./processor/RootNode";
 
-function TextFactory(properties: TextFactory.Attributes) {
+function EditorFactory(properties: TextFactory.Attributes) {
 
     const {node} = properties
 
@@ -22,4 +22,4 @@ namespace TextFactory {
     }
 }
 
-export default TextFactory
+export default EditorFactory

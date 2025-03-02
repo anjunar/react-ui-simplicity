@@ -1,13 +1,12 @@
 import React, {useCallback, useEffect, useRef, useState} from "react"
-import TextFactory from "./TextFactory";
+import EditorFactory from "./EditorFactory";
 import Cursor from "./components/Cursor";
 import {AbstractTreeNode, ParagraphTreeNode, RootTreeNode} from "./ast/TreeNode";
 import EditorContext, {GeneralEvent} from "./components/EditorContext";
 import {findNode} from "./ast/TreeNodes";
+import Toolbar from "./components/Toolbar";
 
-function TextEditor(properties: TextEditor.Attributes) {
-
-    const {ref} = properties
+function Editor(properties: Editor.Attributes) {
 
     const [astState, setAstState] = useState(() => {
         return {
@@ -16,12 +15,8 @@ function TextEditor(properties: TextEditor.Attributes) {
     })
 
     const [cursorState, setCursorState] = useState<{ currentCursor: { container: AbstractTreeNode, offset: number } }>(() => {
-        let pNode = astState.root.children[0] as ParagraphTreeNode
         return {
-            currentCursor: {
-                container: pNode,
-                offset: 0
-            }
+            currentCursor: null
         }
     })
 
@@ -42,6 +37,8 @@ function TextEditor(properties: TextEditor.Attributes) {
         handled: false,
         instance: null
     })
+
+    let ref = useRef<HTMLDivElement>(null)
 
     let inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -117,33 +114,46 @@ function TextEditor(properties: TextEditor.Attributes) {
     }
 
     useEffect(() => {
-        function extracted() {
-            let clientRect = range.getBoundingClientRect();
 
-            const editorRect = ref.current.getBoundingClientRect();
-            const topOffset = clientRect.top - editorRect.top + ref.current.scrollTop;
-            const leftOffset = clientRect.left - editorRect.left + ref.current.scrollLeft;
+        if (cursorState.currentCursor) {
+            function extracted() {
+                let clientRect = range.getBoundingClientRect();
 
-            cursorRef.current.style.left = leftOffset + "px"
-            cursorRef.current.style.top = topOffset + "px"
-            cursorRef.current.style.height = clientRect.height + "px"
+                const editorRect = ref.current.getBoundingClientRect();
+                const topOffset = clientRect.top - editorRect.top + ref.current.scrollTop;
+                const leftOffset = clientRect.left - editorRect.left + ref.current.scrollLeft;
+
+                cursorRef.current.style.left = leftOffset + "px"
+                cursorRef.current.style.top = topOffset + "px"
+                cursorRef.current.style.height = clientRect.height + "px"
+            }
+
+            let range = document.createRange();
+
+            let containerFirstChild = cursorState.currentCursor.container.dom.firstChild;
+
+            if (containerFirstChild instanceof HTMLElement || containerFirstChild === null) {
+                range.selectNode(cursorState.currentCursor.container.dom)
+                extracted()
+            } else {
+                range.setStart(containerFirstChild, cursorState.currentCursor.offset)
+                range.collapse(true)
+                extracted()
+            }
         }
-
-        let range = document.createRange();
-
-        let containerFirstChild = cursorState.currentCursor.container.dom.firstChild;
-
-        if (containerFirstChild instanceof HTMLElement || containerFirstChild === null) {
-            range.selectNode(cursorState.currentCursor.container.dom)
-            extracted()
-        } else {
-            range.setStart(containerFirstChild, cursorState.currentCursor.offset)
-            range.collapse(true)
-            extracted()
-        }
-
 
     }, [cursorState]);
+
+    useEffect(() => {
+        if (selectionState.currentSelection) {
+            let range = document.createRange();
+            range.setStart(selectionState.currentSelection.startContainer.dom.firstChild, selectionState.currentSelection.startOffset);
+            range.setEnd(selectionState.currentSelection.endContainer.dom.firstChild, selectionState.currentSelection.endOffset);
+            let selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+    }, [selectionState]);
 
     useEffect(() => {
 
@@ -204,18 +214,18 @@ function TextEditor(properties: TextEditor.Attributes) {
     return (
         <div ref={ref} style={{position: "relative"}} onClick={onContentClick}>
             <EditorContext value={value}>
+                <Toolbar/>
                 <Cursor ref={cursorRef}/>
-                <TextFactory node={astState.root}/>
+                <EditorFactory node={astState.root}/>
             </EditorContext>
             <textarea ref={inputRef} onKeyDown={onKeyDown} onInput={onInput} onFocus={onFocus} onBlur={onBlur} style={{position: "absolute", left: "-9999px", opacity: 0}}/>
         </div>
     )
 }
 
-namespace TextEditor {
+namespace Editor {
     export interface Attributes {
-        ref: React.RefObject<HTMLDivElement>
     }
 }
 
-export default TextEditor
+export default Editor

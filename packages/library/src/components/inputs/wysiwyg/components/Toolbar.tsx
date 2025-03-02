@@ -1,112 +1,128 @@
 import React, {useContext} from "react"
-import Pages from "../../../layout/pages/Pages";
-import Page from "../../../layout/pages/Page";
-import {Context} from "../context/Context";
-import {AbstractProvider} from "../blocks/shared/AbstractProvider";
+import EditorContext from "./EditorContext";
+import {AbstractTreeNode, RootTreeNode, TextTreeNode} from "../ast/TreeNode";
+
+function splitIntoText(container: TextTreeNode, startOffset : number = 0, endOffset : number = container.text.length) {
+    let {bold, italic, deleted, sup, sub} = container
+    let start = container.text.substring(startOffset, endOffset);
+    let textNode = new TextTreeNode(start);
+    textNode.bold = bold;
+    textNode.italic = italic;
+    textNode.deleted = deleted;
+    textNode.sup = sup;
+    textNode.sub = sub;
+
+    if (textNode.text) {
+        return textNode
+    }
+
+    return null
+}
+
+function partial(currentSelection: { startContainer: AbstractTreeNode; startOffset: number; endContainer: AbstractTreeNode; endOffset: number }) {
+    let container = currentSelection.startContainer as TextTreeNode;
+
+    let startText = splitIntoText(container, 0, currentSelection.startOffset);
+    let middleText = splitIntoText(container, currentSelection.startOffset, currentSelection.endOffset);
+    let endText = splitIntoText(container, currentSelection.endOffset);
+
+    container.parent.appendChild(startText)
+    container.parent.appendChild(middleText)
+    container.parent.appendChild(endText)
+
+    container.remove()
+
+    currentSelection.startContainer = middleText
+    currentSelection.startOffset = 0
+    currentSelection.endContainer = middleText
+    currentSelection.endOffset = middleText.text.length
+
+    return middleText
+}
+
+function over(currentSelection: { startContainer: AbstractTreeNode; startOffset: number; endContainer: AbstractTreeNode; endOffset: number }, root: RootTreeNode) {
+    let startContainer = currentSelection.startContainer;
+    let endContainer = currentSelection.endContainer;
+
+    let preBegin = splitIntoText(startContainer as TextTreeNode, 0, currentSelection.startOffset)
+    let postBegin = splitIntoText(startContainer as TextTreeNode, currentSelection.startOffset)
+    let preEnd = splitIntoText(endContainer as TextTreeNode, 0, currentSelection.endOffset)
+    let postEnd = splitIntoText(endContainer as TextTreeNode, currentSelection.endOffset)
+
+    if (preBegin) {
+        startContainer.parent.insertChild(startContainer.parentIndex, preBegin)
+    }
+    if (postBegin) {
+        startContainer.parent.insertChild(startContainer.parentIndex + 1, postBegin)
+    }
+    if (preEnd) {
+        endContainer.parent.insertChild(endContainer.parentIndex, preEnd)
+    }
+    if (postEnd) {
+        endContainer.parent.insertChild(endContainer.parentIndex + 1, postEnd)
+    }
+
+    startContainer.remove()
+    endContainer.remove()
+
+    currentSelection.startContainer = postBegin
+    currentSelection.startOffset = 0
+    currentSelection.endContainer = preEnd
+    currentSelection.endOffset = preEnd.text.length
+
+    let flattened = root.flatten
+    return flattened.slice(flattened.indexOf(postBegin), flattened.indexOf(postEnd))
+}
 
 function Toolbar(properties: Toolbar.Attributes) {
 
-    const {page} = properties
+    const {} = properties
 
-    const {ast, providers, trigger} = useContext(Context)
+    const {ast : {root, triggerAST}, cursor : {currentCursor}, selection : {currentSelection, triggerSelection}} = useContext(EditorContext)
 
-    function onProviderClick(provider : AbstractProvider<any, any, any>) {
+    function onBoldClick() {
+        if (currentSelection) {
 
-        let index = ast.blocks.findIndex(node => node.selected);
+            if (currentSelection.startContainer === currentSelection.endContainer) {
+                let container = currentSelection.startContainer;
 
-        if (ast.blocks[index].isEmpty) {
-            ast.blocks.splice(index, 1, new provider.factory())
+                if (container instanceof TextTreeNode) {
+                    let textNode = partial(currentSelection);
+                    textNode.bold = true;
+                }
+            } else {
+                let nodes = over(currentSelection, root);
+
+                for (const node of nodes) {
+                    if (node instanceof TextTreeNode) {
+                        node.bold = true;
+                    }
+                }
+
+            }
+
+            triggerSelection()
+
         } else {
-            ast.blocks.splice(index + 1, 0, new provider.factory())
+            if (currentCursor && currentCursor.container instanceof TextTreeNode) {
+                currentCursor.container.bold = ! currentCursor.container.bold
+            }
         }
-
-        trigger()
+        
+        triggerAST()
 
     }
-
-    function onDeleteClick() {
-        let index = ast.blocks.findIndex(node => node.selected);
-        ast.blocks.splice(index, 1)
-        trigger()
-    }
-
-    function onArrowUpClick() {
-        let index = ast.blocks.findIndex(node => node.selected);
-
-        let block = ast.blocks.splice(index, 1)[0];
-
-        ast.blocks.splice(index - 1, 0, block)
-
-        trigger()
-    }
-
-    function onArrowDownClick() {
-        let index = ast.blocks.findIndex(node => node.selected);
-
-        let block = ast.blocks.splice(index, 1)[0];
-
-        ast.blocks.splice(index + 1, 0, block)
-
-        trigger()
-    }
-
-    function createToolbox() {
-        let block = ast.blocks.find(block => block.selected);
-        let provider = providers.find(provider => block instanceof provider.factory);
-        if (provider) {
-            return React.createElement(provider.tool)
-        }
-        return <div style={{lineHeight : "28px", verticalAlign : "middle"}}>Select a Block</div>
-    }
-
-    function isActive(provider : AbstractProvider<any, any, any>) {
-        let block = ast.blocks.find(block => block.selected);
-
-        return block instanceof provider.factory ? " active" : ""
-    }
-
-    const isArrowDownDisabled = ast.blocks[ast.blocks.length - 1].selected
-    const isArrowUpDisabled = ast.blocks[0].selected
-    const isDeleteDisabled = ast.blocks.length === 1
 
     return (
-        <div className={"wysiwyg-toolbar"}>
-            <Pages page={page}>
-                <Page>
-                    <div style={{display : "flex", alignItems : "center", justifyContent : "center"}}>
-                        {
-                            providers.map(provider => (
-                                <button key={provider.title}
-                                        onClick={() => onProviderClick(provider)}
-                                        className={`material-icons${isActive(provider)}`}>
-                                    {provider.icon}
-                                </button>
-                            ))
-                        }
-                    </div>
-                </Page>
-                <Page>
-                    <div style={{display : "flex", alignItems : "center", justifyContent : "center"}}>
-                        <button className={"material-icons"} disabled={isDeleteDisabled} onClick={onDeleteClick}>delete</button>
-                        <button className={"material-icons"} disabled={isArrowUpDisabled} onClick={onArrowUpClick}>arrow_upward</button>
-                        <button className={"material-icons"} disabled={isArrowDownDisabled} onClick={onArrowDownClick}>arrow_downward</button>
-                    </div>
-                </Page>
-                <Page>
-                    <div style={{display : "flex", alignItems : "center", justifyContent : "center"}}>
-                        {
-                            createToolbox()
-                        }
-                    </div>
-                </Page>
-            </Pages>
+        <div>
+            <button className={"material-icons"} onClick={onBoldClick}>format_bold</button>
         </div>
     )
 }
 
 namespace Toolbar {
     export interface Attributes {
-        page : number
+
     }
 }
 

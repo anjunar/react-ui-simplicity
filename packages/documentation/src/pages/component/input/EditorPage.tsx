@@ -46,9 +46,11 @@ function EditorPage(properties : EditorPage.Attributes) {
                     <Features value={info.features}/>
                 </Section>
                 <Section text={"Example"}>
+{/*
                     <Form value={form}>
                     <Editor name={"editor"} style={{height: "500px"}}/>
                     </Form>
+*/}
                     <br/>
                     <p>Console: {console}</p>
                 </Section>

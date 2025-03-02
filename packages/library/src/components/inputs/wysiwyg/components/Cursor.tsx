@@ -6,12 +6,12 @@ function Cursor(properties: Cursor.Attributes) {
 
     const {ref} = properties
 
-    const {cursor : {currentCursor : {container}}} = useContext(EditorContext)
+    const {cursor : {currentCursor}} = useContext(EditorContext)
 
     const style : CSSProperties = {position : "absolute", top : "24px", backgroundColor : "var(--color-background-primary)"};
 
     return (
-        <div className={"cursor"} ref={ref}>|<span style={style}>{container?.dom?.localName}</span></div>
+        <div style={{display : "none"}} className={"cursor"} ref={ref}>|<span style={style}>{currentCursor?.container?.dom?.localName}</span></div>
     )
 }
 

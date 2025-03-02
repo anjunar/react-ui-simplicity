@@ -1,8 +1,0 @@
-.wysiwyg {
-    height : calc(100% - 4px);
-
-    [contenteditable=true] {
-        outline: 0;
-        line-height: 1.6em;
-    }
-}

@@ -178,7 +178,7 @@ function SpanNode(properties: SpanNode.Attributes) {
 
     useEffect(() => {
 
-        if (event.instance && node === currentCursor.container && ! event.handled) {
+        if (event.instance && node === currentCursor?.container && ! event.handled) {
             
             for (const handler of registry) {
                 if (handler.test(event.instance)) {
@@ -195,7 +195,7 @@ function SpanNode(properties: SpanNode.Attributes) {
     }, [event.instance]);
 
     return (
-        <span ref={spanRef}>{node.text.length === 0 ? <br/> : node.text}</span>
+        <span ref={spanRef} style={{fontWeight : node.bold ? "700" : ""}}>{node.text.length === 0 ? <br/> : node.text}</span>
     )
 }
 

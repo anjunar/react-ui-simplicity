@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useRef} from "react"
 import {ParagraphTreeNode, TextTreeNode} from "../ast/TreeNode";
-import TextFactory from "../TextFactory";
+import EditorFactory from "../EditorFactory";
 import EditorContext from "../components/EditorContext";
 import cursor from "../components/Cursor";
 import {onArrowLeft, onArrowRight} from "./Nodes";
@@ -76,7 +76,7 @@ function DivNode(properties: DivNode.Attributes) {
         <div ref={divRef}>
             {node.children.length === 0 ? <br/> : ""}
             {
-                node.children.map(node => <TextFactory key={node.id} node={node}/>)
+                node.children.map(node => <EditorFactory key={node.id} node={node}/>)
             }
         </div>
     )
