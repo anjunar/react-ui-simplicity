@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from "react"
 import TextFactory from "./TextFactory";
 import Cursor from "./components/Cursor";
-import {AbstractTreeNode, ParagraphTreeNode, RootTreeNode, TextTreeNode} from "./ast/TreeNode";
+import {AbstractTreeNode, ParagraphTreeNode, RootTreeNode} from "./ast/TreeNode";
 import EditorContext, {GeneralEvent} from "./components/EditorContext";
 import {findNode} from "./ast/TreeNodes";
 
@@ -25,14 +25,16 @@ function TextEditor(properties: TextEditor.Attributes) {
         }
     })
 
-    const [selectionState, setSelectionState] = useState<{currentSelection : {
-        startContainer : AbstractTreeNode,
-            startOffset : number,
-            endContainer : AbstractTreeNode,
-            endOffset : number}
+    const [selectionState, setSelectionState] = useState<{
+        currentSelection: {
+            startContainer: AbstractTreeNode,
+            startOffset: number,
+            endContainer: AbstractTreeNode,
+            endOffset: number
+        }
     }>(() => {
         return {
-            currentSelection : null
+            currentSelection: null
         }
     })
 
@@ -50,7 +52,7 @@ function TextEditor(properties: TextEditor.Attributes) {
     const processQueue = useCallback(() => {
         if (eventQueue.current.length > 0) {
             const lastEvent = eventQueue.current.pop()
-            setEvent({ handled: false, instance: lastEvent });
+            setEvent({handled: false, instance: lastEvent});
         }
     }, []);
 
@@ -179,7 +181,7 @@ function TextEditor(properties: TextEditor.Attributes) {
 
     let value = {
         ast: {
-            root: astState.root,
+            ...astState,
             triggerAST() {
                 setAstState({...astState})
             }
@@ -190,7 +192,7 @@ function TextEditor(properties: TextEditor.Attributes) {
                 setCursorState({...cursorState})
             }
         },
-        selection : {
+        selection: {
             ...selectionState,
             triggerSelection() {
                 setSelectionState({...selectionState})
@@ -205,7 +207,7 @@ function TextEditor(properties: TextEditor.Attributes) {
                 <Cursor ref={cursorRef}/>
                 <TextFactory node={astState.root}/>
             </EditorContext>
-            <textarea ref={inputRef} onKeyDown={onKeyDown} onInput={onInput} onFocus={onFocus} onBlur={onBlur} style={{position : "absolute", left : "-9999px", opacity: 0}}/>
+            <textarea ref={inputRef} onKeyDown={onKeyDown} onInput={onInput} onFocus={onFocus} onBlur={onBlur} style={{position: "absolute", left: "-9999px", opacity: 0}}/>
         </div>
     )
 }

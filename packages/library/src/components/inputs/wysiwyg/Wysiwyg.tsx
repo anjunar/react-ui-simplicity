@@ -7,6 +7,7 @@ import {AbstractProvider} from "./blocks/shared/AbstractProvider";
 import {Context} from "./context/Context";
 import Footer from "./components/Footer";
 import Toolbar from "./components/Toolbar";
+import {RootTreeNode} from "./blocks/text/ast/TreeNode";
 
 function Wysiwyg(properties: Wysiwyg.Attributes) {
 
@@ -16,7 +17,7 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     const [ast, setAst] = useState<{root : RootNode}>(() => {
         return {
-            root : new RootNode([new ParagraphNode(new TextBlock(""))])
+            root : new RootNode([new ParagraphNode(new TextBlock(new RootTreeNode()))])
         }
     })
 

@@ -1,10 +1,11 @@
 import {AbstractNode} from "../shared/AbstractNode";
+import {AbstractTreeNode} from "../text/ast/TreeNode";
 
 export class TextBlock {
 
-    text : string
+    text : AbstractTreeNode
 
-    constructor(text: string) {
+    constructor(text: AbstractTreeNode) {
         this.text = text;
     }
 }
@@ -16,7 +17,7 @@ export class ParagraphNode extends AbstractNode<TextBlock> {
     data: TextBlock
 
     get isEmpty() {
-        return this.data.text === "<p><span><br></span></p>"
+        return this.data.text.length === 0
     }
 
     constructor(data: TextBlock) {

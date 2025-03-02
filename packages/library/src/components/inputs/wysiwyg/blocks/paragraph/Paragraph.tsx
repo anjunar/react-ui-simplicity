@@ -30,7 +30,7 @@ function Paragraph(properties: Paragraph.Attributes) {
     }, []);
 
     return (
-        <TextEditor ref={ref}/>
+        <TextEditor ref={ref} node={node}/>
     )
 }
 
