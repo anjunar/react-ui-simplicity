@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef} from "react"
+import React, {CSSProperties, useContext, useEffect, useRef} from "react"
 import {AbstractNode, ParagraphNode, RootNode, TextNode} from "../ast/TreeNode";
 import EditorContext, {GeneralEvent} from "../components/EditorContext";
 import {onArrowDown, onArrowLeft, onArrowRight, onArrowUp} from "./Processors";
@@ -199,6 +199,31 @@ function SpanProcessor(properties: SpanNode.Attributes) {
 
     const spanRef = useRef<HTMLDivElement>(null);
 
+    function generateStyleClassNames() {
+        let classNames: string[] = []
+
+        if (node.bold) {
+            classNames.push("bold")
+        }
+
+        if (node.italic) {
+            classNames.push("italic")
+        }
+
+        if (node.deleted) {
+            classNames.push("deleted")
+        }
+
+        if (node.sub) {
+            classNames.push("subscript")
+        }
+
+        if (node.sup) {
+            classNames.push("superscript")
+        }
+        return classNames;
+    }
+
     useEffect(() => {
         node.dom = spanRef.current
     }, [node]);
@@ -221,8 +246,10 @@ function SpanProcessor(properties: SpanNode.Attributes) {
 
     }, [event.instance]);
 
+    let classNames = generateStyleClassNames();
+
     return (
-        <span ref={spanRef} style={{fontWeight : node.bold ? "700" : ""}}>{node.text.length === 0 ? <br/> : node.text}</span>
+        <span ref={spanRef} className={classNames.join(" ")}>{node.text.length === 0 ? <br/> : node.text}</span>
     )
 }
 

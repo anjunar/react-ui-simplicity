@@ -1,3 +1,4 @@
+import "./Editor.css"
 import React, {useCallback, useEffect, useRef, useState} from "react"
 import EditorFactory from "./processor/EditorFactory";
 import Cursor from "./components/Cursor";
@@ -214,7 +215,7 @@ function Editor(properties: Editor.Attributes) {
     };
 
     return (
-        <div ref={ref} style={{position: "relative", ...style}} onClick={onContentClick}>
+        <div ref={ref} className={"editor"} style={{position: "relative", ...style}} onClick={onContentClick}>
             <EditorContext value={value}>
                 <Toolbar/>
                 <Cursor ref={cursorRef}/>

@@ -72,7 +72,7 @@ function RootProcessor(properties: RootNode.Attributes) {
     }, [node]);
 
     return (
-        <div ref={divRef}>
+        <div ref={divRef} className={"root"}>
             {
                 node.children.map(node => (<EditorFactory key={node.id} node={node}/>))
             }

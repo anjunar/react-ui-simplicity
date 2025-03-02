@@ -1,0 +1,27 @@
+.editor {
+
+    .root {
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
+        .deleted {
+            text-decoration: line-through;
+        }
+
+        .subscript {
+            vertical-align: sub;
+        }
+
+        .superscript {
+            vertical-align: super;
+        }
+
+    }
+
+}
