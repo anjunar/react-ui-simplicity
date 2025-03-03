@@ -2,7 +2,7 @@ import "./Editor.css"
 import React, {useCallback, useEffect, useRef, useState} from "react"
 import ProcessorFactory from "./processor/ProcessorFactory";
 import Cursor from "./ui/Cursor";
-import {AbstractContainerNode, AbstractNode, ParagraphNode, RootNode, TextNode} from "./core/TreeNode";
+import {AbstractNode, ParagraphNode, RootNode} from "./core/TreeNode";
 import EditorContext, {GeneralEvent} from "./EditorContext";
 import {findNode} from "./core/TreeNodes";
 import Toolbar from "./ui/Toolbar";
@@ -176,17 +176,47 @@ function Editor(properties: Editor.Attributes) {
             if (selection && !selection.isCollapsed) {
                 let rangeAt = selection.getRangeAt(0);
 
-                let start = findNode(astState.root, (node) => node.dom.firstChild === rangeAt.startContainer)
-                let end = findNode(astState.root, (node) => node.dom.firstChild === rangeAt.endContainer)
+                let start = findNode(astState.root, (node) => {
+                    if (rangeAt.startContainer instanceof HTMLElement) {
+                        if (rangeAt.startContainer instanceof HTMLBRElement) {
+                            return node.dom === rangeAt.startContainer.parentElement
+                        } else {
+                            return node.dom === rangeAt.startContainer
+                        }
 
-                setSelectionState({
-                    currentSelection: {
-                        startContainer: start,
-                        startOffset: rangeAt.startOffset,
-                        endContainer: end,
-                        endOffset: rangeAt.endOffset
+                    } else {
+                        return node.dom.firstChild === rangeAt.startContainer
                     }
+
                 })
+                let end = findNode(astState.root, (node) => {
+                    if (rangeAt.endContainer instanceof HTMLElement) {
+                        if (rangeAt.endContainer instanceof HTMLBRElement) {
+                            return node.dom === rangeAt.endContainer.parentElement
+                        } else {
+                            return node.dom === rangeAt.endContainer
+                        }
+
+                    } else {
+                        return node.dom.firstChild === rangeAt.endContainer
+                    }
+
+                })
+
+                if (!(selectionState.currentSelection &&
+                    selectionState.currentSelection.startContainer === start &&
+                    selectionState.currentSelection.endContainer === end &&
+                    selectionState.currentSelection.startOffset === rangeAt.startOffset &&
+                    selectionState.currentSelection.endOffset === rangeAt.endOffset)) {
+                    setSelectionState({
+                        currentSelection: {
+                            startContainer: start,
+                            startOffset: rangeAt.startOffset,
+                            endContainer: end,
+                            endOffset: rangeAt.endOffset
+                        }
+                    })
+                }
             } else {
                 setSelectionState({
                     currentSelection: null
@@ -200,7 +230,7 @@ function Editor(properties: Editor.Attributes) {
         return () => {
             return document.removeEventListener("selectionchange", onSelectionChange)
         }
-    }, []);
+    }, [selectionState.currentSelection]);
 
     let value = {
         ast: {
@@ -225,11 +255,11 @@ function Editor(properties: Editor.Attributes) {
     };
 
     return (
-        <div ref={ref} className={"editor"} style={{position: "relative", ...style}} >
+        <div ref={ref} className={"editor"} style={{position: "relative", ...style}}>
             <EditorContext value={value}>
                 <Toolbar page={page}/>
                 <Cursor ref={cursorRef}/>
-                <div onClick={onContentClick} style={{flex : 1}}>
+                <div onClick={onContentClick} style={{flex: 1}}>
                     <ProcessorFactory node={astState.root}/>
                 </div>
                 <Footer page={page} onPage={(value) => setPage(value)}/>
@@ -239,7 +269,7 @@ function Editor(properties: Editor.Attributes) {
                       onInput={onInput}
                       onFocus={onFocus}
                       onBlur={onBlur}
-                      style={{position: "absolute", top : "-200px", opacity: 1}}/>
+                      style={{position: "absolute", top: "-200px", opacity: 1}}/>
         </div>
     )
 }

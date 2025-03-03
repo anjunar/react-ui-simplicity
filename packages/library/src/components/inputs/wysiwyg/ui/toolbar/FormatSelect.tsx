@@ -1,5 +1,5 @@
-import React, {useContext, useState} from "react"
-import {AbstractNode, ParagraphNode} from "../../core/TreeNode";
+import React, {useContext, useEffect, useState} from "react"
+import {AbstractNode, ParagraphNode, TextNode} from "../../core/TreeNode";
 import EditorContext from "../../EditorContext";
 import {AbstractCommand} from "../../commands/AbstractCommands";
 
@@ -18,6 +18,10 @@ function FormatSelect(properties: FormatSelect.Attributes) {
         command.execute(value, context)
     }
 
+    useEffect(() => {
+        setValue(callback(context.cursor.currentCursor?.container as TextNode))
+    }, [context.cursor.currentCursor]);
+
     return (
         <select value={value} onChange={onChange}>
             {
@@ -30,7 +34,7 @@ function FormatSelect(properties: FormatSelect.Attributes) {
 namespace FormatSelect {
     export interface Attributes {
         children : React.ReactNode[]
-        callback : (node: AbstractNode) => string
+        callback : (node: TextNode) => string
         command : AbstractCommand<string>
     }
 }

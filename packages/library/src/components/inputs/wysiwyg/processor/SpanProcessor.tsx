@@ -3,8 +3,8 @@ import {AbstractNode, ParagraphNode, RootNode, TextNode} from "../core/TreeNode"
 import EditorContext, {GeneralEvent} from "../EditorContext";
 import {onArrowDown, onArrowLeft, onArrowRight, onArrowUp} from "../utils/ProcessorUtils";
 
-const deleteContentBackward =  {
-    test(value : GeneralEvent) : boolean {
+const deleteContentBackward = {
+    test(value: GeneralEvent): boolean {
         return value.type === "deleteContentBackward"
     },
     process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
@@ -46,8 +46,8 @@ const deleteContentBackward =  {
     }
 }
 
-const insertText =  {
-    test(value : GeneralEvent) : boolean {
+const insertText = {
+    test(value: GeneralEvent): boolean {
         return value.type === "insertText" || value.type === "insertCompositionText"
     },
     process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
@@ -59,8 +59,8 @@ const insertText =  {
     }
 }
 
-const insertLineBreak =  {
-    test(value : GeneralEvent) : boolean {
+const insertLineBreak = {
+    test(value: GeneralEvent): boolean {
         return value.type === "insertLineBreak"
     },
     process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
@@ -100,12 +100,11 @@ const insertLineBreak =  {
         }
 
 
-
     }
 }
 
 const arrowLeft = {
-    test(value : GeneralEvent) {
+    test(value: GeneralEvent) {
         return value.data === "ArrowLeft" && value.type === "keydown"
     },
     process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
@@ -118,7 +117,7 @@ const arrowLeft = {
 }
 
 const arrowRight = {
-    test(value : GeneralEvent) {
+    test(value: GeneralEvent) {
         return value.data === "ArrowRight" && value.type === "keydown"
     },
     process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
@@ -131,7 +130,7 @@ const arrowRight = {
 }
 
 const arrowUp = {
-    test(value : GeneralEvent) {
+    test(value: GeneralEvent) {
         return value.data === "ArrowUp" && value.type === "keydown"
     },
     process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
@@ -140,7 +139,7 @@ const arrowUp = {
 }
 
 const arrowDown = {
-    test(value : GeneralEvent) {
+    test(value: GeneralEvent) {
         return value.data === "ArrowDown" && value.type === "keydown"
     },
     process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
@@ -149,7 +148,7 @@ const arrowDown = {
 }
 
 const deleteKey = {
-    test(value : GeneralEvent) {
+    test(value: GeneralEvent) {
         return value.data === "Delete" && value.type === "keydown"
     },
     process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
@@ -198,38 +197,58 @@ const registry = [
     deleteKey
 ]
 
+function generateStyleObject(node : TextNode) {
+    let style: CSSProperties = {};
+    if (node.fontFamily) {
+        style.fontFamily = node.fontFamily;
+    }
+
+    if (node.fontSize) {
+        style.fontSize = node.fontSize;
+    }
+
+    if (node.color) {
+        style.color = node.color;
+    }
+
+    if (node.backgroundColor) {
+        style.backgroundColor = node.backgroundColor;
+    }
+    return style;
+}
+
+function generateStyleClassNames(node : TextNode) {
+    let classNames: string[] = []
+
+    if (node.bold) {
+        classNames.push("bold")
+    }
+
+    if (node.italic) {
+        classNames.push("italic")
+    }
+
+    if (node.deleted) {
+        classNames.push("deleted")
+    }
+
+    if (node.sub) {
+        classNames.push("subscript")
+    }
+
+    if (node.sup) {
+        classNames.push("superscript")
+    }
+    return classNames;
+}
+
 function SpanProcessor(properties: SpanNode.Attributes) {
 
     const {node} = properties
 
-    const {ast : {root, triggerAST}, cursor : {currentCursor, triggerCursor}, event} = useContext(EditorContext)
+    const {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, event} = useContext(EditorContext)
 
     const spanRef = useRef<HTMLDivElement>(null);
-
-    function generateStyleClassNames() {
-        let classNames: string[] = []
-
-        if (node.bold) {
-            classNames.push("bold")
-        }
-
-        if (node.italic) {
-            classNames.push("italic")
-        }
-
-        if (node.deleted) {
-            classNames.push("deleted")
-        }
-
-        if (node.sub) {
-            classNames.push("subscript")
-        }
-
-        if (node.sup) {
-            classNames.push("superscript")
-        }
-        return classNames;
-    }
 
     useEffect(() => {
         node.dom = spanRef.current
@@ -237,8 +256,8 @@ function SpanProcessor(properties: SpanNode.Attributes) {
 
     useEffect(() => {
 
-        if (event.instance && node === currentCursor?.container && ! event.handled) {
-            
+        if (event.instance && node === currentCursor?.container && !event.handled) {
+
             for (const handler of registry) {
                 if (handler.test(event.instance)) {
                     handler.process(currentCursor, node, event.instance, root)
@@ -253,16 +272,21 @@ function SpanProcessor(properties: SpanNode.Attributes) {
 
     }, [event.instance]);
 
-    let classNames = generateStyleClassNames();
+    let classNames = generateStyleClassNames(node);
+    let style = generateStyleObject(node);
 
     return (
-        <span ref={spanRef} className={classNames.length === 0 ? null : classNames.join(" ")}>{node.text.length === 0 ? <br/> : node.text}</span>
+        <span ref={spanRef}
+              style={Object.keys(style).length === 0 ? null : style}
+              className={classNames.length === 0 ? null : classNames.join(" ")}>
+            {node.text.length === 0 ? <br/> : node.text}
+        </span>
     )
 }
 
 namespace SpanNode {
     export interface Attributes {
-        node : TextNode
+        node: TextNode
     }
 }
 

@@ -1,6 +1,11 @@
 import {v4} from "uuid";
 import {flatten} from "./TreeNodes";
 
+function resolveVariable(value : string) {
+    const rootStyles = getComputedStyle(document.documentElement);
+    return rootStyles.getPropertyValue(value).trim();
+}
+
 export abstract class AbstractNode {
     id : string = v4()
     abstract type : string
@@ -142,6 +147,14 @@ export class TextNode extends AbstractNode {
     sup : boolean = false
 
     sub : boolean = false
+
+    fontFamily : string = ""
+
+    fontSize : string = ""
+
+    color : string = ""
+
+    backgroundColor : string = ""
 
     constructor(text: string) {
         super();

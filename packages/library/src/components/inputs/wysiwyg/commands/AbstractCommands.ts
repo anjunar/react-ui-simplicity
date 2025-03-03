@@ -132,11 +132,11 @@ export abstract class AbstractBlockCommand extends AbstractCommand<string> {
 
 }
 
-export abstract class AbstractFormatCommand extends AbstractCommand<boolean> {
+export abstract class AbstractFormatCommand<E> extends AbstractCommand<E> {
 
     abstract get format(): string;
 
-    execute(value: boolean, context: Context): void {
+    execute(value: E, context: Context): void {
 
         const {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, selection: {currentSelection, triggerSelection}} = context
 
@@ -172,5 +172,4 @@ export abstract class AbstractFormatCommand extends AbstractCommand<boolean> {
         triggerAST()
 
     }
-
 }
