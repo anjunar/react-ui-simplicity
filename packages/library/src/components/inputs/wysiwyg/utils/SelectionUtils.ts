@@ -1,4 +1,4 @@
-import {AbstractNode, RootNode, TextNode} from "../ast/TreeNode";
+import {AbstractNode, RootNode, TextNode} from "../core/TreeNode";
 
 export function splitIntoText(container: TextNode, startOffset: number = 0, endOffset: number = container.text.length) {
     let {bold, italic, deleted, sup, sub} = container

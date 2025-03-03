@@ -1,7 +1,7 @@
-import {AbstractBlockCommand} from "./AbstractBlockCommand";
-import {AbstractNode, HeadingNode, ParagraphNode} from "../ast/TreeNode";
+import {AbstractNode, HeadingNode, ParagraphNode} from "../core/TreeNode";
+import {AbstractBlockCommand} from "./Command";
 
-export class BlockCommand extends AbstractBlockCommand {
+export class BlockCommands extends AbstractBlockCommand {
     get callback(): (value: string, container: AbstractNode[]) => void {
         return (value: string, container: AbstractNode[]) => {
 

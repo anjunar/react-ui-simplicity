@@ -1,6 +1,6 @@
 import React, {CSSProperties, useContext, useEffect, useRef} from "react"
-import {AbstractNode, ParagraphNode, RootNode, TextNode} from "../ast/TreeNode";
-import EditorContext, {GeneralEvent} from "../components/EditorContext";
+import {AbstractNode, ParagraphNode, RootNode, TextNode} from "../core/TreeNode";
+import EditorContext, {GeneralEvent} from "../ui/EditorContext";
 import {onArrowDown, onArrowLeft, onArrowRight, onArrowUp} from "./Processors";
 
 const deleteContentBackward =  {

@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useRef} from "react"
-import EditorContext from "../components/EditorContext";
-import {HeadingNode} from "../ast/TreeNode";
+import EditorContext from "../ui/EditorContext";
+import {HeadingNode} from "../core/TreeNode";
 import EditorFactory from "./EditorFactory";
 
 function HeadingProcessor(properties: HeadingProcessor.Attributes) {

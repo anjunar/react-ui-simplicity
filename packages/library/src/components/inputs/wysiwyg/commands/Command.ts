@@ -1,7 +1,10 @@
-import {AbstractCommand} from "./AbstractCommand";
-import {Context, SelectionState, selectionState} from "../components/EditorContext";
-import {AbstractNode, TextNode} from "../ast/TreeNode";
-import {over, partial, splitIntoContainers} from "./Commands";
+import {Context, selectionState, SelectionState} from "../ui/EditorContext";
+import {AbstractNode, TextNode} from "../core/TreeNode";
+import {over, partial, splitIntoContainers} from "../utils/SelectionUtils";
+
+export abstract class AbstractCommand<E> {
+    abstract execute(value: E, context: Context): void;
+}
 
 function updateSelection(
     selection: {
@@ -27,7 +30,7 @@ abstract class SelectionStateHandler {
     ): void;
 }
 
-class FullSelectionStateHandler extends SelectionStateHandler {
+export class FullSelectionStateHandler extends SelectionStateHandler {
     handle(
         value: string,
         context: Context,
@@ -42,7 +45,7 @@ class FullSelectionStateHandler extends SelectionStateHandler {
     }
 }
 
-class PartialSelectionStateHandler extends SelectionStateHandler {
+export class PartialSelectionStateHandler extends SelectionStateHandler {
     handle(
         value: string,
         context: Context,
@@ -58,7 +61,7 @@ class PartialSelectionStateHandler extends SelectionStateHandler {
     }
 }
 
-class OverSelectionStateHandler extends SelectionStateHandler {
+export class OverSelectionStateHandler extends SelectionStateHandler {
     handle(
         value: string,
         context: Context,
@@ -87,7 +90,7 @@ class OverSelectionStateHandler extends SelectionStateHandler {
     }
 }
 
-class NoneSelectionStateHandler extends SelectionStateHandler {
+export class NoneSelectionStateHandler extends SelectionStateHandler {
     handle(
         value: string,
         context: Context,
@@ -101,20 +104,19 @@ class NoneSelectionStateHandler extends SelectionStateHandler {
     }
 }
 
-const stateHandlers: Map<SelectionState, SelectionStateHandler> = new Map();
+export const stateHandlers: Map<SelectionState, SelectionStateHandler> = new Map();
 
 stateHandlers.set(SelectionState.full, new FullSelectionStateHandler());
 stateHandlers.set(SelectionState.partial, new PartialSelectionStateHandler());
 stateHandlers.set(SelectionState.over, new OverSelectionStateHandler());
 stateHandlers.set(SelectionState.none, new NoneSelectionStateHandler());
 
-
 export abstract class AbstractBlockCommand extends AbstractCommand<string> {
 
     abstract get callback(): (value: string, containers: AbstractNode[]) => void;
 
     execute(value: string, context: Context): void {
-        const {ast : {triggerAST}, selection : {triggerSelection}} = context;
+        const {ast: {triggerAST}, selection: {triggerSelection}} = context;
         const state = selectionState(context.selection.currentSelection);
         const handler = stateHandlers.get(state);
 
@@ -126,6 +128,48 @@ export abstract class AbstractBlockCommand extends AbstractCommand<string> {
 
         triggerAST();
         triggerSelection();
+    }
+
+}
+
+export abstract class AbstractFormatCommand extends AbstractCommand<boolean> {
+
+    abstract get format(): string;
+
+    execute(value: boolean, context: Context): void {
+
+        const {ast: {root, triggerAST}, cursor: {currentCursor}, selection: {currentSelection, triggerSelection}} = context
+
+        if (currentSelection) {
+
+            if (currentSelection.startContainer === currentSelection.endContainer) {
+                let container = currentSelection.startContainer;
+
+                if (container instanceof TextNode) {
+                    let textNode = partial(currentSelection);
+                    textNode[this.format] = value
+                }
+            } else {
+                let nodes = over(currentSelection, root);
+
+                for (const node of nodes) {
+                    if (node instanceof TextNode) {
+                        node[this.format] = value;
+                    }
+                }
+
+            }
+
+            triggerSelection()
+
+        } else {
+            if (currentCursor && currentCursor.container instanceof TextNode) {
+                currentCursor.container[this.format] = value
+            }
+        }
+
+        triggerAST()
+
     }
 
 }

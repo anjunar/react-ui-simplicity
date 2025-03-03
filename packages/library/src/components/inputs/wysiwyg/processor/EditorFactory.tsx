@@ -1,5 +1,5 @@
 import React from "react"
-import {AbstractNode, HeadingNode, ParagraphNode, RootNode, TextNode} from "../ast/TreeNode";
+import {AbstractNode, HeadingNode, ParagraphNode, RootNode, TextNode} from "../core/TreeNode";
 import SpanProcessor from "./SpanProcessor";
 import DivProcessor from "./DivProcessor";
 import RootProcessor from "./RootProcessor";

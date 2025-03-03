@@ -1,11 +1,11 @@
 import "./Editor.css"
 import React, {useCallback, useEffect, useRef, useState} from "react"
 import EditorFactory from "./processor/EditorFactory";
-import Cursor from "./components/Cursor";
-import {AbstractContainerNode, AbstractNode, ParagraphNode, RootNode, TextNode} from "./ast/TreeNode";
-import EditorContext, {GeneralEvent} from "./components/EditorContext";
-import {findNode} from "./ast/TreeNodes";
-import Toolbar from "./components/Toolbar";
+import Cursor from "./ui/Cursor";
+import {AbstractContainerNode, AbstractNode, ParagraphNode, RootNode, TextNode} from "./core/TreeNode";
+import EditorContext, {GeneralEvent} from "./ui/EditorContext";
+import {findNode} from "./core/TreeNodes";
+import Toolbar from "./ui/Toolbar";
 
 function Editor(properties: Editor.Attributes) {
 

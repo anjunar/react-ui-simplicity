@@ -1,4 +1,4 @@
-import {AbstractContainerNode, AbstractNode, RootNode, TextNode} from "../ast/TreeNode";
+import {AbstractContainerNode, AbstractNode, RootNode, TextNode} from "../core/TreeNode";
 
 export function onArrowLeft(root: RootNode, current: { container: AbstractNode; offset: number }) {
     let flattened = root.flatten

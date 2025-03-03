@@ -1,8 +1,8 @@
 import React, {useContext, useEffect, useRef} from "react"
-import {ParagraphNode, TextNode} from "../ast/TreeNode";
+import {ParagraphNode, TextNode} from "../core/TreeNode";
 import EditorFactory from "./EditorFactory";
-import EditorContext from "../components/EditorContext";
-import cursor from "../components/Cursor";
+import EditorContext from "../ui/EditorContext";
+import cursor from "../ui/Cursor";
 import {onArrowLeft, onArrowRight} from "./Processors";
 
 function DivProcessor(properties: DivNode.Attributes) {

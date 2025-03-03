@@ -1,15 +1,11 @@
 import "./Toolbar.css"
 import React from "react"
 import FormatButton from "./toolbar/FormatButton";
-import {BoldCommand} from "../commands/BoldCommand";
-import {ItalicCommand} from "../commands/ItalicCommand";
-import {DeletedCommand} from "../commands/DeletedCommand";
-import {SubCommand} from "../commands/SubCommand";
-import {SupCommand} from "../commands/SupCommand";
 import FormatSelect from "./toolbar/FormatSelect";
-import {AbstractNode, HeadingNode} from "../ast/TreeNode";
-import {AbstractBlockCommand} from "../commands/AbstractBlockCommand";
-import {BlockCommand} from "../commands/BlockCommand";
+import {AbstractNode, HeadingNode} from "../core/TreeNode";
+import {BlockCommands} from "../commands/BlockCommands";
+import {AbstractBlockCommand} from "../commands/Command";
+import {BoldCommand, DeletedCommand, ItalicCommand, SubCommand, SupCommand} from "../commands/FormatCommands";
 
 function Toolbar(properties: Toolbar.Attributes) {
 
@@ -24,7 +20,7 @@ function Toolbar(properties: Toolbar.Attributes) {
 
     return (
         <div className={"editor-toolbar"}>
-            <FormatSelect callback={onCallback} command={new BlockCommand()}>
+            <FormatSelect callback={onCallback} command={new BlockCommands()}>
                 <option value={"h1"}>H1</option>
                 <option value={"h2"}>H2</option>
                 <option value={"h3"}>H3</option>

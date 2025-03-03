@@ -1,7 +1,8 @@
 import React, {useContext, useEffect, useState} from "react"
 import EditorContext from "../EditorContext";
-import {AbstractNode, TextNode} from "../../ast/TreeNode";
-import {AbstractCommand} from "../../commands/AbstractCommand";
+import {AbstractNode, TextNode} from "../../core/TreeNode";
+
+import {AbstractCommand} from "../../commands/Command";
 
 function FormatButton(properties: FormatButton.Attributes) {
 
