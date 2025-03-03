@@ -1,5 +1,5 @@
 import React from "react"
-import {AbstractNode, RootNode, TextNode} from "../core/TreeNode";
+import {AbstractNode, RootNode, TextNode} from "./core/TreeNode";
 
 export enum SelectionState {
     partial= "partial",

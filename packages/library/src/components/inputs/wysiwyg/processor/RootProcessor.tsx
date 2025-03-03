@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef} from "react"
 import {ParagraphNode, RootNode, TextNode} from "../core/TreeNode";
 import ProcessorFactory from "./ProcessorFactory";
-import EditorContext from "../ui/EditorContext";
+import EditorContext from "../EditorContext";
 import DivProcessor from "./DivProcessor";
 import {onArrowLeft, onArrowRight} from "../utils/ProcessorUtils";
 

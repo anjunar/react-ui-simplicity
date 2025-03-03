@@ -1,4 +1,4 @@
-import {AbstractFormatCommand} from "./Command";
+import {AbstractFormatCommand} from "./AbstractCommands";
 
 export class BoldCommand extends AbstractFormatCommand {
     format = "bold";

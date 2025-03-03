@@ -3,7 +3,7 @@ import React, {useCallback, useEffect, useRef, useState} from "react"
 import ProcessorFactory from "./processor/ProcessorFactory";
 import Cursor from "./ui/Cursor";
 import {AbstractContainerNode, AbstractNode, ParagraphNode, RootNode, TextNode} from "./core/TreeNode";
-import EditorContext, {GeneralEvent} from "./ui/EditorContext";
+import EditorContext, {GeneralEvent} from "./EditorContext";
 import {findNode} from "./core/TreeNodes";
 import Toolbar from "./ui/Toolbar";
 import Footer from "./ui/Footer";

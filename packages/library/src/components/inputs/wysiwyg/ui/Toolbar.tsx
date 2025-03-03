@@ -4,7 +4,7 @@ import FormatButton from "./toolbar/FormatButton";
 import FormatSelect from "./toolbar/FormatSelect";
 import {AbstractNode, HeadingNode} from "../core/TreeNode";
 import {BlockCommand} from "../commands/BlockCommands";
-import {AbstractBlockCommand} from "../commands/Command";
+import {AbstractBlockCommand} from "../commands/AbstractCommands";
 import {BoldCommand, DeletedCommand, ItalicCommand, SubCommand, SupCommand} from "../commands/FormatCommands";
 import Pages from "../../../layout/pages/Pages";
 import Page from "../../../layout/pages/Page";

@@ -1,4 +1,4 @@
-import {Context, selectionState, SelectionState} from "../ui/EditorContext";
+import {Context, selectionState, SelectionState} from "../EditorContext";
 import {AbstractNode, TextNode} from "../core/TreeNode";
 import {over, partial, splitIntoContainers} from "../utils/SelectionUtils";
 
