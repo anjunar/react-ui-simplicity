@@ -7,25 +7,16 @@ function Footer(properties: Footer.Attributes) {
     const {page, onPage} = properties
 
     return (
-        <div className={"editor-footer"}>
+        <div className={"wysiwyg-footer"}>
             <Tabs page={page} onPage={onPage}>
-                <Tab selected={true}>
-                    <span className={"material-icons"}>text_format</span>
+                <Tab>
+                    <span className={"material-icons"}>add</span>
                 </Tab>
                 <Tab>
-                    <span className={"material-icons"}>format_size</span>
+                    <span className={"material-icons"}>toc</span>
                 </Tab>
                 <Tab>
-                    <span className={"material-icons"}>palette</span>
-                </Tab>
-                <Tab>
-                    <span className={"material-icons"}>construction</span>
-                </Tab>
-                <Tab>
-                    <span className={"material-icons"}>format_align_justify</span>
-                </Tab>
-                <Tab>
-                    <span className={"material-icons"}>frame_inspect</span>
+                    <span className={"material-icons"}>widgets</span>
                 </Tab>
             </Tabs>
         </div>

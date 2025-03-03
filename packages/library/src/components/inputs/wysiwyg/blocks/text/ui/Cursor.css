@@ -1,0 +1,15 @@
+.cursor {
+    position: absolute;
+    width: 2px;
+    height: 20px;
+    background: black;
+    animation: blink 1s step-start infinite;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
