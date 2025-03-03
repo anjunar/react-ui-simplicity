@@ -5,7 +5,7 @@ import DivProcessor from "./DivProcessor";
 import RootProcessor from "./RootProcessor";
 import HeadingProcessor from "./HeadingProcessor";
 
-function EditorFactory(properties: TextFactory.Attributes) {
+function ProcessorFactory(properties: TextFactory.Attributes) {
 
     const {node} = properties
 
@@ -24,4 +24,4 @@ namespace TextFactory {
     }
 }
 
-export default EditorFactory
+export default ProcessorFactory

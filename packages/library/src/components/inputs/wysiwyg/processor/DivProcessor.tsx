@@ -1,9 +1,9 @@
 import React, {useContext, useEffect, useRef} from "react"
 import {ParagraphNode, TextNode} from "../core/TreeNode";
-import EditorFactory from "./EditorFactory";
+import ProcessorFactory from "./ProcessorFactory";
 import EditorContext from "../ui/EditorContext";
 import cursor from "../ui/Cursor";
-import {onArrowLeft, onArrowRight} from "./Processors";
+import {onArrowLeft, onArrowRight} from "../utils/ProcessorUtils";
 
 function DivProcessor(properties: DivNode.Attributes) {
 
@@ -76,7 +76,7 @@ function DivProcessor(properties: DivNode.Attributes) {
         <div ref={divRef}>
             {node.children.length === 0 ? <br/> : ""}
             {
-                node.children.map(node => <EditorFactory key={node.id} node={node}/>)
+                node.children.map(node => <ProcessorFactory key={node.id} node={node}/>)
             }
         </div>
     )

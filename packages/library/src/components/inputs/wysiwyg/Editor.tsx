@@ -1,11 +1,12 @@
 import "./Editor.css"
 import React, {useCallback, useEffect, useRef, useState} from "react"
-import EditorFactory from "./processor/EditorFactory";
+import ProcessorFactory from "./processor/ProcessorFactory";
 import Cursor from "./ui/Cursor";
 import {AbstractContainerNode, AbstractNode, ParagraphNode, RootNode, TextNode} from "./core/TreeNode";
 import EditorContext, {GeneralEvent} from "./ui/EditorContext";
 import {findNode} from "./core/TreeNodes";
 import Toolbar from "./ui/Toolbar";
+import Footer from "./ui/Footer";
 
 function Editor(properties: Editor.Attributes) {
 
@@ -40,6 +41,8 @@ function Editor(properties: Editor.Attributes) {
         handled: false,
         instance: null
     })
+
+    const [page, setPage] = useState(0)
 
     let ref = useRef<HTMLDivElement>(null)
 
@@ -129,6 +132,7 @@ function Editor(properties: Editor.Attributes) {
                 cursorRef.current.style.left = leftOffset - 2 + "px"
                 cursorRef.current.style.top = topOffset + "px"
                 cursorRef.current.style.fontSize = clientRect.height + "px"
+                cursorRef.current.style.display = "block"
             }
 
             let range = document.createRange();
@@ -223,11 +227,12 @@ function Editor(properties: Editor.Attributes) {
     return (
         <div ref={ref} className={"editor"} style={{position: "relative", ...style}} >
             <EditorContext value={value}>
-                <Toolbar/>
+                <Toolbar page={page}/>
                 <Cursor ref={cursorRef}/>
-                <div onClick={onContentClick} style={{height : "100%"}}>
-                    <EditorFactory node={astState.root}/>
+                <div onClick={onContentClick} style={{flex : 1}}>
+                    <ProcessorFactory node={astState.root}/>
                 </div>
+                <Footer page={page} onPage={(value) => setPage(value)}/>
             </EditorContext>
             <textarea ref={inputRef}
                       onKeyDown={onKeyDown}

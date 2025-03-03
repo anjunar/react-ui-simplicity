@@ -138,7 +138,7 @@ export abstract class AbstractFormatCommand extends AbstractCommand<boolean> {
 
     execute(value: boolean, context: Context): void {
 
-        const {ast: {root, triggerAST}, cursor: {currentCursor}, selection: {currentSelection, triggerSelection}} = context
+        const {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, selection: {currentSelection, triggerSelection}} = context
 
         if (currentSelection) {
 
@@ -165,6 +165,7 @@ export abstract class AbstractFormatCommand extends AbstractCommand<boolean> {
         } else {
             if (currentCursor && currentCursor.container instanceof TextNode) {
                 currentCursor.container[this.format] = value
+                triggerCursor()
             }
         }
 

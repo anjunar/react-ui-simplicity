@@ -1,9 +1,9 @@
 import React, {useContext, useEffect, useRef} from "react"
 import {ParagraphNode, RootNode, TextNode} from "../core/TreeNode";
-import EditorFactory from "./EditorFactory";
+import ProcessorFactory from "./ProcessorFactory";
 import EditorContext from "../ui/EditorContext";
 import DivProcessor from "./DivProcessor";
-import {onArrowLeft, onArrowRight} from "./Processors";
+import {onArrowLeft, onArrowRight} from "../utils/ProcessorUtils";
 
 function RootProcessor(properties: RootNode.Attributes) {
 
@@ -74,7 +74,7 @@ function RootProcessor(properties: RootNode.Attributes) {
     return (
         <div ref={divRef} className={"root"}>
             {
-                node.children.map(node => (<EditorFactory key={node.id} node={node}/>))
+                node.children.map(node => (<ProcessorFactory key={node.id} node={node}/>))
             }
         </div>
     )

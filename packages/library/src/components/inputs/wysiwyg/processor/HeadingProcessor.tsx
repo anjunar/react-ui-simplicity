@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef} from "react"
 import EditorContext from "../ui/EditorContext";
 import {HeadingNode} from "../core/TreeNode";
-import EditorFactory from "./EditorFactory";
+import ProcessorFactory from "./ProcessorFactory";
 
 function HeadingProcessor(properties: HeadingProcessor.Attributes) {
 
@@ -21,7 +21,7 @@ function HeadingProcessor(properties: HeadingProcessor.Attributes) {
         <Heading ref={headingRef}>
             {node.children.length === 0 ? <br/> : ""}
             {
-                node.children.map(node => <EditorFactory key={node.id} node={node}/>)
+                node.children.map(node => <ProcessorFactory key={node.id} node={node}/>)
             }
         </Heading>
     )
