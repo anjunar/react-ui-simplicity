@@ -1,71 +1,131 @@
 import {AbstractCommand} from "./AbstractCommand";
 import {Context, SelectionState, selectionState} from "../components/EditorContext";
-import {AbstractContainerNode, AbstractNode, HeadingNode, ParagraphNode, TextNode} from "../ast/TreeNode";
+import {AbstractNode, TextNode} from "../ast/TreeNode";
 import {over, partial, splitIntoContainers} from "./Commands";
 
-function extracted(value: string, context: Context) {
+function updateSelection(
+    selection: {
+        startContainer: AbstractNode,
+        endContainer: AbstractNode,
+        startOffset: number,
+        endOffset: number
+    },
+    startContainer: TextNode,
+    endContainer: TextNode
+): void {
+    selection.startContainer = startContainer;
+    selection.endContainer = endContainer;
+    selection.startOffset = 0;
+    selection.endOffset = endContainer.text.length;
 }
+
+abstract class SelectionStateHandler {
+    abstract handle(
+        value: string,
+        context: Context,
+        callback: (value: string, containers: AbstractNode[]) => void
+    ): void;
+}
+
+class FullSelectionStateHandler extends SelectionStateHandler {
+    handle(
+        value: string,
+        context: Context,
+        callback: (value: string, containers: AbstractNode[]) => void
+    ): void {
+        const {currentSelection} = context.selection;
+
+        if (currentSelection.startContainer instanceof TextNode) {
+            splitIntoContainers(currentSelection.startContainer);
+            callback(value, [currentSelection.startContainer]);
+        }
+    }
+}
+
+class PartialSelectionStateHandler extends SelectionStateHandler {
+    handle(
+        value: string,
+        context: Context,
+        callback: (value: string, containers: AbstractNode[]) => void
+    ): void {
+        const {currentSelection} = context.selection;
+
+        let textNode = partial(currentSelection);
+        splitIntoContainers(textNode);
+        callback(value, [textNode]);
+
+        updateSelection(currentSelection, textNode, textNode)
+    }
+}
+
+class OverSelectionStateHandler extends SelectionStateHandler {
+    handle(
+        value: string,
+        context: Context,
+        callback: (value: string, containers: AbstractNode[]) => void
+    ): void {
+        const {ast: {root}, selection: {currentSelection}} = context;
+
+        let abstractNodes = over(currentSelection, root);
+
+        let startContainer = abstractNodes[0] as TextNode
+        let endContainer = abstractNodes[abstractNodes.length - 1] as TextNode
+
+        splitIntoContainers(startContainer)
+        splitIntoContainers(endContainer)
+
+        callback(value, abstractNodes.filter(node => node instanceof TextNode))
+
+        abstractNodes.forEach(node => {
+            if (!(node instanceof TextNode)) {
+                node.remove()
+            }
+        })
+
+        updateSelection(currentSelection, startContainer, endContainer)
+
+    }
+}
+
+class NoneSelectionStateHandler extends SelectionStateHandler {
+    handle(
+        value: string,
+        context: Context,
+        callback: (value: string, containers: AbstractNode[]) => void
+    ): void {
+        const {currentCursor} = context.cursor;
+
+        splitIntoContainers(currentCursor.container as TextNode)
+
+        callback(value, [currentCursor.container])
+    }
+}
+
+const stateHandlers: Map<SelectionState, SelectionStateHandler> = new Map();
+
+stateHandlers.set(SelectionState.full, new FullSelectionStateHandler());
+stateHandlers.set(SelectionState.partial, new PartialSelectionStateHandler());
+stateHandlers.set(SelectionState.over, new OverSelectionStateHandler());
+stateHandlers.set(SelectionState.none, new NoneSelectionStateHandler());
+
 
 export abstract class AbstractBlockCommand extends AbstractCommand<string> {
 
-    abstract get callback(): (value: string, containers : AbstractNode[]) => void;
+    abstract get callback(): (value: string, containers: AbstractNode[]) => void;
 
     execute(value: string, context: Context): void {
+        const {ast : {triggerAST}, selection : {triggerSelection}} = context;
+        const state = selectionState(context.selection.currentSelection);
+        const handler = stateHandlers.get(state);
 
-        let state = selectionState(context.selection.currentSelection)
-
-        const {ast: {root, triggerAST}, cursor: {currentCursor}, selection: {currentSelection, triggerSelection}} = context
-
-        switch (state) {
-            case SelectionState.full : {
-                this.callback(value, [currentSelection.startContainer])
-            } break;
-            case SelectionState.partial : {
-                let textNode = partial(currentSelection);
-
-                splitIntoContainers(textNode)
-
-                this.callback(value, [textNode])
-
-                currentSelection.startContainer = textNode;
-                currentSelection.endContainer = textNode;
-                currentSelection.startOffset = 0
-                currentSelection.endOffset = textNode.text.length
-
-            } break
-            case SelectionState.over : {
-                let abstractNodes = over(currentSelection, root);
-
-                let startContainer = abstractNodes[0] as TextNode
-                let endContainer = abstractNodes[abstractNodes.length - 1] as TextNode
-
-                splitIntoContainers(startContainer)
-                splitIntoContainers(endContainer)
-
-                this.callback(value, abstractNodes.filter(node => node instanceof TextNode))
-
-                abstractNodes.forEach(node => {
-                    if (! (node instanceof TextNode)) {
-                        node.remove()
-                    }
-                })
-
-                currentSelection.startContainer = startContainer
-                currentSelection.endContainer = endContainer
-                currentSelection.startOffset = 0
-                currentSelection.endOffset = endContainer.text.length
-
-
-            } break
-            case SelectionState.none : {
-                this.callback(value, [currentCursor.container])
-            }
+        if (!handler) {
+            throw new Error(`No handler found for state: ${state}`);
         }
 
-        triggerAST()
-        triggerSelection()
+        handler.handle(value, context, this.callback);
 
-
+        triggerAST();
+        triggerSelection();
     }
 
 }

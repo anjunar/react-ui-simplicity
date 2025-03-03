@@ -1,6 +1,6 @@
-import {AbstractContainerNode, AbstractNode, RootNode, TextNode} from "../ast/TreeNode";
+import {AbstractNode, RootNode, TextNode} from "../ast/TreeNode";
 
-export function splitIntoText(container: TextNode, startOffset : number = 0, endOffset : number = container.text.length) {
+export function splitIntoText(container: TextNode, startOffset: number = 0, endOffset: number = container.text.length) {
     let {bold, italic, deleted, sup, sub} = container
     let start = container.text.substring(startOffset, endOffset);
     let textNode = new TextNode(start);
@@ -17,7 +17,7 @@ export function splitIntoText(container: TextNode, startOffset : number = 0, end
     return null
 }
 
-export function splitIntoContainers(textNode : TextNode) {
+export function splitIntoContainers(textNode: TextNode) {
     let parent = textNode.parent;
     let grandParent = parent.parent;
     let index = textNode.parentIndex;
