@@ -35,6 +35,7 @@ export abstract class AbstractNode {
 }
 
 export abstract class AbstractContainerNode extends AbstractNode {
+
     private readonly _children : AbstractNode[] = []
 
     protected constructor(children: AbstractNode[]) {
@@ -43,6 +44,8 @@ export abstract class AbstractContainerNode extends AbstractNode {
             this.appendChild(child)
         })
     }
+
+    abstract newInstance() : AbstractContainerNode
 
     appendChild(node: AbstractNode) {
         node.remove()
@@ -64,6 +67,15 @@ export abstract class AbstractContainerNode extends AbstractNode {
         this._children.splice(index, 0, node)
     }
 
+    replaceWith(heading: AbstractNode) {
+        const parent = this.parent;
+        const index = this.parentIndex;
+        if (parent && index >= 0) {
+            parent.removeChild(this);
+            parent.insertChild(index, heading);
+        }
+    }
+
     get children(): ReadonlyArray<AbstractNode> {
         return this._children;
     }
@@ -75,6 +87,10 @@ export class RootNode extends AbstractContainerNode {
 
     constructor(children: AbstractNode[] = []) {
         super(children);
+    }
+
+    newInstance(): AbstractContainerNode {
+        return new RootNode()
     }
 
     get flatten() : AbstractNode[] {
@@ -89,18 +105,27 @@ export class ParagraphNode extends AbstractContainerNode {
     constructor(children: AbstractNode[]= []) {
         super(children);
     }
+
+    newInstance(): AbstractContainerNode {
+        return new ParagraphNode()
+    }
+
 }
 
-export class BoldNode extends AbstractContainerNode {
-    readonly type: string = "bold"
-
+export class HeadingNode extends AbstractContainerNode {
+    readonly type: string = "heading"
+    level : string = "h1"
 
     constructor(children: AbstractNode[] = []) {
         super(children);
     }
+
+    newInstance(): AbstractContainerNode {
+        return new HeadingNode()
+    }
+
+
 }
-
-
 
 export class TextNode extends AbstractNode {
 

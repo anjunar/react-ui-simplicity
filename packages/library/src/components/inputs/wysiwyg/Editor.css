@@ -2,6 +2,8 @@
 
     .root {
 
+        word-wrap: break-word;
+
         .bold {
             font-weight: bold;
         }

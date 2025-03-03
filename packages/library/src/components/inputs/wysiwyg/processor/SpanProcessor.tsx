@@ -13,8 +13,15 @@ const deleteContentBackward =  {
             let end = node.text.substring(current.offset);
             node.text = start + end;
 
-            current.offset--;
+            if (node.text.length === 0) {
+                let prevSibling = node.prevSibling as TextNode;
+                node.remove()
 
+                current.container = prevSibling;
+                current.offset = prevSibling.text.length;
+            } else {
+                current.offset--;
+            }
         } else if (node.parent && node.parent.parent) {
             let parent = node.parent;
             let index = parent.parentIndex;
@@ -249,7 +256,7 @@ function SpanProcessor(properties: SpanNode.Attributes) {
     let classNames = generateStyleClassNames();
 
     return (
-        <span ref={spanRef} className={classNames.join(" ")}>{node.text.length === 0 ? <br/> : node.text}</span>
+        <span ref={spanRef} className={classNames.length === 0 ? null : classNames.join(" ")}>{node.text.length === 0 ? <br/> : node.text}</span>
     )
 }
 

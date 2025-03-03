@@ -2,7 +2,7 @@ import "./Editor.css"
 import React, {useCallback, useEffect, useRef, useState} from "react"
 import EditorFactory from "./processor/EditorFactory";
 import Cursor from "./components/Cursor";
-import {AbstractNode, ParagraphNode, RootNode} from "./ast/TreeNode";
+import {AbstractContainerNode, AbstractNode, ParagraphNode, RootNode, TextNode} from "./ast/TreeNode";
 import EditorContext, {GeneralEvent} from "./components/EditorContext";
 import {findNode} from "./ast/TreeNodes";
 import Toolbar from "./components/Toolbar";
@@ -126,9 +126,9 @@ function Editor(properties: Editor.Attributes) {
                 const topOffset = clientRect.top - editorRect.top + ref.current.scrollTop;
                 const leftOffset = clientRect.left - editorRect.left + ref.current.scrollLeft;
 
-                cursorRef.current.style.left = leftOffset + "px"
+                cursorRef.current.style.left = leftOffset - 2 + "px"
                 cursorRef.current.style.top = topOffset + "px"
-                cursorRef.current.style.height = clientRect.height + "px"
+                cursorRef.current.style.fontSize = clientRect.height + "px"
             }
 
             let range = document.createRange();
@@ -157,6 +157,12 @@ function Editor(properties: Editor.Attributes) {
             selection.addRange(range);
         }
     }, [selectionState]);
+
+    useEffect(() => {
+
+        inputRef.current.value = Math.random() + ""
+
+    }, [astState, cursorState]);
 
     useEffect(() => {
 
@@ -215,13 +221,20 @@ function Editor(properties: Editor.Attributes) {
     };
 
     return (
-        <div ref={ref} className={"editor"} style={{position: "relative", ...style}} onClick={onContentClick}>
+        <div ref={ref} className={"editor"} style={{position: "relative", ...style}} >
             <EditorContext value={value}>
                 <Toolbar/>
                 <Cursor ref={cursorRef}/>
-                <EditorFactory node={astState.root}/>
+                <div onClick={onContentClick} style={{height : "100%"}}>
+                    <EditorFactory node={astState.root}/>
+                </div>
             </EditorContext>
-            <textarea ref={inputRef} onKeyDown={onKeyDown} onInput={onInput} onFocus={onFocus} onBlur={onBlur} style={{position: "absolute", left: "-9999px", opacity: 0}}/>
+            <textarea ref={inputRef}
+                      onKeyDown={onKeyDown}
+                      onInput={onInput}
+                      onFocus={onFocus}
+                      onBlur={onBlur}
+                      style={{position: "absolute", top : "-200px", opacity: 1}}/>
         </div>
     )
 }

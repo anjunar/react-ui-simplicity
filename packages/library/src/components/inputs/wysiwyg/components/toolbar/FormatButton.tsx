@@ -20,7 +20,7 @@ function FormatButton(properties: FormatButton.Attributes) {
         if (context.cursor.currentCursor) {
             setActive(callback(context.cursor.currentCursor.container as TextNode))
         }
-    }, [context.cursor.currentCursor])
+    }, [context.cursor.currentCursor?.container])
 
     return (
         <button className={`material-icons${active ? " active" : ""}`} onClick={onClick}>{children}</button>
