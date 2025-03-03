@@ -3,16 +3,16 @@ import {AbstractBlockCommand} from "./AbstractCommands";
 
 export class BlockCommand extends AbstractBlockCommand {
     get callback(): (value: string, container: AbstractNode[]) => void {
-        return (value: string, container: AbstractNode[]) => {
+        return (value: string, nodes: AbstractNode[]) => {
 
-            let parent = container[0].parent;
+            let parent = nodes[0].parent;
             if (value.startsWith("h")) {
-                let headingNode = new HeadingNode(container);
+                let headingNode = new HeadingNode(nodes);
                 headingNode.level = value
                 parent.replaceWith(headingNode)
             }
             if (value.startsWith("p")) {
-                let paragraphNode = new ParagraphNode(container);
+                let paragraphNode = new ParagraphNode(nodes);
                 parent.replaceWith(paragraphNode)
             }
 

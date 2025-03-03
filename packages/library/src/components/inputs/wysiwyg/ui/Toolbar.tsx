@@ -100,8 +100,7 @@ function Toolbar(properties: Toolbar.Attributes) {
                         <option value="x-large">x-large</option>
                         <option value="xx-large">xx-large</option>
                     </FormatSelect>
-                </div>
-                {/*
+{/*
                     <FormatSelect>
                         <option value={"justify"} className={"material-icons"}>format_align_justify</option>
                         <option value={"left"} className={"material-icons"}>format_align_left</option>
@@ -109,6 +108,7 @@ function Toolbar(properties: Toolbar.Attributes) {
                         <option value={"center"} className={"material-icons"}>format_align_center</option>
                     </FormatSelect>
 */}
+                </div>
             </Page>
             <Page>
                 <div className={"editor-toolbar"}>
