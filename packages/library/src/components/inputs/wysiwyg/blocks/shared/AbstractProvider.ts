@@ -1,15 +1,13 @@
 import React from "react";
 
-export abstract class AbstractProvider<C, T, N extends new (...args: any[]) => any> {
+export abstract class AbstractProvider<C extends new (...args: any[]) => any, P> {
 
+    abstract type : string
+    abstract icon: string
     abstract title: string
 
-    abstract icon : string
+    abstract command: C
 
-    abstract component: ((properties: C) => React.JSX.Element)
-
-    abstract tool: ((properties: T) => React.JSX.Element)
-
-    abstract get factory(): N
+    abstract processor: ((properties: P) => React.JSX.Element)
 
 }

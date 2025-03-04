@@ -1,24 +1,19 @@
-import {AbstractNode} from "../shared/AbstractNode";
+import {AbstractContainerNode, AbstractNode} from "../../core/TreeNode";
 
-export class ListData {
+export class ListNode extends AbstractContainerNode {
+    type: string = "list";
 
-    type = "unordered"
 
-    items : string[]  = []
-
+    constructor(children: AbstractNode[] = []) {
+        super(children);
+    }
 }
 
-export class ListNode extends AbstractNode<ListData> {
+export class ItemNode extends AbstractContainerNode {
+    type: string = "item";
 
-    type: string = "list"
-    data: ListData;
 
-    get isEmpty(): any {
-        return this.data.items.length === 0
-    }
-
-    constructor(data: ListData) {
-        super();
-        this.data = data;
+    constructor(children: AbstractNode[] = []) {
+        super(children);
     }
 }
