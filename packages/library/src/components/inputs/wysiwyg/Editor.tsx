@@ -61,7 +61,7 @@ function Editor(properties: Editor.Attributes) {
     }, []);
 
     useEffect(() => {
-        const interval = setInterval(processQueue, 50)
+        const interval = setInterval(processQueue, 100)
         return () => clearInterval(interval)
     }, [processQueue]);
 
@@ -262,7 +262,7 @@ function Editor(properties: Editor.Attributes) {
             <EditorContext value={value}>
                 <Toolbar page={page}/>
                 <Cursor ref={cursorRef}/>
-                <div onClick={onContentClick} style={{flex: 1}}>
+                <div onClick={onContentClick} style={{flex: 1, overflow : "auto"}}>
                     <ProcessorFactory node={astState.root}/>
                 </div>
                 <Footer page={page} onPage={(value) => setPage(value)}/>
