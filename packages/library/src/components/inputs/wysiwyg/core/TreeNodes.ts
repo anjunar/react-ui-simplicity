@@ -45,7 +45,7 @@ export function findNodeWithMaxDepth(
 
 export function flatten(node : AbstractNode) : AbstractNode[] {
     if (node instanceof AbstractContainerNode) {
-        return [node, ...node.children.flatMap(child => flatten(child)), node]
+        return [node, ...node.children.flatMap(child => flatten(child))]
     } else {
         return [node]
     }

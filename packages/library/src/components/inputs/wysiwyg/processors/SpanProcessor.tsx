@@ -134,7 +134,7 @@ const arrowUp = {
         return value.data === "ArrowUp" && value.type === "keydown"
     },
     process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
-        onArrowUp(node, current)
+        onArrowUp(node, current, root)
     }
 }
 
@@ -143,7 +143,7 @@ const arrowDown = {
         return value.data === "ArrowDown" && value.type === "keydown"
     },
     process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
-        onArrowDown(node, current)
+        onArrowDown(node, current, root)
     }
 }
 

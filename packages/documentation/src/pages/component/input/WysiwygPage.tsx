@@ -6,7 +6,7 @@ export default function WysiwygPage() {
     let listProvider = new ListProvider();
 
     return (
-        <div className={"wysiwyg-page"} style={{height : "100%", padding : "10px"}}>
+        <div className={"wysiwyg-page"} style={{height : "calc(100% - 20px)", padding : "10px"}}>
             <Editor style={{height : "100%"}} providers={[listProvider]}/>
         </div>
     )

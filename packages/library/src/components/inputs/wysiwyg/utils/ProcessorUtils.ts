@@ -4,7 +4,7 @@ export function onArrowLeft(root: RootNode, current: { container: AbstractNode; 
     let flattened = root.flatten
     let indexOf = flattened.indexOf(current.container);
     if (indexOf > 0) {
-        current.container = flattened[indexOf - 1]
+        current.container = flattened.findLast((node, index) => index < indexOf && node instanceof TextNode)
         if (current.container instanceof TextNode) {
             current.offset = current.container.text.length
         } else {
@@ -17,19 +17,22 @@ export function onArrowRight(root: RootNode, current: { container: AbstractNode;
     let flattened = root.flatten
     let indexOf = flattened.lastIndexOf(current.container);
     if (indexOf < flattened.length - 1) {
-        current.container = flattened[indexOf + 1]
+        current.container = flattened.find((node, index) => index > indexOf && node instanceof TextNode)
         current.offset = 0
     }
 }
 
-export function onArrowUp(node: TextNode, current: { container: AbstractNode; offset: number }) {
+export function onArrowUp(node: TextNode, current: { container: AbstractNode; offset: number }, root: RootNode) {
     let parent = node.parent;
     if (parent) {
         let grandParent = parent.parent;
         if (grandParent) {
             const parentIndex = parent.parentIndex;
             if (parentIndex > -1) {
-                const siblingAbove = grandParent.children[parentIndex - 1];
+                let flattened = root.flatten;
+                let indexOf = flattened.indexOf(parent);
+                let abstractNode = flattened.findLast((node, index) => index < indexOf && node instanceof TextNode);
+                const siblingAbove = abstractNode.parent
                 if (siblingAbove instanceof AbstractContainerNode) {
 
                     let remainingOffset = parent
@@ -60,14 +63,17 @@ export function onArrowUp(node: TextNode, current: { container: AbstractNode; of
     }
 }
 
-export function onArrowDown(node: TextNode, current: { container: AbstractNode; offset: number }) {
+export function onArrowDown(node: TextNode, current: { container: AbstractNode; offset: number }, root : RootNode) {
     let parent = node.parent;
     if (parent) {
         let grandParent = parent.parent;
         if (grandParent) {
             const parentIndex = parent.parentIndex;
             if (parentIndex >= 0 && parentIndex < grandParent.children.length - 1) {
-                const siblingBelow = grandParent.children[parentIndex + 1];
+                let flattened = root.flatten;
+                let indexOf = flattened.indexOf(parent.children[parent.children.length - 1])
+                let abstractNode = flattened.find((node, index) => index > indexOf && node instanceof TextNode);
+                const siblingBelow = abstractNode.parent
                 if (siblingBelow instanceof AbstractContainerNode) {
 
                     let remainingOffset = parent

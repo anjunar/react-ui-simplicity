@@ -17,61 +17,6 @@ function DivProcessor(properties: DivNode.Attributes) {
         node.dom = divRef.current
     }, [node]);
 
-    useEffect(() => {
-
-        if (event.instance && node === currentCursor.container && ! event.handled) {
-            let e = event.instance
-            let node = currentCursor.container as ParagraphNode
-
-            switch (e.type) {
-                case "insertCompositionText" :
-                case "insertText" : {
-
-                    if (node.children.length === 0) {
-                        let textNode = new TextNode(e.data)
-                        node.appendChild(textNode)
-
-                        currentCursor.container = textNode
-                        currentCursor.offset = e.data.length
-
-                        event.handled = true
-
-                        triggerAST()
-                        triggerCursor()
-
-                    }
-
-                }
-                    break
-                case "keydown" : {
-
-                    switch (e.data) {
-                        case "ArrowLeft" : {
-                            onArrowLeft(root, currentCursor);
-
-                            event.handled = true
-
-                            triggerCursor()
-
-                        } break
-                        case "ArrowRight" : {
-                            onArrowRight(root, currentCursor);
-
-                            event.handled = true
-
-                            triggerCursor()
-                        }
-                    }
-
-                } break
-            }
-
-        }
-
-    }, [event.instance]);
-
-
-
     return (
         <div ref={divRef} className={node.justify ? node.justify : null}>
             {node.children.length === 0 ? <br/> : ""}

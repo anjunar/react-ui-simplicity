@@ -2,7 +2,7 @@ import "./Editor.css"
 import React, {useCallback, useEffect, useRef, useState} from "react"
 import ProcessorFactory from "./processors/ProcessorFactory";
 import Cursor from "./ui/Cursor";
-import {AbstractNode, ParagraphNode, RootNode} from "./core/TreeNode";
+import {AbstractNode, ParagraphNode, RootNode, TextNode} from "./core/TreeNode";
 import EditorContext, {GeneralEvent} from "./EditorContext";
 import {findNode} from "./core/TreeNodes";
 import Toolbar from "./ui/Toolbar";
@@ -15,7 +15,7 @@ function Editor(properties: Editor.Attributes) {
 
     const [astState, setAstState] = useState(() => {
         return {
-            root: new RootNode([new ParagraphNode([])])
+            root: new RootNode([new ParagraphNode([new TextNode("")])])
         }
     })
 
