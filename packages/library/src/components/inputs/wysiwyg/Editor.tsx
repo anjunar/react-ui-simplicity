@@ -130,9 +130,9 @@ function Editor(properties: Editor.Attributes) {
                 const topOffset = clientRect.top - editorRect.top + ref.current.scrollTop;
                 const leftOffset = clientRect.left - editorRect.left + ref.current.scrollLeft;
 
-                cursorRef.current.style.left = leftOffset - 2 + "px"
+                cursorRef.current.style.left = leftOffset - 2 + clientRect.width +  "px"
                 cursorRef.current.style.top = topOffset + "px"
-                cursorRef.current.style.fontSize = clientRect.height + "px"
+                cursorRef.current.style.height = clientRect.height + "px"
                 cursorRef.current.style.display = "block"
             }
 
@@ -141,7 +141,7 @@ function Editor(properties: Editor.Attributes) {
             let containerFirstChild = cursorState.currentCursor.container.dom.firstChild;
 
             if (containerFirstChild instanceof HTMLElement || containerFirstChild === null) {
-                range.selectNode(cursorState.currentCursor.container.dom)
+                range.selectNode(cursorState.currentCursor.container.dom.firstChild)
                 extracted()
             } else {
                 range.setStart(containerFirstChild, cursorState.currentCursor.offset)
@@ -165,7 +165,7 @@ function Editor(properties: Editor.Attributes) {
 
     useEffect(() => {
 
-        inputRef.current.value = Math.random() + ""
+        inputRef.current.value = " " + inputRef.current.value;
         inputRef.current.focus()
 
     }, [astState, cursorState]);

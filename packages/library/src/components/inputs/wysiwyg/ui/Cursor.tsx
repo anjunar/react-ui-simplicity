@@ -8,10 +8,10 @@ function Cursor(properties: Cursor.Attributes) {
 
     const {cursor : {currentCursor}} = useContext(EditorContext)
 
-    const style : CSSProperties = {position : "absolute", top : "38px", backgroundColor : "var(--color-background-primary)"};
+    const style : CSSProperties = {position : "absolute", top : "38px", fontSize : "medium", backgroundColor : "var(--color-background-primary)"};
 
     return (
-        <div style={{display : "none"}} className={"cursor"} ref={ref}>|<span style={style}>{currentCursor?.container?.dom?.localName}</span></div>
+        <div style={{display : "none"}} className={"cursor"} ref={ref}></div>
     )
 }
 

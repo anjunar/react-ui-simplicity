@@ -27,7 +27,7 @@ function ItemProcessor(properties: ItemProcessor.Attributes) {
         if (firstChild.text === "") {
             let grandParent = parent.parent;
             let grandParentIndex = parent.parentIndex;
-
+            node.remove()
             grandParent.insertChild(grandParentIndex + 1, new ParagraphNode([textNode]));
         } else {
             parent.insertChild(parentIndex + 1, new ItemNode([new ParagraphNode([textNode])]));
