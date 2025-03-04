@@ -23,7 +23,15 @@ function ItemProcessor(properties: ItemProcessor.Attributes) {
 
         let textNode = new TextNode("");
 
-        parent.insertChild(parentIndex + 1, new ItemNode([new ParagraphNode([textNode])]));
+        let firstChild = (node.children[0] as ParagraphNode).children[0] as TextNode
+        if (firstChild.text === "") {
+            let grandParent = parent.parent;
+            let grandParentIndex = parent.parentIndex;
+
+            grandParent.insertChild(grandParentIndex + 1, new ParagraphNode([textNode]));
+        } else {
+            parent.insertChild(parentIndex + 1, new ItemNode([new ParagraphNode([textNode])]));
+        }
 
         currentCursor.container = textNode
         currentCursor.offset = 0
