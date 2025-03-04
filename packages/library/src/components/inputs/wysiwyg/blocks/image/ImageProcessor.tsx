@@ -11,6 +11,17 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
 
     const [open, setOpen] = useState(false)
 
+    const [width, setWidth] = useState(360)
+
+    const [height, setHeight] = useState(360)
+
+    const [aspectRatio, setAspectRatio] = useState(1)
+
+    const [dimensions, setDimensions] = useState({
+        width : 360,
+        height : 360
+    })
+
     let {ast: {triggerAST}, cursor: {currentCursor, triggerCursor}} = useContext(EditorContext);
 
     const divRef = useRef(null);
@@ -30,6 +41,20 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
                     if (reader.result) {
                         let result = reader.result as string
 
+                        const image = new Image()
+                        image.src = result
+                        image.onload = () => {
+                            let ratio = image.width / image.height;
+                            setAspectRatio(ratio)
+                            let height = width / ratio;
+                            setHeight(height)
+
+                            setDimensions({
+                                width : 360,
+                                height : height
+                            })
+                        }
+
                         setImage(result)
 
                         triggerAST()
@@ -40,6 +65,39 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
             }
         }
     }
+
+    function onWidthChange(event : React.ChangeEvent<HTMLInputElement>) {
+        setWidth(event.target.valueAsNumber)
+        triggerAST()
+    }
+
+    function onHeightChange(event : React.ChangeEvent<HTMLInputElement>) {
+        setHeight(event.target.valueAsNumber)
+        triggerAST()
+    }
+
+    function onSendClick(event : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        event.stopPropagation()
+        setDimensions({
+            width : width,
+            height : height
+        })
+    }
+
+    useEffect(() => {
+        let result = Math.round(height * aspectRatio * 100) / 100;
+        if (result !== width) {
+            setWidth(result)
+        }
+
+    }, [height]);
+
+    useEffect(() => {
+        let result = Math.round((width / aspectRatio) * 100) / 100;
+        if (result !== height) {
+            setHeight(result)
+        }
+    }, [width]);
 
     useEffect(() => {
         let cursor = findNodeWithMaxDepth(node, (node) => node === currentCursor.container, 2);
@@ -62,7 +120,7 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
     return (
         <div ref={divRef} style={{display : "flex", justifyContent : "center", alignItems : "center", position : "relative"}}>
             {
-                image && <img src={image} style={{maxWidth : "360px", width : "100%"}}/>
+                image && <img src={image} style={{maxWidth : dimensions.width, maxHeight : dimensions.height, width : "100%"}}/>
             }
             <input ref={inputRef} onChange={onLoad} type={"file"} style={{display : "none"}}/>
             {
@@ -77,10 +135,9 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
                         display : "flex",
                         alignItems : "center"
                     }}>
-                        <input type={"number"} placeholder={"Width"} style={{width : "50px"}} onClick={event => event.stopPropagation()}/>
-                        <button className={"material-icons"}>add</button>
-                        <button className={"material-icons"}>delete</button>
-                        <input type={"text"} placeholder={"Height"}  style={{width : "50px"}} onClick={event => event.stopPropagation()}/>
+                        <input value={width} onChange={onWidthChange} type={"number"} placeholder={"Width"} style={{width : "50px"}} onClick={event => event.stopPropagation()}/>
+                        <button className={"material-icons"} onClick={onSendClick}>send</button>
+                        <input value={height} onChange={onHeightChange} type={"number"} placeholder={"Height"}  style={{width : "50px"}} onClick={event => event.stopPropagation()}/>
                     </div>
                 )
             }

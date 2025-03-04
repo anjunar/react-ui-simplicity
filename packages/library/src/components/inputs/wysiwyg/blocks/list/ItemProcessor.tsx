@@ -40,6 +40,11 @@ function ItemProcessor(properties: ItemProcessor.Attributes) {
         triggerAST()
     }
 
+    function closeClick(event : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        event.stopPropagation()
+        setOpen(false)
+    }
+
     function deleteClick(event : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         event.stopPropagation()
 
@@ -76,6 +81,7 @@ function ItemProcessor(properties: ItemProcessor.Attributes) {
                     <div style={{position: "absolute", right: 0, backgroundColor : "var(--color-background-primary)", boxShadow : "3px 3px 10px 3px #1a1a1a"}}>
                         <button className={"material-icons"} onClick={addClick}>add</button>
                         <button className={"material-icons"} onClick={deleteClick}>delete</button>
+                        <button className={"material-icons"} onClick={closeClick}>close</button>
                     </div>
                 )
             }
