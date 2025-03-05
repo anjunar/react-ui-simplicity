@@ -32,30 +32,32 @@ export function onArrowUp(node: TextNode, current: { container: AbstractNode; of
                 let flattened = root.flatten;
                 let indexOf = flattened.indexOf(parent);
                 let abstractNode = flattened.findLast((node, index) => index < indexOf && node instanceof TextNode);
-                const siblingAbove = abstractNode.parent
-                if (siblingAbove instanceof AbstractContainerNode) {
+                if (abstractNode) {
+                    const siblingAbove = abstractNode.parent
+                    if (siblingAbove instanceof AbstractContainerNode) {
 
-                    let remainingOffset = parent
-                        .children
-                        .slice(0, node.parentIndex)
-                        .reduce((acc, child) => acc + (child as TextNode).text.length, 0) + current.offset;
+                        let remainingOffset = parent
+                            .children
+                            .slice(0, node.parentIndex)
+                            .reduce((acc, child) => acc + (child as TextNode).text.length, 0) + current.offset;
 
-                    for (const child of siblingAbove.children) {
-                        const textLength = (child as TextNode).text.length;
+                        for (const child of siblingAbove.children) {
+                            const textLength = (child as TextNode).text.length;
 
-                        if (remainingOffset <= textLength) {
-                            current.container = child;
-                            current.offset = remainingOffset;
-                            return;
+                            if (remainingOffset <= textLength) {
+                                current.container = child;
+                                current.offset = remainingOffset;
+                                return;
+                            }
+
+                            remainingOffset -= textLength;
                         }
 
-                        remainingOffset -= textLength;
-                    }
-
-                    const lastTextNode = siblingAbove.children[siblingAbove.children.length - 1] as TextNode;
-                    if (lastTextNode) {
-                        current.container = lastTextNode;
-                        current.offset = lastTextNode.text.length;
+                        const lastTextNode = siblingAbove.children[siblingAbove.children.length - 1] as TextNode;
+                        if (lastTextNode) {
+                            current.container = lastTextNode;
+                            current.offset = lastTextNode.text.length;
+                        }
                     }
                 }
             }
@@ -73,30 +75,32 @@ export function onArrowDown(node: TextNode, current: { container: AbstractNode; 
                 let flattened = root.flatten;
                 let indexOf = flattened.indexOf(parent.children[parent.children.length - 1])
                 let abstractNode = flattened.find((node, index) => index > indexOf && node instanceof TextNode);
-                const siblingBelow = abstractNode.parent
-                if (siblingBelow instanceof AbstractContainerNode) {
+                if (abstractNode) {
+                    const siblingBelow = abstractNode.parent
+                    if (siblingBelow instanceof AbstractContainerNode) {
 
-                    let remainingOffset = parent
-                        .children
-                        .slice(0, node.parentIndex)
-                        .reduce((acc, child) => acc + (child as TextNode).text.length, 0) + current.offset;
+                        let remainingOffset = parent
+                            .children
+                            .slice(0, node.parentIndex)
+                            .reduce((acc, child) => acc + (child as TextNode).text.length, 0) + current.offset;
 
-                    for (const child of siblingBelow.children) {
-                        const textLength = (child as TextNode).text.length;
+                        for (const child of siblingBelow.children) {
+                            const textLength = (child as TextNode).text.length;
 
-                        if (remainingOffset <= textLength) {
-                            current.container = child;
-                            current.offset = remainingOffset;
-                            return;
+                            if (remainingOffset <= textLength) {
+                                current.container = child;
+                                current.offset = remainingOffset;
+                                return;
+                            }
+
+                            remainingOffset -= textLength;
                         }
 
-                        remainingOffset -= textLength;
-                    }
-
-                    const lastTextNode = siblingBelow.children[siblingBelow.children.length - 1] as TextNode;
-                    if (lastTextNode) {
-                        current.container = lastTextNode;
-                        current.offset = lastTextNode.text.length;
+                        const lastTextNode = siblingBelow.children[siblingBelow.children.length - 1] as TextNode;
+                        if (lastTextNode) {
+                            current.container = lastTextNode;
+                            current.offset = lastTextNode.text.length;
+                        }
                     }
                 }
             }

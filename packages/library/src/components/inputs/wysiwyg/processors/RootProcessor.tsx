@@ -15,7 +15,7 @@ function RootProcessor(properties: RootNode.Attributes) {
 
     useEffect(() => {
 
-        if (event.instance && node === currentCursor.container && ! event.handled) {
+        if (event.instance && node === currentCursor?.container && ! event.handled) {
             let e = event.instance
             let node = currentCursor.container as ParagraphNode
 

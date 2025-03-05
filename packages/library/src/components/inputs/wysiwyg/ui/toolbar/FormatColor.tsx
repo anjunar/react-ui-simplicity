@@ -9,6 +9,8 @@ function FormatColor(properties: FormatColor.Attributes) {
 
     const [value, setValue] = useState(defaultValue)
 
+    const [disabled, setDisabled] = useState(false)
+
     const context = useContext(EditorContext)
 
     function resolveVariable(value : string) {
@@ -24,6 +26,15 @@ function FormatColor(properties: FormatColor.Attributes) {
     }
 
     useEffect(() => {
+        if (context.cursor.currentCursor || context.selection.currentSelection) {
+            setDisabled(false)
+        } else {
+            setDisabled(true)
+        }
+
+    }, [context.cursor.currentCursor, context.selection.currentSelection]);
+
+    useEffect(() => {
         if (context.cursor.currentCursor) {
             let result = callback(context.cursor.currentCursor?.container as TextNode);
             if (result) {
@@ -33,7 +44,7 @@ function FormatColor(properties: FormatColor.Attributes) {
     }, [context.ast]);
 
     return (
-        <input list={id} type={"color"} value={value} onChange={onChange}></input>
+        <input disabled={disabled} list={id} type={"color"} value={value} onChange={onChange}></input>
     )
 }
 

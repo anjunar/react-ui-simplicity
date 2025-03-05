@@ -9,6 +9,8 @@ function FormatSelect(properties: FormatSelect.Attributes) {
 
     const [value, setValue] = useState("p")
 
+    const [disabled, setDisabled] = useState(false)
+
     const context = useContext(EditorContext)
 
     function onChange(event : React.ChangeEvent<HTMLSelectElement>) {
@@ -19,13 +21,22 @@ function FormatSelect(properties: FormatSelect.Attributes) {
     }
 
     useEffect(() => {
+        if (context.cursor.currentCursor || context.selection.currentSelection) {
+            setDisabled(false)
+        } else {
+            setDisabled(true)
+        }
+
+    }, [context.cursor.currentCursor, context.selection.currentSelection]);
+
+    useEffect(() => {
         if (context.cursor.currentCursor) {
             setValue(callback(context.cursor.currentCursor?.container as TextNode))
         }
     }, [context.cursor.currentCursor]);
 
     return (
-        <select value={value} onChange={onChange} className={className} style={style}>
+        <select disabled={disabled} value={value} onChange={onChange} className={className} style={style}>
             {
                 children
             }

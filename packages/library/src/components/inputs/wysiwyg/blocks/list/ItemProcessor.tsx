@@ -21,7 +21,7 @@ function ItemProcessor(properties: ItemProcessor.Attributes) {
         let parent = node.parent;
         let parentIndex = node.parentIndex;
 
-        let textNode = new TextNode("");
+        let textNode = new TextNode();
 
         let firstChild = (node.children[0] as ParagraphNode).children[0] as TextNode
         if (firstChild.text === "") {

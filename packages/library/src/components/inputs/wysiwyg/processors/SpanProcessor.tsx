@@ -256,8 +256,8 @@ function SpanProcessor(properties: SpanNode.Attributes) {
     const spanRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        node.dom = spanRef.current
-    }, [node]);
+        node.dom = spanRef.current.firstChild
+    }, [node.text]);
 
     useEffect(() => {
 

@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useRef, useState} from "react"
 import {ImageNode} from "./ImageNode";
 import EditorContext from "../../EditorContext";
 import {findNodeWithMaxDepth} from "../../core/TreeNodes";
+import {ParagraphNode, TextNode} from "../../core/TreeNode";
 
 function ImageProcessor(properties: ImageProcessor.Attributes) {
 
@@ -22,7 +23,7 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
         height : 360
     })
 
-    let {ast: {triggerAST}, cursor: {currentCursor, triggerCursor}} = useContext(EditorContext);
+    let {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, event} = useContext(EditorContext);
 
     const divRef = useRef(null);
 
@@ -116,6 +117,47 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
     useEffect(() => {
         inputRef.current.click()
     }, []);
+
+    useEffect(() => {
+
+        if (event.instance && node === currentCursor?.container && !event.handled) {
+
+            switch (event.instance.type) {
+                case "insertLineBreak" : {
+                    let index = node.parentIndex;
+                    let parent = node.parent;
+                    let textNode = new TextNode();
+
+                    currentCursor.container = textNode
+                    currentCursor.offset = 0
+
+                    parent.insertChild(index + 1, new ParagraphNode([textNode]));
+
+                    event.handled = true
+
+                } break
+                case "deleteContentBackward" : {
+
+                    let flattened = root.flatten;
+                    let index = flattened.indexOf(node);
+                    let slice = flattened.slice(0, index);
+                    let textNode = slice.findLast(node => node instanceof TextNode);
+
+                    currentCursor.container = textNode
+                    currentCursor.offset = textNode.text.length;
+
+                    node.remove()
+
+                    event.handled = true
+
+                } break
+            }
+
+            triggerCursor()
+            triggerAST()
+        }
+
+    }, [event.instance]);
 
     return (
         <div ref={divRef} style={{display : "flex", justifyContent : "center", alignItems : "center", position : "relative"}}>

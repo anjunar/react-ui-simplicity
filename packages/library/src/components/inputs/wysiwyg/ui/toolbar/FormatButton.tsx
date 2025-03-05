@@ -10,6 +10,8 @@ function FormatButton(properties: FormatButton.Attributes) {
 
     const [active, setActive] = useState(false)
 
+    const [disabled, setDisabled] = useState(false)
+
     const context = useContext(EditorContext)
 
     function onClick() {
@@ -23,8 +25,17 @@ function FormatButton(properties: FormatButton.Attributes) {
         }
     }, [context.cursor.currentCursor?.container])
 
+    useEffect(() => {
+        if (context.cursor.currentCursor || context.selection.currentSelection) {
+            setDisabled(false)
+        } else {
+            setDisabled(true)
+        }
+
+    }, [context.cursor.currentCursor, context.selection.currentSelection]);
+
     return (
-        <button className={`material-icons${active ? " active" : ""}`} onClick={onClick}>{children}</button>
+        <button disabled={disabled} className={`material-icons${active ? " active" : ""}`} onClick={onClick}>{children}</button>
     )
 }
 

@@ -9,7 +9,7 @@ export class ListCommand extends AbstractCommand<AbstractNode> {
         let index = parent.parentIndex
         let grandParent = parent.parent;
 
-        let textNode = new TextNode("");
+        let textNode = new TextNode();
 
         grandParent.insertChild(index + 1, new ListNode([new ItemNode([new ParagraphNode([textNode])],)]))
 

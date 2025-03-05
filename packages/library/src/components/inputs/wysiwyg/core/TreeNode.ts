@@ -9,7 +9,7 @@ function resolveVariable(value : string) {
 export abstract class AbstractNode {
     id : string = v4()
     abstract type : string
-    dom : HTMLElement
+    dom : Node
     parent: AbstractContainerNode;
 
     get nextSibling(): AbstractNode {
@@ -135,7 +135,7 @@ export class TextNode extends AbstractNode {
 
     backgroundColor : string = ""
 
-    constructor(text: string) {
+    constructor(text: string = "") {
         super();
         this.text = text;
     }

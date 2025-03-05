@@ -15,7 +15,7 @@ function Editor(properties: Editor.Attributes) {
 
     const [astState, setAstState] = useState(() => {
         return {
-            root: new RootNode([new ParagraphNode([new TextNode("")])])
+            root: new RootNode([new ParagraphNode([new TextNode()])])
         }
     })
 
@@ -73,11 +73,11 @@ function Editor(properties: Editor.Attributes) {
         } else {
             let caretPosition = document.caretPositionFromPoint(event.clientX, event.clientY);
 
-            let selectedNode: AbstractNode;
-            if (caretPosition.offsetNode instanceof HTMLElement) {
-                selectedNode = findNode(astState.root, (node) => node.dom === caretPosition.offsetNode);
+            let selectedNode: AbstractNode
+            if (caretPosition.offsetNode instanceof HTMLSpanElement) {
+                selectedNode= findNode(astState.root, (node) => node.dom.parentElement === caretPosition.offsetNode);
             } else {
-                selectedNode = findNode(astState.root, (node) => node.dom.firstChild === caretPosition.offsetNode);
+                selectedNode= findNode(astState.root, (node) => node.dom === caretPosition.offsetNode);
             }
 
             if (selectedNode) {
@@ -87,6 +87,12 @@ function Editor(properties: Editor.Attributes) {
                         offset: caretPosition.offset
                     }
                 })
+            } else {
+/*
+                setCursorState({
+                    currentCursor: null
+                })
+*/
             }
             inputRef.current?.focus();
         }
@@ -138,10 +144,10 @@ function Editor(properties: Editor.Attributes) {
 
             let range = document.createRange();
 
-            let containerFirstChild = cursorState.currentCursor.container.dom.firstChild;
+            let containerFirstChild = cursorState.currentCursor.container.dom;
 
-            if (containerFirstChild instanceof HTMLElement || containerFirstChild === null) {
-                range.selectNode(cursorState.currentCursor.container.dom.firstChild)
+            if (containerFirstChild instanceof HTMLElement) {
+                range.selectNode(cursorState.currentCursor.container.dom)
                 extracted()
             } else {
                 range.setStart(containerFirstChild, cursorState.currentCursor.offset)
@@ -155,8 +161,8 @@ function Editor(properties: Editor.Attributes) {
     useEffect(() => {
         if (selectionState.currentSelection) {
             let range = document.createRange();
-            range.setStart(selectionState.currentSelection.startContainer.dom.firstChild, selectionState.currentSelection.startOffset);
-            range.setEnd(selectionState.currentSelection.endContainer.dom.firstChild, selectionState.currentSelection.endOffset);
+            range.setStart(selectionState.currentSelection.startContainer.dom, selectionState.currentSelection.startOffset);
+            range.setEnd(selectionState.currentSelection.endContainer.dom, selectionState.currentSelection.endOffset);
             let selection = window.getSelection();
             selection.removeAllRanges();
             selection.addRange(range);
@@ -166,7 +172,10 @@ function Editor(properties: Editor.Attributes) {
     useEffect(() => {
 
         inputRef.current.value = " " + inputRef.current.value;
-        inputRef.current.focus()
+        if (cursorState.currentCursor) {
+            inputRef.current.focus()
+        }
+
 
     }, [cursorState]);
 
@@ -178,32 +187,8 @@ function Editor(properties: Editor.Attributes) {
             if (selection && !selection.isCollapsed) {
                 let rangeAt = selection.getRangeAt(0);
 
-                let start = findNode(astState.root, (node) => {
-                    if (rangeAt.startContainer instanceof HTMLElement) {
-                        if (rangeAt.startContainer instanceof HTMLBRElement) {
-                            return node.dom === rangeAt.startContainer.parentElement
-                        } else {
-                            return node.dom === rangeAt.startContainer
-                        }
-
-                    } else {
-                        return node.dom.firstChild === rangeAt.startContainer
-                    }
-
-                })
-                let end = findNode(astState.root, (node) => {
-                    if (rangeAt.endContainer instanceof HTMLElement) {
-                        if (rangeAt.endContainer instanceof HTMLBRElement) {
-                            return node.dom === rangeAt.endContainer.parentElement
-                        } else {
-                            return node.dom === rangeAt.endContainer
-                        }
-
-                    } else {
-                        return node.dom.firstChild === rangeAt.endContainer
-                    }
-
-                })
+                let start = findNode(astState.root, (node) => node.dom === rangeAt.startContainer)
+                let end = findNode(astState.root, (node) => node.dom === rangeAt.endContainer)
 
                 if (!(selectionState.currentSelection &&
                     selectionState.currentSelection.startContainer === start &&
@@ -272,7 +257,7 @@ function Editor(properties: Editor.Attributes) {
                       onInput={onInput}
                       onFocus={onFocus}
                       onBlur={onBlur}
-                      style={{position: "absolute", top: "-200px", opacity: 1}}/>
+                      style={{position: "absolute", top: "-2000px", opacity: 1}}/>
         </div>
     )
 }

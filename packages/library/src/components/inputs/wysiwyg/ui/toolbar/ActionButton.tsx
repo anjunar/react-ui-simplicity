@@ -1,4 +1,4 @@
-import React, {useContext} from "react"
+import React, {useContext, useEffect, useState} from "react"
 import {AbstractCommand} from "../../commands/AbstractCommands";
 import {AbstractNode} from "../../core/TreeNode";
 import EditorContext from "../../EditorContext";
@@ -9,12 +9,23 @@ function ActionButton(properties: ActionButton.Attributes) {
 
     const context = useContext(EditorContext)
 
+    const [disabled, setDisabled] = useState(false)
+
     function onClick() {
         command.execute(context.cursor.currentCursor?.container, context)
     }
 
+    useEffect(() => {
+        if (context.cursor.currentCursor || context.selection.currentSelection) {
+            setDisabled(false)
+        } else {
+            setDisabled(true)
+        }
+
+    }, [context.cursor.currentCursor, context.selection.currentSelection]);
+
     return (
-        <button className={"material-icons"} onClick={onClick}>{children}</button>
+        <button disabled={disabled} className={"material-icons"} onClick={onClick}>{children}</button>
     )
 }
 
