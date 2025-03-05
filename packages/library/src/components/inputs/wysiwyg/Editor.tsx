@@ -88,11 +88,9 @@ function Editor(properties: Editor.Attributes) {
                     }
                 })
             } else {
-/*
                 setCursorState({
                     currentCursor: null
                 })
-*/
             }
             inputRef.current?.focus();
         }

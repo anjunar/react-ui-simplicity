@@ -101,10 +101,16 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
     }, [width]);
 
     useEffect(() => {
-        let cursor = findNodeWithMaxDepth(node, (node) => node === currentCursor.container, 2);
+        if (currentCursor) {
+            let container = currentCursor.container
 
-        if (cursor) {
-            setOpen(true)
+            let cursor = findNodeWithMaxDepth(node, (node) => node === container, 2);
+
+            if (cursor) {
+                setOpen(true)
+            } else {
+                setOpen(false)
+            }
         } else {
             setOpen(false)
         }
