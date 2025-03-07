@@ -1,7 +1,6 @@
 table.table {
     width: fit-content;
     border-spacing: 0;
-    font-size: 14px;
     table-layout: auto;
 }
 

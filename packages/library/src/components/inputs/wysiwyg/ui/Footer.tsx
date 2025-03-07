@@ -24,9 +24,6 @@ function Footer(properties: Footer.Attributes) {
                 <Tab>
                     <span className={"material-icons"}>widgets</span>
                 </Tab>
-                <Tab>
-                    <span className={"material-icons"}>frame_inspect</span>
-                </Tab>
             </Tabs>
         </div>
     )

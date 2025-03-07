@@ -1,8 +1,9 @@
 import ListProcessor from "./ListProcessor";
 import {AbstractProvider} from "../shared/AbstractProvider";
 import {ListCommand} from "./ListCommand";
+import ListTool from "./ListTool";
 
-export class ListProvider extends AbstractProvider<typeof ListCommand, ListProcessor.Attributes> {
+export class ListProvider extends AbstractProvider<typeof ListCommand, ListProcessor.Attributes, ListTool.Attributes> {
 
     type : string = "list"
 
@@ -13,5 +14,7 @@ export class ListProvider extends AbstractProvider<typeof ListCommand, ListProce
     command = ListCommand
 
     processor = ListProcessor
+
+    tool = ListTool
 
 }

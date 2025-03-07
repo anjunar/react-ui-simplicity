@@ -1,7 +1,6 @@
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {ImageNode} from "./ImageNode";
 import EditorContext from "../../EditorContext";
-import {findNodeWithMaxDepth} from "../../core/TreeNodes";
 import {ParagraphNode, TextNode} from "../../core/TreeNode";
 
 function ImageProcessor(properties: ImageProcessor.Attributes) {
@@ -9,19 +8,6 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
     const {node} = properties
 
     const [image, setImage] = useState(node.src)
-
-    const [open, setOpen] = useState(false)
-
-    const [width, setWidth] = useState(360)
-
-    const [height, setHeight] = useState(360)
-
-    const [aspectRatio, setAspectRatio] = useState(1)
-
-    const [dimensions, setDimensions] = useState({
-        width : 360,
-        height : 360
-    })
 
     let {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, event} = useContext(EditorContext);
 
@@ -46,14 +32,9 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
                         image.src = result
                         image.onload = () => {
                             let ratio = image.width / image.height;
-                            setAspectRatio(ratio)
-                            let height = width / ratio;
-                            setHeight(height)
-
-                            setDimensions({
-                                width : 360,
-                                height : height
-                            })
+                            node.aspectRatio = ratio
+                            node.width = 360
+                            node.height = 360 / ratio
                         }
 
                         setImage(result)
@@ -66,55 +47,6 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
             }
         }
     }
-
-    function onWidthChange(event : React.ChangeEvent<HTMLInputElement>) {
-        setWidth(event.target.valueAsNumber)
-        triggerAST()
-    }
-
-    function onHeightChange(event : React.ChangeEvent<HTMLInputElement>) {
-        setHeight(event.target.valueAsNumber)
-        triggerAST()
-    }
-
-    function onSendClick(event : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        event.stopPropagation()
-        setDimensions({
-            width : width,
-            height : height
-        })
-    }
-
-    useEffect(() => {
-        let result = Math.round(height * aspectRatio * 100) / 100;
-        if (result !== width) {
-            setWidth(result)
-        }
-
-    }, [height]);
-
-    useEffect(() => {
-        let result = Math.round((width / aspectRatio) * 100) / 100;
-        if (result !== height) {
-            setHeight(result)
-        }
-    }, [width]);
-
-    useEffect(() => {
-        if (currentCursor) {
-            let container = currentCursor.container
-
-            let cursor = findNodeWithMaxDepth(node, (node) => node === container, 2);
-
-            if (cursor) {
-                setOpen(true)
-            } else {
-                setOpen(false)
-            }
-        } else {
-            setOpen(false)
-        }
-    }, [currentCursor?.container]);
 
     useEffect(() => {
         node.dom = divRef.current
@@ -168,27 +100,9 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
     return (
         <div ref={divRef} style={{display : "flex", justifyContent : "center", alignItems : "center", position : "relative"}}>
             {
-                image && <img src={image} style={{maxWidth : dimensions.width, maxHeight : dimensions.height, width : "100%"}}/>
+                image && <img src={image} style={{maxWidth : node.width, maxHeight : node.height, width : "100%"}}/>
             }
             <input ref={inputRef} onChange={onLoad} type={"file"} style={{display : "none"}}/>
-            {
-                open && (
-                    <div style={{
-                        position: "absolute",
-                        left: "50%",
-                        transform : "translateX(-50%)",
-                        bottom : "12px",
-                        backgroundColor : "var(--color-background-primary)",
-                        boxShadow : "3px 3px 10px 3px #1a1a1a",
-                        display : "flex",
-                        alignItems : "center"
-                    }}>
-                        <input value={width} onChange={onWidthChange} type={"number"} placeholder={"Width"} style={{width : "50px"}} onClick={event => event.stopPropagation()}/>
-                        <button className={"material-icons"} onClick={onSendClick}>send</button>
-                        <input value={height} onChange={onHeightChange} type={"number"} placeholder={"Height"}  style={{width : "50px"}} onClick={event => event.stopPropagation()}/>
-                    </div>
-                )
-            }
         </div>
     )
 }

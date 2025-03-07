@@ -1,5 +1,16 @@
 import {AbstractContainerNode, AbstractNode} from "./TreeNode";
 
+export function findParent(node: AbstractNode, callback: (node: AbstractNode) => boolean) {
+
+    if (callback(node)) {
+        return node
+    }
+
+    if (node.parent) {
+        return findParent(node.parent, callback)
+    }
+}
+
 export function findNode(node: AbstractNode, callback: (node: AbstractNode) => boolean) {
 
     if (callback(node)) {

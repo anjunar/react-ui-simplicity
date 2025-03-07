@@ -12,7 +12,7 @@ export interface Context {
         root : RootNode,
         triggerAST() : void
     }
-    providers : AbstractProvider<any, any>[]
+    providers : AbstractProvider<any, any, any>[]
     cursor: {
         currentCursor : {
             container: AbstractNode,

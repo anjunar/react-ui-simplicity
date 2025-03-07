@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react"
 import {ItemNode, ListNode} from "./ListNode";
-import ItemProcessor from "./ItemProcessor";
+import ListItemProcessor from "./ListItemProcessor";
 
 function ListProcessor(properties: ListProcessor.Attributes) {
 
@@ -15,7 +15,7 @@ function ListProcessor(properties: ListProcessor.Attributes) {
 
     return (
         <ul ref={ulRef}>
-            {node.children.map(child => <ItemProcessor key={child.id} node={child as ItemNode}/>)}
+            {node.children.map(child => <ListItemProcessor key={child.id} node={child as ItemNode}/>)}
         </ul>
     )
 }

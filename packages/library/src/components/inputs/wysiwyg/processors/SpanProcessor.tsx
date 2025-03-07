@@ -15,10 +15,12 @@ const deleteContentBackward = {
 
             if (node.text.length === 0) {
                 let prevSibling = node.prevSibling as TextNode;
-                node.remove()
+                if (prevSibling) {
+                    node.remove()
 
-                current.container = prevSibling;
-                current.offset = prevSibling.text.length;
+                    current.container = prevSibling;
+                    current.offset = prevSibling.text.length;
+                }
             } else {
                 current.offset--;
             }

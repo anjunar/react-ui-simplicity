@@ -8,6 +8,7 @@ import {findNode} from "./core/TreeNodes";
 import Toolbar from "./ui/Toolbar";
 import Footer from "./ui/Footer";
 import {AbstractProvider} from "./blocks/shared/AbstractProvider";
+import Inspector from "./ui/Inspector";
 
 function Editor(properties: Editor.Attributes) {
 
@@ -50,6 +51,8 @@ function Editor(properties: Editor.Attributes) {
     let inputRef = useRef<HTMLTextAreaElement>(null);
 
     let cursorRef = useRef<HTMLDivElement>(null)
+
+    let inspectorRef = useRef<HTMLDivElement>(null)
 
     const eventQueue = useRef<GeneralEvent[]>([]);
 
@@ -122,6 +125,36 @@ function Editor(properties: Editor.Attributes) {
 
     function onBlur() {
         cursorRef.current.style.display = "none"
+    }
+
+    function onContentDoubleClick(event: React.MouseEvent) {
+        event.stopPropagation();
+        event.preventDefault();
+
+        const inspector = inspectorRef.current;
+        const container = ref.current;
+
+        const topOffset = event.clientY - container.offsetTop + container.scrollTop;
+        const leftOffset = event.clientX - container.offsetLeft + container.scrollLeft;
+
+        inspector.style.display = "block";
+
+        inspector.style.top = topOffset + "px";
+        // inspector.style.transform = "translateX(-50%)";
+
+        const inspectorWidth = inspector.offsetWidth;
+        const containerWidth = container.offsetWidth;
+
+        let adjustedLeftOffset = leftOffset;
+
+        if (leftOffset - inspectorWidth / 2 < 0) {
+            adjustedLeftOffset = inspectorWidth / 2;
+        }
+        else if (leftOffset + inspectorWidth / 2 > containerWidth) {
+            adjustedLeftOffset = containerWidth - inspectorWidth / 2;
+        }
+
+        inspector.style.left = adjustedLeftOffset + "px";
     }
 
     useEffect(() => {
@@ -210,10 +243,17 @@ function Editor(properties: Editor.Attributes) {
 
         }
 
+        function onDocumentClick() {
+            inspectorRef.current.style.display = "none"
+        }
+
+
         document.addEventListener("selectionchange", onSelectionChange)
+        document.addEventListener("click", onDocumentClick)
 
         return () => {
-            return document.removeEventListener("selectionchange", onSelectionChange)
+            document.removeEventListener("selectionchange", onSelectionChange)
+            document.removeEventListener("click", onDocumentClick)
         }
     }, [selectionState.currentSelection]);
 
@@ -245,7 +285,8 @@ function Editor(properties: Editor.Attributes) {
             <EditorContext value={value}>
                 <Toolbar page={page}/>
                 <Cursor ref={cursorRef}/>
-                <div onClick={onContentClick} style={{flex: 1, overflow : "auto"}}>
+                <Inspector ref={inspectorRef}/>
+                <div onClick={onContentClick} onDoubleClick={onContentDoubleClick} style={{flex: 1, overflow : "auto"}}>
                     <ProcessorFactory node={astState.root}/>
                 </div>
                 <Footer page={page} onPage={(value) => setPage(value)}/>
@@ -263,7 +304,7 @@ function Editor(properties: Editor.Attributes) {
 namespace Editor {
     export interface Attributes {
         style?: React.CSSProperties,
-        providers : AbstractProvider<any, any>[]
+        providers : AbstractProvider<any, any, any>[]
     }
 }
 

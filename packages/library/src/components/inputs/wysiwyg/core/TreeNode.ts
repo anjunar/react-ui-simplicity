@@ -10,7 +10,7 @@ export abstract class AbstractNode {
     id : string = v4()
     abstract type : string
     dom : Node
-    parent: AbstractContainerNode;
+    parent: AbstractContainerNode<any>;
 
     get nextSibling(): AbstractNode {
         if (!this.parent) return null;
@@ -39,26 +39,26 @@ export abstract class AbstractNode {
 
 }
 
-export abstract class AbstractContainerNode extends AbstractNode {
+export abstract class AbstractContainerNode<C extends AbstractNode> extends AbstractNode {
 
-    private readonly _children : AbstractNode[] = []
+    private readonly _children : C[] = []
 
     justify : string
 
-    protected constructor(children: AbstractNode[]) {
+    protected constructor(children: C[]) {
         super();
         children.forEach(child => {
             this.appendChild(child)
         })
     }
 
-    appendChild(node: AbstractNode) {
+    appendChild(node: C) {
         node.remove()
         node.parent = this;
         this._children.push(node);
     }
 
-    removeChild(node: AbstractNode) {
+    removeChild(node: C) {
         node.parent = null;
         const index = this._children.indexOf(node)
         if (index >= 0) {
@@ -66,13 +66,13 @@ export abstract class AbstractContainerNode extends AbstractNode {
         }
     }
 
-    insertChild(index: number, node: AbstractNode) {
+    insertChild(index: number, node: C) {
         node.remove()
         node.parent = this
         this._children.splice(index, 0, node)
     }
 
-    replaceWith(heading: AbstractNode) {
+    replaceWith(heading: C) {
         const parent = this.parent;
         const index = this.parentIndex;
         if (parent && index >= 0) {
@@ -81,13 +81,13 @@ export abstract class AbstractContainerNode extends AbstractNode {
         }
     }
 
-    get children(): ReadonlyArray<AbstractNode> {
+    get children(): ReadonlyArray<C> {
         return this._children;
     }
 
 }
 
-export class RootNode extends AbstractContainerNode {
+export class RootNode extends AbstractContainerNode<AbstractNode> {
     readonly type: string = "root"
 
     constructor(children: AbstractNode[] = []) {
@@ -100,7 +100,7 @@ export class RootNode extends AbstractContainerNode {
 
 }
 
-export class ParagraphNode extends AbstractContainerNode {
+export class ParagraphNode extends AbstractContainerNode<AbstractNode> {
     readonly type: string = "p"
 
     constructor(children: AbstractNode[]= []) {

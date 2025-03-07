@@ -11,6 +11,8 @@ import {JustifyCommand} from "../commands/JustifyCommand";
 import ActionButton from "./toolbar/ActionButton";
 import EditorContext from "../EditorContext";
 import {AbstractProvider} from "../blocks/shared/AbstractProvider";
+import {findParent} from "../core/TreeNodes";
+import Inspector from "./Inspector";
 
 const colors = [
     "--color-text",
@@ -46,7 +48,7 @@ function Toolbar(properties: Toolbar.Attributes) {
 
     const {page} = properties
 
-    const {providers} = useContext(EditorContext)
+    const {providers, cursor : {currentCursor}} = useContext(EditorContext)
 
     function onBlockCallback(node : AbstractNode): string {
         if (node instanceof TextNode) {
@@ -130,12 +132,12 @@ function Toolbar(properties: Toolbar.Attributes) {
                 </div>
             </Page>
             <Page>
-                <div>Tools</div>
+                <div className={"editor-toolbar"}>Tools</div>
             </Page>
             <Page>
                 <div className={"editor-toolbar"}>
                     {
-                        providers.map((provider : AbstractProvider<any, any>) => (
+                        providers.map((provider : AbstractProvider<any, any, any>) => (
                             <ActionButton key={provider.type} command={new provider.command()}>{provider.icon}</ActionButton>
                         ))
                     }

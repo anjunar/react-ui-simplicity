@@ -68,6 +68,22 @@
             text-align: right;
         }
 
+        table {
+            width: 100%;
+            table-layout: fixed;
+
+            tr {
+
+                td div:has(br):before {
+
+                    content: "Write something...";
+                    color: var(--color-background-secondary);
+
+                }
+
+            }
+        }
+
     }
 
 }
