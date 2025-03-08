@@ -1,9 +1,5 @@
 import React from "react";
-import {Editor} from "react-ui-simplicity";
-import {ListProvider} from "react-ui-simplicity/src/components/inputs/wysiwyg/blocks/list/ListProvider";
-import {ImageProvider} from "react-ui-simplicity/src/components/inputs/wysiwyg/blocks/image/ImageProvider";
-import {TableProvider} from "react-ui-simplicity/src/components/inputs/wysiwyg/blocks/table/TableProvider";
-import {ParagraphProvider} from "react-ui-simplicity/src/components/inputs/wysiwyg/blocks/paragraph/ParagraphProvider";
+import {Editor, ImageProvider, ListProvider, ParagraphProvider, TableProvider} from "react-ui-simplicity";
 
 export default function WysiwygPage() {
     return (

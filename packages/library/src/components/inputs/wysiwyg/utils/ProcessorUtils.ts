@@ -71,7 +71,7 @@ export function onArrowDown(node: TextNode, current: { container: AbstractNode; 
         let grandParent = parent.parent;
         if (grandParent) {
             const parentIndex = parent.parentIndex;
-            if (parentIndex >= 0 && parentIndex < grandParent.children.length - 1) {
+            if (parentIndex >= 0) {
                 let flattened = root.flatten;
                 let indexOf = flattened.indexOf(parent.children[parent.children.length - 1])
                 let abstractNode = flattened.find((node, index) => index > indexOf && node instanceof TextNode);
