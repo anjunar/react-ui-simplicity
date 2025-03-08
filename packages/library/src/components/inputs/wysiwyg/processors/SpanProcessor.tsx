@@ -189,6 +189,24 @@ const deleteKey = {
     }
 }
 
+const endKey = {
+    test(value: GeneralEvent) {
+        return value.data === "End" && value.type === "keydown"
+    },
+    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+        current.offset = node.text.length
+    }
+}
+
+const pos1Key = {
+    test(value: GeneralEvent) {
+        return value.data === "Home" && value.type === "keydown"
+    },
+    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+        current.offset = 0
+    }
+}
+
 const registry = [
     deleteContentBackward,
     insertText,
@@ -197,7 +215,9 @@ const registry = [
     arrowRight,
     arrowUp,
     arrowDown,
-    deleteKey
+    deleteKey,
+    pos1Key,
+    endKey
 ]
 
 function generateStyleObject(node : TextNode) {

@@ -110,7 +110,7 @@ function Editor(properties: Editor.Attributes) {
     }
 
     function onKeyDown(event: React.KeyboardEvent) {
-        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete"]
+        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End"]
 
         if (whiteList.indexOf(event.key) > -1) {
             eventQueue.current.push({
@@ -137,7 +137,7 @@ function Editor(properties: Editor.Attributes) {
         const inspector = inspectorRef.current;
         const container = ref.current;
 
-        let viewport = document.getElementById("viewport");
+        let viewport = document.getElementById("viewport") || document.querySelector("body");
         let boundingClientRect = viewport.getBoundingClientRect();
 
         const topOffset = event.clientY - container.offsetTop + container.scrollTop - boundingClientRect.top + 12;
