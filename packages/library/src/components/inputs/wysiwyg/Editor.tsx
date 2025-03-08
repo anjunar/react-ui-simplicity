@@ -1,5 +1,5 @@
 import "./Editor.css"
-import React, {useCallback, useEffect, useRef, useState} from "react"
+import React, {useCallback, useDeferredValue, useEffect, useRef, useState} from "react"
 import ProcessorFactory from "./processors/ProcessorFactory";
 import Cursor from "./ui/Cursor";
 import {AbstractNode, RootNode, TextNode} from "./core/TreeNode";
@@ -26,6 +26,8 @@ function Editor(properties: Editor.Attributes) {
             currentCursor: null
         }
     })
+
+    let cursorDeferredValue = useDeferredValue(cursorState);
 
     const [selectionState, setSelectionState] = useState<{
         currentSelection: {
@@ -56,22 +58,6 @@ function Editor(properties: Editor.Attributes) {
     let inputRef = useRef<HTMLTextAreaElement>(null);
 
     let cursorRef = useRef<HTMLDivElement>(null)
-
-    let inspectorRef = useRef<HTMLDivElement>(null)
-
-    const eventQueue = useRef<GeneralEvent[]>([]);
-
-    const processQueue = useCallback(() => {
-        if (eventQueue.current.length > 0) {
-            const lastEvent = eventQueue.current.pop()
-            setEvent({handled: false, instance: lastEvent});
-        }
-    }, []);
-
-    useEffect(() => {
-        const interval = setInterval(processQueue, 100)
-        return () => clearInterval(interval)
-    }, [processQueue]);
 
     function onContentClick(event: React.MouseEvent) {
         let selection = window.getSelection();
@@ -107,20 +93,29 @@ function Editor(properties: Editor.Attributes) {
 
     function onInput(e: React.FormEvent<HTMLTextAreaElement>) {
         let inputEvent = e.nativeEvent as InputEvent;
-        eventQueue.current.push({
-            type: inputEvent.inputType,
-            data: inputEvent.data
-        });
+
+        setEvent({
+            handled : false,
+            instance : {
+                type: inputEvent.inputType,
+                data: inputEvent.data
+            }
+        })
+
     }
 
     function onKeyDown(event: React.KeyboardEvent) {
         const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End"]
 
         if (whiteList.indexOf(event.key) > -1) {
-            eventQueue.current.push({
-                type: event.type,
-                data: event.key
-            });
+            setEvent({
+                handled : false,
+                instance : {
+                    type: event.type,
+                    data: event.key
+                }
+            })
+
         }
     }
 
@@ -164,40 +159,28 @@ function Editor(properties: Editor.Attributes) {
     }
 
     useEffect(() => {
+        if (!cursorState.currentCursor) return;
 
-        if (cursorState.currentCursor) {
-            function extracted() {
-                let clientRect = range.getBoundingClientRect();
+        let range = document.createRange();
+        let container = cursorState.currentCursor.container.dom;
 
-                const editorRect = ref.current.getBoundingClientRect();
-                const topOffset = clientRect.top - editorRect.top + ref.current.scrollTop;
-                const leftOffset = clientRect.left - editorRect.left + ref.current.scrollLeft;
-
-                cursorRef.current.style.left = leftOffset + clientRect.width +  "px"
-                cursorRef.current.style.top = topOffset + "px"
-                cursorRef.current.style.height = clientRect.height + "px"
-                cursorRef.current.style.display = "block"
-
-                setTimeout(() => {
-                    inputRef.current.focus()
-                }, 100)
-            }
-
-            let range = document.createRange();
-
-            let containerFirstChild = cursorState.currentCursor.container.dom;
-
-            if (containerFirstChild instanceof HTMLElement) {
-                range.selectNode(cursorState.currentCursor.container.dom)
-                extracted()
-            } else {
-                range.setStart(containerFirstChild, cursorState.currentCursor.offset)
-                range.collapse(true)
-                extracted()
-            }
+        if (container instanceof HTMLElement) {
+            range.selectNode(container);
+        } else {
+            range.setStart(container, cursorState.currentCursor.offset);
+            range.collapse(true);
         }
 
-    }, [cursorState]);
+        let clientRect = range.getBoundingClientRect();
+        let editorRect = ref.current.getBoundingClientRect();
+
+        cursorRef.current.style.left = clientRect.left - editorRect.left + ref.current.scrollLeft + "px"
+        cursorRef.current.style.top = clientRect.top - editorRect.top + ref.current.scrollTop + "px"
+        cursorRef.current.style.height = clientRect.height + "px"
+        cursorRef.current.style.display = "block"
+
+        inputRef.current?.focus();
+    }, [cursorDeferredValue]);
 
     useEffect(() => {
         if (selectionState.currentSelection) {
