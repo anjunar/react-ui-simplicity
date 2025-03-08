@@ -137,8 +137,11 @@ function Editor(properties: Editor.Attributes) {
         const inspector = inspectorRef.current;
         const container = ref.current;
 
-        const topOffset = event.clientY - container.offsetTop + container.scrollTop;
-        const leftOffset = event.clientX - container.offsetLeft + container.scrollLeft;
+        let viewport = document.getElementById("viewport");
+        let boundingClientRect = viewport.getBoundingClientRect();
+
+        const topOffset = event.clientY - container.offsetTop + container.scrollTop - boundingClientRect.top + 12;
+        const leftOffset = event.clientX - container.offsetLeft + container.scrollLeft - boundingClientRect.left;
 
         inspector.style.display = "block";
 
