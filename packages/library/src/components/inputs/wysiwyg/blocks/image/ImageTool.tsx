@@ -77,7 +77,7 @@ function ImageTool(properties: ImageTool.Attributes) {
             <button onClick={onSendClick}>Ok</button>
             <hr style={{width : "100%"}}/>
             <button onClick={onDeleteImage} className={"container"}><span className={"material-icons"}>delete</span>Delete Image</button>
-            <button onClick={onAddText} className={"container"}><span className={"material-icons"}>delete</span>Add Text</button>
+            <button onClick={onAddText} className={"container"}><span className={"material-icons"}>add</span>Add Text</button>
             <hr style={{width : "100%"}}/>
             <OrderNode node={node}/>
         </div>

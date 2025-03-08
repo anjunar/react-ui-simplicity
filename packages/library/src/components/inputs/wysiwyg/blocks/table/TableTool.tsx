@@ -119,7 +119,7 @@ function TableTool(properties: TableTool.Attributes) {
             <button className={"container"} onClick={onAddColumnRight}><span className={"material-icons"}>add_column_right</span>Column right</button>
             <hr style={{width : "100%"}}/>
             <button onClick={onDeleteTable} className={"container"}><span className={"material-icons"}>delete</span>Delete Table</button>
-            <button onClick={onAddText} className={"container"}><span className={"material-icons"}>delete</span>Add Text</button>
+            <button onClick={onAddText} className={"container"}><span className={"material-icons"}>add</span>Add Text</button>
             <hr style={{width : "100%"}}/>
             <OrderNode node={node}/>
         </div>

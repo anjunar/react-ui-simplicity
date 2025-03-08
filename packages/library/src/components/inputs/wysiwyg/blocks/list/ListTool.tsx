@@ -75,7 +75,7 @@ function ListTool(properties: ListTool.Attributes) {
             <button onClick={deleteClick} className={"container"}><span className={"material-icons"}>delete</span>Delete item</button>
             <hr style={{width : "100%"}}/>
             <button onClick={onDeleteList} className={"container"}><span className={"material-icons"}>delete</span>Delete List</button>
-            <button onClick={onAddText} className={"container"}><span className={"material-icons"}>delete</span>Add Text</button>
+            <button onClick={onAddText} className={"container"}><span className={"material-icons"}>add</span>Add Text</button>
             <hr style={{width : "100%"}}/>
             <OrderNode node={node}/>
         </div>

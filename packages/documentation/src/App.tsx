@@ -2,8 +2,6 @@ import "./App.css"
 import React, {useEffect, useState} from "react"
 import {Drawer, Link, Page, Pages, Router, Tab, Tabs, ToolBar, useMatchMedia, Viewport} from "react-ui-simplicity";
 import {init} from "./domain/Persistence";
-import Header from "./layout/Header";
-import WysiwygPage from "./pages/component/input/WysiwygPage";
 
 init()
 

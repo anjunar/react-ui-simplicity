@@ -9,22 +9,24 @@ function Footer(properties: Footer.Attributes) {
     const [bottomPadding, setBottomPadding] = useState(-8);
 
     useEffect(() => {
-        const updatePadding = () => {
+        const updatePadding = (event : any) => {
             if (window.visualViewport) {
                 const viewportHeight = window.visualViewport.height;
                 const screenHeight = window.innerHeight;
                 if (screenHeight === viewportHeight) {
-                    setBottomPadding(screenHeight - viewportHeight - 8);
+                    setBottomPadding(screenHeight - viewportHeight - window.visualViewport.offsetTop - 8);
                 } else {
-                    setBottomPadding(screenHeight - viewportHeight - 24);
+                    setBottomPadding(screenHeight - viewportHeight - window.visualViewport.offsetTop - 24);
                 }
 
             }
         };
 
         window.visualViewport?.addEventListener("resize", updatePadding);
+        window.visualViewport?.addEventListener("scroll", updatePadding)
         return () => {
             window.visualViewport?.removeEventListener("resize", updatePadding);
+            window.visualViewport?.removeEventListener("scroll", updatePadding)
         };
     }, []);
 

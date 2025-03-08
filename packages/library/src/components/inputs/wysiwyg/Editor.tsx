@@ -47,6 +47,10 @@ function Editor(properties: Editor.Attributes) {
 
     const [page, setPage] = useState(0)
 
+    const [inspector, setInspector] = useState({
+        current : null
+    })
+
     let ref = useRef<HTMLDivElement>(null)
 
     let inputRef = useRef<HTMLTextAreaElement>(null);
@@ -134,7 +138,6 @@ function Editor(properties: Editor.Attributes) {
         event.stopPropagation();
         event.preventDefault();
 
-        const inspector = inspectorRef.current;
         const container = ref.current;
 
         let viewport = document.getElementById("viewport") || document.querySelector("body");
@@ -143,12 +146,7 @@ function Editor(properties: Editor.Attributes) {
         const topOffset = event.clientY - container.offsetTop + container.scrollTop - boundingClientRect.top + 12;
         const leftOffset = event.clientX - container.offsetLeft + container.scrollLeft - boundingClientRect.left;
 
-        inspector.style.display = "block";
-
-        inspector.style.top = topOffset + "px";
-        inspector.style.width = "150px"
-
-        const inspectorWidth = inspector.offsetWidth;
+        const inspectorWidth = 150
         const containerWidth = container.offsetWidth;
 
         let adjustedLeftOffset = leftOffset;
@@ -157,7 +155,12 @@ function Editor(properties: Editor.Attributes) {
             adjustedLeftOffset = containerWidth - inspectorWidth;
         }
 
-        inspector.style.left = adjustedLeftOffset + "px";
+        setInspector({
+            current: {
+                left : adjustedLeftOffset,
+                top : topOffset
+            }
+        })
     }
 
     useEffect(() => {
@@ -247,7 +250,9 @@ function Editor(properties: Editor.Attributes) {
         }
 
         function onDocumentClick() {
-            inspectorRef.current.style.display = "none"
+            setInspector({
+                current: null
+            })
         }
 
 
@@ -288,7 +293,9 @@ function Editor(properties: Editor.Attributes) {
             <EditorContext value={value}>
                 <Toolbar page={page}/>
                 <Cursor ref={cursorRef}/>
-                <Inspector ref={inspectorRef}/>
+                {
+                    inspector.current && <Inspector style={inspector.current}/>
+                }
                 <div onClick={onContentClick} onContextMenu={onContextClick} style={{flex: 1, overflow : "auto"}}>
                     <ProcessorFactory node={astState.root}/>
                 </div>
@@ -299,6 +306,7 @@ function Editor(properties: Editor.Attributes) {
                       onInput={onInput}
                       onFocus={onFocus}
                       onBlur={onBlur}
+                      disabled={!! inspector.current}
                       style={{position: "absolute", top: "-2000px", opacity: 1}}/>
         </div>
     )

@@ -21,6 +21,8 @@ const deleteContentBackward = {
 
                     current.container = prevSibling;
                     current.offset = prevSibling.text.length;
+                } else {
+                    current.offset = 0
                 }
             } else {
                 current.offset--;
@@ -198,7 +200,7 @@ const endKey = {
     }
 }
 
-const pos1Key = {
+const homeKey = {
     test(value: GeneralEvent) {
         return value.data === "Home" && value.type === "keydown"
     },
@@ -216,7 +218,7 @@ const registry = [
     arrowUp,
     arrowDown,
     deleteKey,
-    pos1Key,
+    homeKey,
     endKey
 ]
 

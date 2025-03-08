@@ -1,21 +1,21 @@
 import "./Inspector.css"
-import React, {useContext, useEffect, useState} from "react"
+import React, {CSSProperties, useContext, useEffect, useState} from "react"
 import EditorContext from "../EditorContext";
 import {AbstractNode} from "../core/TreeNode";
 
 function Inspector(properties: Inspector.Attributes) {
 
-    const {ref} = properties
+    const {style} = properties
 
     const [selectedNodeId, setSelectedNodeId] = useState<string>("")
 
     const [hierarchicalNodes, setHierarchicalNodes] = useState<AbstractNode[]>([])
 
-    const {providers, cursor : {currentCursor}} = useContext(EditorContext)
+    const {providers, cursor: {currentCursor}} = useContext(EditorContext)
 
     useEffect(() => {
 
-        const nodes : AbstractNode[] = []
+        const nodes: AbstractNode[] = []
 
         if (currentCursor) {
             let cursor = currentCursor.container
@@ -46,7 +46,7 @@ function Inspector(properties: Inspector.Attributes) {
             let selectedNode = hierarchicalNodes.find(node => node.id === selectedNodeId)
             if (selectedNode) {
                 let provider = providers.find(provider => provider.type === selectedNode.type)
-                return React.createElement(provider.tool, {node : selectedNode})
+                return React.createElement(provider.tool, {node: selectedNode})
             }
             return <div>Select an Element</div>
         } else {
@@ -55,14 +55,19 @@ function Inspector(properties: Inspector.Attributes) {
     }
 
     return (
-        <div ref={ref} className={"inspector"} onClick={event => event.stopPropagation()}>
-            <div style={{display: "flex", flexDirection : "column"}}>
-                <select style={{padding : "4px"}} value={selectedNodeId} onChange={event => setSelectedNodeId(event.target.value)}>
+        <div className={"inspector"} onClick={event => event.stopPropagation()} style={style}>
+            <div style={{display: "flex", flexDirection: "column"}}>
+                <select style={{padding: "4px"}} value={selectedNodeId} onChange={event => setSelectedNodeId(event.target.value)}>
                     {
-                        hierarchicalNodes.map(node => <option key={node.id} value={node.id}>{node.type}</option>)
+                        hierarchicalNodes.map(node => (
+                            <option key={node.id} value={node.id}>
+                                {providers.find(provider => provider.type === node.type).title}
+                            </option>
+                            )
+                        )
                     }
                 </select>
-                <hr style={{width : "100%"}}/>
+                <hr style={{width: "100%"}}/>
                 {
                     createTool()
                 }
@@ -73,7 +78,7 @@ function Inspector(properties: Inspector.Attributes) {
 
 namespace Inspector {
     export interface Attributes {
-        ref : React.RefObject<HTMLDivElement>
+        style : CSSProperties
     }
 }
 
