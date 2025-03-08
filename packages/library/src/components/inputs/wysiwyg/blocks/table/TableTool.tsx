@@ -1,8 +1,10 @@
 import React, {useContext} from "react"
 import {findParent} from "../../core/TreeNodes";
 import {TableCellNode, TableNode, TableRowNode} from "./TableNode";
-import {ParagraphNode, TextNode} from "../../core/TreeNode";
+import {TextNode} from "../../core/TreeNode";
 import EditorContext from "../../EditorContext";
+import {ParagraphNode} from "../paragraph/ParagraphNode";
+import OrderNode from "../shared/OrderNode";
 
 function TableTool(properties: TableTool.Attributes) {
 
@@ -10,7 +12,7 @@ function TableTool(properties: TableTool.Attributes) {
 
     let {ast: {triggerAST}, cursor: {currentCursor, triggerCursor}} = useContext(EditorContext);
 
-    function onAddRowAbove(event : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    function onAddRowAbove() {
         let tableCell = findParent(currentCursor.container, (node) => node instanceof TableCellNode)
         let tableRow = tableCell.parent
 
@@ -23,12 +25,10 @@ function TableTool(properties: TableTool.Attributes) {
             tableRowNode.appendChild(new TableCellNode([new ParagraphNode([new TextNode("")])]))
         }
 
-        event.stopPropagation()
-
         triggerAST()
     }
 
-    function deleteRow(event : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    function deleteRow() {
         let tableCell = findParent(currentCursor.container, (node) => node instanceof TableCellNode)
         let tableRow = tableCell.parent
 
@@ -39,7 +39,7 @@ function TableTool(properties: TableTool.Attributes) {
         triggerAST()
     }
 
-    function onAddRowBelow(event : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    function onAddRowBelow() {
         let tableCell = findParent(currentCursor.container, (node) => node instanceof TableCellNode)
         let tableRow = tableCell.parent
 
@@ -52,12 +52,10 @@ function TableTool(properties: TableTool.Attributes) {
             tableRowNode.appendChild(new TableCellNode([new ParagraphNode([new TextNode("")])]))
         }
 
-        event.stopPropagation()
-
         triggerAST()
     }
 
-    function onAddColumnLeft(event : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    function onAddColumnLeft() {
         let tableCell = findParent(currentCursor.container, (node) => node instanceof TableCellNode)
         let tableCellIndex = tableCell.parentIndex
 
@@ -70,7 +68,7 @@ function TableTool(properties: TableTool.Attributes) {
         triggerAST()
     }
 
-    function onDeleteColumn(event : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    function onDeleteColumn() {
         let tableCell = findParent(currentCursor.container, (node) => node instanceof TableCellNode)
         let tableCellIndex = tableCell.parentIndex
 
@@ -78,12 +76,10 @@ function TableTool(properties: TableTool.Attributes) {
             row.children[tableCellIndex].remove()
         }
 
-        event.stopPropagation()
-
         triggerAST()
     }
 
-    function onAddColumnRight(event : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    function onAddColumnRight() {
         let tableCell = findParent(currentCursor.container, (node) => node instanceof TableCellNode)
         let tableCellIndex = tableCell.parentIndex
 
@@ -91,20 +87,41 @@ function TableTool(properties: TableTool.Attributes) {
             row.insertChild(tableCellIndex + 1, new TableCellNode([new ParagraphNode([new TextNode("")])]))
         }
 
-        event.stopPropagation()
+        triggerAST()
+    }
+
+
+    function onDeleteTable() {
+        node.remove()
 
         triggerAST()
     }
 
+    function onAddText() {
+        let textNode = new TextNode("");
+        node.after(new ParagraphNode([textNode]))
+
+        currentCursor.container = textNode
+        currentCursor.offset = 0
+
+        triggerCursor()
+        triggerAST()
+    }
 
     return (
         <div style={{display : "flex", flexDirection : "column"}}>
             <button className={"container"} onClick={onAddRowAbove}><span className={"material-icons"}>add_row_above</span>Row above</button>
             <button className={"container"} onClick={deleteRow}><span className={"material-icons"}>delete</span>Delete row</button>
             <button className={"container"} onClick={onAddRowBelow}><span className={"material-icons"}>add_row_below</span>Row below</button>
+            <hr style={{width : "100%"}}/>
             <button className={"container"} onClick={onAddColumnLeft}><span className={"material-icons"}>add_column_left</span>Column left</button>
             <button className={"container"} onClick={onDeleteColumn}><span className={"material-icons"}>delete</span>Delete column</button>
             <button className={"container"} onClick={onAddColumnRight}><span className={"material-icons"}>add_column_right</span>Column right</button>
+            <hr style={{width : "100%"}}/>
+            <button onClick={onDeleteTable} className={"container"}><span className={"material-icons"}>delete</span>Delete Table</button>
+            <button onClick={onAddText} className={"container"}><span className={"material-icons"}>delete</span>Add Text</button>
+            <hr style={{width : "100%"}}/>
+            <OrderNode node={node}/>
         </div>
     )
 }

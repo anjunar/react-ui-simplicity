@@ -1,15 +1,13 @@
 import React, {useContext, useEffect, useRef} from "react"
-import {ParagraphNode, TextNode} from "../core/TreeNode";
-import ProcessorFactory from "./ProcessorFactory";
-import EditorContext from "../EditorContext";
-import cursor from "../ui/Cursor";
-import {onArrowLeft, onArrowRight} from "../utils/ProcessorUtils";
+import ProcessorFactory from "../../processors/ProcessorFactory";
+import EditorContext from "../../EditorContext";
+import {ParagraphNode} from "./ParagraphNode";
 
-function DivProcessor(properties: DivNode.Attributes) {
+function ParagraphProcessor(properties: ParagraphProcessor.Attributes) {
 
     const {node} = properties
 
-    const {ast : {root, triggerAST}, cursor : {currentCursor, triggerCursor}, event} = useContext(EditorContext)
+    const {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, event} = useContext(EditorContext)
 
     const divRef = useRef<HTMLDivElement>(null);
 
@@ -27,10 +25,10 @@ function DivProcessor(properties: DivNode.Attributes) {
     )
 }
 
-namespace DivNode {
+namespace ParagraphProcessor {
     export interface Attributes {
-        node : ParagraphNode
+        node: ParagraphNode
     }
 }
 
-export default DivProcessor
+export default ParagraphProcessor

@@ -2,13 +2,14 @@ import "./Editor.css"
 import React, {useCallback, useEffect, useRef, useState} from "react"
 import ProcessorFactory from "./processors/ProcessorFactory";
 import Cursor from "./ui/Cursor";
-import {AbstractNode, ParagraphNode, RootNode, TextNode} from "./core/TreeNode";
+import {AbstractNode, RootNode, TextNode} from "./core/TreeNode";
 import EditorContext, {GeneralEvent} from "./EditorContext";
 import {findNode} from "./core/TreeNodes";
 import Toolbar from "./ui/Toolbar";
 import Footer from "./ui/Footer";
 import {AbstractProvider} from "./blocks/shared/AbstractProvider";
 import Inspector from "./ui/Inspector";
+import {ParagraphNode} from "./blocks/paragraph/ParagraphNode";
 
 function Editor(properties: Editor.Attributes) {
 
@@ -127,7 +128,9 @@ function Editor(properties: Editor.Attributes) {
         cursorRef.current.style.display = "none"
     }
 
-    function onContentDoubleClick(event: React.MouseEvent) {
+    function onContextClick(event: React.MouseEvent) {
+        onContentClick(event)
+
         event.stopPropagation();
         event.preventDefault();
 
@@ -140,18 +143,15 @@ function Editor(properties: Editor.Attributes) {
         inspector.style.display = "block";
 
         inspector.style.top = topOffset + "px";
-        // inspector.style.transform = "translateX(-50%)";
+        inspector.style.width = "150px"
 
         const inspectorWidth = inspector.offsetWidth;
         const containerWidth = container.offsetWidth;
 
         let adjustedLeftOffset = leftOffset;
 
-        if (leftOffset - inspectorWidth / 2 < 0) {
-            adjustedLeftOffset = inspectorWidth / 2;
-        }
-        else if (leftOffset + inspectorWidth / 2 > containerWidth) {
-            adjustedLeftOffset = containerWidth - inspectorWidth / 2;
+        if (leftOffset + inspectorWidth > containerWidth) {
+            adjustedLeftOffset = containerWidth - inspectorWidth;
         }
 
         inspector.style.left = adjustedLeftOffset + "px";
@@ -286,7 +286,7 @@ function Editor(properties: Editor.Attributes) {
                 <Toolbar page={page}/>
                 <Cursor ref={cursorRef}/>
                 <Inspector ref={inspectorRef}/>
-                <div onClick={onContentClick} onDoubleClick={onContentDoubleClick} style={{flex: 1, overflow : "auto"}}>
+                <div onClick={onContentClick} onContextMenu={onContextClick} style={{flex: 1, overflow : "auto"}}>
                     <ProcessorFactory node={astState.root}/>
                 </div>
                 <Footer page={page} onPage={(value) => setPage(value)}/>

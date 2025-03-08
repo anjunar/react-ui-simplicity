@@ -1,8 +1,10 @@
 import React, {useContext} from "react"
 import {ItemNode, ListNode} from "./ListNode";
-import {ParagraphNode, TextNode} from "../../core/TreeNode";
+import {TextNode} from "../../core/TreeNode";
 import EditorContext from "../../EditorContext";
 import {findParent} from "../../core/TreeNodes";
+import {ParagraphNode} from "../paragraph/ParagraphNode";
+import OrderNode from "../shared/OrderNode";
 
 function ListTool(properties: ListTool.Attributes) {
 
@@ -10,9 +12,7 @@ function ListTool(properties: ListTool.Attributes) {
 
     let {ast: {triggerAST}, cursor: {currentCursor, triggerCursor}} = useContext(EditorContext);
 
-    function addClick(event : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        event.stopPropagation()
-
+    function addClick() {
         let liNode = findParent(currentCursor.container, element => element instanceof ItemNode && element.parent === node) as ItemNode
 
         let parent = liNode.parent;
@@ -37,8 +37,7 @@ function ListTool(properties: ListTool.Attributes) {
         triggerAST()
     }
 
-    function deleteClick(event : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        event.stopPropagation()
+    function deleteClick() {
 
         let liNode = findParent(currentCursor.container, element => element instanceof ItemNode && element.parent === node) as ItemNode
 
@@ -53,12 +52,32 @@ function ListTool(properties: ListTool.Attributes) {
         triggerAST()
     }
 
+    function onDeleteList() {
+        node.remove()
 
+        triggerAST()
+    }
+
+    function onAddText() {
+        let textNode = new TextNode("");
+        node.after(new ParagraphNode([textNode]))
+
+        currentCursor.container = textNode
+        currentCursor.offset = 0
+
+        triggerCursor()
+        triggerAST()
+    }
 
     return (
         <div style={{display : "flex", flexDirection : "column"}}>
-            <button onClick={addClick} className={"container"}><span className={"material-icons"}>add</span>Add</button>
-            <button onClick={deleteClick} className={"container"}><span className={"material-icons"}>delete</span>Delete</button>
+            <button onClick={addClick} className={"container"}><span className={"material-icons"}>add</span>Add item</button>
+            <button onClick={deleteClick} className={"container"}><span className={"material-icons"}>delete</span>Delete item</button>
+            <hr style={{width : "100%"}}/>
+            <button onClick={onDeleteList} className={"container"}><span className={"material-icons"}>delete</span>Delete List</button>
+            <button onClick={onAddText} className={"container"}><span className={"material-icons"}>delete</span>Add Text</button>
+            <hr style={{width : "100%"}}/>
+            <OrderNode node={node}/>
         </div>
     )
 }

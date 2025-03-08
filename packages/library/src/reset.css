@@ -55,3 +55,7 @@ button {
 input {
   padding: 0;
 }
+
+select {
+  outline: 0;
+}

@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react"
-import {AbstractNode, ParagraphNode, TextNode} from "../../core/TreeNode";
+import {TextNode} from "../../core/TreeNode";
 import EditorContext from "../../EditorContext";
 import {AbstractCommand} from "../../commands/AbstractCommands";
 
@@ -13,7 +13,7 @@ function FormatSelect(properties: FormatSelect.Attributes) {
 
     const context = useContext(EditorContext)
 
-    function onChange(event : React.ChangeEvent<HTMLSelectElement>) {
+    function onChange(event: React.ChangeEvent<HTMLSelectElement>) {
         const value = event.target.value
         setValue(value)
 
@@ -46,11 +46,11 @@ function FormatSelect(properties: FormatSelect.Attributes) {
 
 namespace FormatSelect {
     export interface Attributes {
-        children : React.ReactNode[]
-        callback : (node: TextNode) => string
-        command : AbstractCommand<string>
-        className? : string
-        style? : React.CSSProperties
+        children: React.ReactNode[]
+        callback: (node: TextNode) => string
+        command: AbstractCommand<string>
+        className?: string
+        style?: React.CSSProperties
     }
 }
 

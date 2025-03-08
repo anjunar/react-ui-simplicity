@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useEffect, useState} from "react"
 import Tabs from "../../../layout/tabs/Tabs";
 import Tab from "../../../layout/tabs/Tab";
 
@@ -6,8 +6,30 @@ function Footer(properties: Footer.Attributes) {
 
     const {page, onPage} = properties
 
+    const [bottomPadding, setBottomPadding] = useState(-8);
+
+    useEffect(() => {
+        const updatePadding = () => {
+            if (window.visualViewport) {
+                const viewportHeight = window.visualViewport.height;
+                const screenHeight = window.innerHeight;
+                if (screenHeight === viewportHeight) {
+                    setBottomPadding(screenHeight - viewportHeight - 8);
+                } else {
+                    setBottomPadding(screenHeight - viewportHeight - 24);
+                }
+
+            }
+        };
+
+        window.visualViewport?.addEventListener("resize", updatePadding);
+        return () => {
+            window.visualViewport?.removeEventListener("resize", updatePadding);
+        };
+    }, []);
+
     return (
-        <div className={"editor-footer"}>
+        <div className={"editor-footer"} style={{position : "absolute", left : 0, bottom : bottomPadding + "px", width : "100%"}}>
             <Tabs page={page} onPage={onPage}>
                 <Tab selected={true}>
                     <span className={"material-icons"}>text_format</span>

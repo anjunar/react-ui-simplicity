@@ -1,9 +1,6 @@
-import React, {useContext, useEffect, useRef, useState} from "react"
+import React, {useEffect, useRef} from "react"
 import {ItemNode} from "./ListNode";
 import ProcessorFactory from "../../processors/ProcessorFactory";
-import EditorContext from "../../EditorContext";
-import {findNode, findNodeWithMaxDepth} from "../../core/TreeNodes";
-import {ParagraphNode, TextNode} from "../../core/TreeNode";
 
 function ListItemProcessor(properties: ItemProcessor.Attributes) {
 

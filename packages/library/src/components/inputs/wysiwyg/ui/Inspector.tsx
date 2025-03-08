@@ -57,11 +57,12 @@ function Inspector(properties: Inspector.Attributes) {
     return (
         <div ref={ref} className={"inspector"} onClick={event => event.stopPropagation()}>
             <div style={{display: "flex", flexDirection : "column"}}>
-                <select value={selectedNodeId} onChange={event => setSelectedNodeId(event.target.value)}>
+                <select style={{padding : "4px"}} value={selectedNodeId} onChange={event => setSelectedNodeId(event.target.value)}>
                     {
                         hierarchicalNodes.map(node => <option key={node.id} value={node.id}>{node.type}</option>)
                     }
                 </select>
+                <hr style={{width : "100%"}}/>
                 {
                     createTool()
                 }

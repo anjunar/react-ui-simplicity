@@ -1,11 +1,6 @@
 import {v4} from "uuid";
 import {flatten} from "./TreeNodes";
 
-function resolveVariable(value : string) {
-    const rootStyles = getComputedStyle(document.documentElement);
-    return rootStyles.getPropertyValue(value).trim();
-}
-
 export abstract class AbstractNode {
     id : string = v4()
     abstract type : string
@@ -35,6 +30,13 @@ export abstract class AbstractNode {
         if (this.parent) {
             return this.parent.removeChild(this)
         }
+    }
+
+    after(node : AbstractNode) {
+        let index = this.parentIndex;
+        let parent = this.parent
+
+        parent.insertChild(index + 1, node)
     }
 
 }
@@ -96,15 +98,6 @@ export class RootNode extends AbstractContainerNode<AbstractNode> {
 
     get flatten() : AbstractNode[] {
         return flatten(this)
-    }
-
-}
-
-export class ParagraphNode extends AbstractContainerNode<AbstractNode> {
-    readonly type: string = "p"
-
-    constructor(children: AbstractNode[]= []) {
-        super(children);
     }
 
 }
