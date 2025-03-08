@@ -55,9 +55,9 @@ function Inspector(properties: Inspector.Attributes) {
     }
 
     return (
-        <div className={"inspector"} onClick={event => event.stopPropagation()} style={style}>
+        <div className={"inspector"} style={style}>
             <div style={{display: "flex", flexDirection: "column"}}>
-                <select style={{padding: "4px"}} value={selectedNodeId} onChange={event => setSelectedNodeId(event.target.value)}>
+                <select onClick={event => event.stopPropagation()} style={{padding: "4px"}} value={selectedNodeId} onChange={event => setSelectedNodeId(event.target.value)}>
                     {
                         hierarchicalNodes.map(node => (
                             <option key={node.id} value={node.id}>

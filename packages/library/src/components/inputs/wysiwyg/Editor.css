@@ -74,13 +74,20 @@
 
             tr {
 
-                td div:has(br):before {
+                td p:has(br):before {
 
-                    content: "Write something...";
+                    content: "...";
                     color: var(--color-background-secondary);
 
                 }
 
+            }
+        }
+
+        ul {
+            li p:has(br):before {
+                content: "...";
+                color: var(--color-background-secondary);
             }
         }
 

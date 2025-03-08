@@ -16,12 +16,12 @@ function ParagraphProcessor(properties: ParagraphProcessor.Attributes) {
     }, [node]);
 
     return (
-        <div ref={divRef} className={node.justify ? node.justify : null}>
+        <p ref={divRef} className={node.justify ? node.justify : null}>
             {node.children.length === 0 ? <br/> : ""}
             {
                 node.children.map(node => <ProcessorFactory key={node.id} node={node}/>)
             }
-        </div>
+        </p>
     )
 }
 

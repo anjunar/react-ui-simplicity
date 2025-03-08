@@ -9,7 +9,7 @@ function Footer(properties: Footer.Attributes) {
     const [bottomPadding, setBottomPadding] = useState(-8);
 
     useEffect(() => {
-        const updatePadding = (event : any) => {
+        const updatePadding = () => {
             if (window.visualViewport) {
                 const viewportHeight = window.visualViewport.height;
                 const screenHeight = window.innerHeight;

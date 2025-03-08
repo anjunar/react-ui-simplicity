@@ -177,6 +177,10 @@ function Editor(properties: Editor.Attributes) {
                 cursorRef.current.style.top = topOffset + "px"
                 cursorRef.current.style.height = clientRect.height + "px"
                 cursorRef.current.style.display = "block"
+
+                setTimeout(() => {
+                    inputRef.current.focus()
+                }, 100)
             }
 
             let range = document.createRange();
