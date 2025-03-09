@@ -13,6 +13,7 @@ function ListProcessor(properties: ListProcessor.Attributes) {
     }, [node]);
 
 
+
     return (
         <ul ref={ulRef}>
             {node.children.map(child => <ListItemProcessor key={child.id} node={child as ItemNode}/>)}

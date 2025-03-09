@@ -58,24 +58,12 @@ function ListTool(properties: ListTool.Attributes) {
         triggerAST()
     }
 
-    function onAddText() {
-        let textNode = new TextNode("");
-        node.after(new ParagraphNode([textNode]))
-
-        currentCursor.container = textNode
-        currentCursor.offset = 0
-
-        triggerCursor()
-        triggerAST()
-    }
-
     return (
         <div style={{display : "flex", flexDirection : "column"}}>
             <button onClick={addClick} className={"container"}><span className={"material-icons"}>add</span>Add item</button>
             <button onClick={deleteClick} className={"container"}><span className={"material-icons"}>delete</span>Delete item</button>
             <hr style={{width : "100%"}}/>
             <button onClick={onDeleteList} className={"container"}><span className={"material-icons"}>delete</span>Delete List</button>
-            <button onClick={onAddText} className={"container"}><span className={"material-icons"}>add</span>Add Text</button>
             <hr style={{width : "100%"}}/>
             <OrderNode node={node}/>
         </div>

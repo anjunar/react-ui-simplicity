@@ -136,7 +136,7 @@ namespace CursorManager {
         cursorRef: React.RefObject<HTMLDivElement>
         inputRef: React.RefObject<HTMLTextAreaElement>
         editorRef: React.RefObject<HTMLDivElement>
-        contentEditableRef: React.RefObject<HTMLPreElement>
+        contentEditableRef: React.RefObject<HTMLDivElement>
         inspectorRef: React.RefObject<HTMLDivElement>
     }
 }

@@ -3,6 +3,7 @@ import {AbstractNode, RootNode, TextNode} from "../core/TreeNode";
 import {onArrowDown, onArrowLeft, onArrowRight, onArrowUp} from "../utils/ProcessorUtils";
 import {ParagraphNode} from "../blocks/paragraph/ParagraphNode";
 import {EditorContext, GeneralEvent} from "../EditorState";
+import {findNearestTextLeft, findNearestTextRight} from "../core/TreeNodes";
 
 const deleteContentBackward = {
     test(value: GeneralEvent): boolean {
@@ -34,18 +35,29 @@ const deleteContentBackward = {
             if (index > 0) {
                 let sibling = parent.prevSibling as ParagraphNode;
 
-                let lastNode = sibling.children[sibling.children.length - 1] as TextNode;
-                let lastNodeLength = lastNode.text.length;
-                lastNode.text += node.text;
+                let lastNode = sibling.children[sibling.children.length - 1]
+                if (lastNode instanceof TextNode) {
+                    let lastNodeLength = lastNode.text.length;
+                    lastNode.text += node.text;
 
-                parent.children
-                    .slice(node.parentIndex + 1)
-                    .forEach(node => sibling.appendChild(node))
+                    parent.children
+                        .slice(node.parentIndex + 1)
+                        .forEach(node => sibling.appendChild(node))
 
-                parent.remove()
+                    current.container = lastNode;
+                    current.offset = lastNodeLength;
 
-                current.container = lastNode;
-                current.offset = lastNodeLength;
+                    parent.remove()
+                } else {
+                    if (node.text === "") {
+                        let textRight = findNearestTextRight(root, node.parent) as TextNode;
+                        current.container = textRight
+                        current.offset = textRight.text.length
+
+                        parent.remove()
+                    }
+                }
+
             }
         }
     }

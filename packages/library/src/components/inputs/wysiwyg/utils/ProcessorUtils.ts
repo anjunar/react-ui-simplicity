@@ -1,4 +1,5 @@
 import {AbstractContainerNode, AbstractNode, RootNode, TextNode} from "../core/TreeNode";
+import {findNearestTextLeft, findNearestTextRight} from "../core/TreeNodes";
 
 export function onArrowLeft(root: RootNode, current: { container: AbstractNode; offset: number }) {
     let flattened = root.flatten
@@ -29,9 +30,7 @@ export function onArrowUp(node: TextNode, current: { container: AbstractNode; of
         if (grandParent) {
             const parentIndex = parent.parentIndex;
             if (parentIndex > -1) {
-                let flattened = root.flatten;
-                let indexOf = flattened.indexOf(parent);
-                let abstractNode = flattened.findLast((node, index) => index < indexOf && node instanceof TextNode);
+                let abstractNode = findNearestTextRight(root, parent);
                 if (abstractNode) {
                     const siblingAbove = abstractNode.parent
                     if (siblingAbove instanceof AbstractContainerNode) {
@@ -72,9 +71,7 @@ export function onArrowDown(node: TextNode, current: { container: AbstractNode; 
         if (grandParent) {
             const parentIndex = parent.parentIndex;
             if (parentIndex >= 0) {
-                let flattened = root.flatten;
-                let indexOf = flattened.indexOf(parent.children[parent.children.length - 1])
-                let abstractNode = flattened.find((node, index) => index > indexOf && node instanceof TextNode);
+                let abstractNode = findNearestTextLeft(root, parent);
                 if (abstractNode) {
                     const siblingBelow = abstractNode.parent
                     if (siblingBelow instanceof AbstractContainerNode) {

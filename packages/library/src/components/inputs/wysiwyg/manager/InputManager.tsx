@@ -2,7 +2,6 @@ import React, {useContext} from "react"
 
 import {EditorContext} from "../EditorState";
 
-const queue = []
 let isComposing = false
 
 function InputManager(properties: EditorInput.Attributes) {
@@ -28,11 +27,9 @@ function InputManager(properties: EditorInput.Attributes) {
     }
 
     function onKeyDown(e: React.KeyboardEvent) {
-        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End", "Backspace"]
+        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End", window.ontouchmove ? "Backspace" : ""]
 
         if (whiteList.indexOf(e.key) > -1) {
-
-            console.log(e)
 
             event.currentEvent = {
                 handled : false,

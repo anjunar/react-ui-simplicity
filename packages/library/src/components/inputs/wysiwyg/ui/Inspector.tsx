@@ -37,7 +37,7 @@ function Inspector(properties: Inspector.Attributes) {
 
     useEffect(() => {
         if (hierarchicalNodes.length > 0) {
-            setSelectedNodeId(hierarchicalNodes[0].id)
+            setSelectedNodeId(hierarchicalNodes.length === 1 ? hierarchicalNodes[0].id : hierarchicalNodes[1].id)
         }
     }, [hierarchicalNodes]);
 

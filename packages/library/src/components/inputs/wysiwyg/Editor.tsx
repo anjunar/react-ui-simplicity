@@ -25,18 +25,18 @@ function Editor(properties: Editor.Attributes) {
 
     const cursorRef = useRef<HTMLDivElement>(null)
 
-    const contentEditableRef = useRef<HTMLPreElement>(null);
+    const contentEditableRef = useRef<HTMLDivElement>(null);
 
     const inspectorRef = useRef<HTMLDivElement>(null);
 
     return (
         <div ref={editorRef} className={"editor"} style={{position: "relative", ...style}}>
             <Toolbar page={page}/>
-            <pre ref={contentEditableRef} style={{flex: 1, overflow: "auto"}}>
+            <div ref={contentEditableRef} style={{flex: 1, overflow: "auto"}}>
                 <Cursor ref={cursorRef}/>
                 <Inspector inspectorRef={inspectorRef}/>
                 <ProcessorFactory node={ast.root}/>
-            </pre>
+            </div>
             <CursorManager cursorRef={cursorRef} inputRef={inputRef} editorRef={editorRef} contentEditableRef={contentEditableRef} inspectorRef={inspectorRef}/>
             <SelectionManager/>
             <InspectorManager editorRef={editorRef} contentEditableRef={contentEditableRef} inputRef={inputRef} inspectorRef={inspectorRef}/>

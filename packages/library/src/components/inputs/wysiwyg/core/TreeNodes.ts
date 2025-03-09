@@ -1,5 +1,4 @@
 import {AbstractContainerNode, AbstractNode, RootNode, TextNode} from "./TreeNode";
-import {ParagraphNode} from "../blocks/paragraph/ParagraphNode";
 
 export function findParent(node: AbstractNode, callback: (node: AbstractNode) => boolean) {
 
@@ -62,3 +61,16 @@ export function flatten(node : AbstractNode) : AbstractNode[] {
         return [node]
     }
 }
+
+export function findNearestTextLeft(root: RootNode, parent: AbstractContainerNode<any>) {
+    let flattened = root.flatten;
+    let indexOf = flattened.indexOf(parent.children[parent.children.length - 1])
+    return flattened.find((node, index) => index > indexOf && node instanceof TextNode);
+}
+
+export function findNearestTextRight(root: RootNode, parent: AbstractContainerNode<any>) {
+    let flattened = root.flatten;
+    let indexOf = flattened.indexOf(parent);
+    return flattened.findLast((node, index) => index < indexOf && node instanceof TextNode);
+}
+
