@@ -9,6 +9,8 @@ import Footer from "./ui/Footer";
 import {AbstractProvider} from "./blocks/shared/AbstractProvider";
 import Inspector from "./ui/Inspector";
 import EditorContext from "./EditorContext";
+import SelectionManager from "./SelectionManager";
+import EditorInput from "./EditorInput";
 
 function Editor(properties: Editor.Attributes) {
 
@@ -59,45 +61,6 @@ function Editor(properties: Editor.Attributes) {
             inputRef.current?.focus();
         }
 
-    }
-
-    function onInput(e: React.FormEvent<HTMLTextAreaElement>) {
-        let inputEvent = e.nativeEvent as InputEvent;
-
-        event.currentEvent = {
-            handled : false,
-            instance : {
-                type: inputEvent.inputType,
-                data: inputEvent.data
-            }
-        }
-
-        event.triggerEvent()
-    }
-
-    function onKeyDown(e: React.KeyboardEvent) {
-        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End"]
-
-        if (whiteList.indexOf(e.key) > -1) {
-
-            event.currentEvent = {
-                handled : false,
-                instance : {
-                    type: e.type,
-                    data: e.key
-                }
-            }
-
-            event.triggerEvent()
-        }
-    }
-
-    function onFocus() {
-        cursorRef.current.style.display = "block"
-    }
-
-    function onBlur() {
-        cursorRef.current.style.display = "none"
     }
 
     function onContextClick(event: React.MouseEvent) {
@@ -156,17 +119,6 @@ function Editor(properties: Editor.Attributes) {
     }, [cursorDeferredValue]);
 
     useEffect(() => {
-        if (selection.currentSelection) {
-            let range = document.createRange();
-            range.setStart(selection.currentSelection.startContainer.dom, selection.currentSelection.startOffset);
-            range.setEnd(selection.currentSelection.endContainer.dom, selection.currentSelection.endOffset);
-            let nativeSelection = window.getSelection();
-            nativeSelection.removeAllRanges();
-            nativeSelection.addRange(range);
-        }
-    }, [selection]);
-
-    useEffect(() => {
 
         inputRef.current.value = " " + inputRef.current.value;
         if (cursor.currentCursor) {
@@ -177,57 +129,42 @@ function Editor(properties: Editor.Attributes) {
     }, [cursor]);
 
     useEffect(() => {
-
-        let onSelectionChange = () => {
-
-            let nativeSelection = window.getSelection();
-            if (nativeSelection && !nativeSelection.isCollapsed) {
-                let rangeAt = nativeSelection.getRangeAt(0);
-
-                let start = findNode(ast.root, (node) => node.dom === rangeAt.startContainer)
-                let end = findNode(ast.root, (node) => node.dom === rangeAt.endContainer)
-
-                if (!(selection.currentSelection &&
-                    selection.currentSelection.startContainer === start &&
-                    selection.currentSelection.endContainer === end &&
-                    selection.currentSelection.startOffset === rangeAt.startOffset &&
-                    selection.currentSelection.endOffset === rangeAt.endOffset)) {
-
-                    selection.currentSelection = {
-                        startContainer: start,
-                        startOffset: rangeAt.startOffset,
-                        endContainer: end,
-                        endOffset: rangeAt.endOffset
-                    }
-                }
-            } else {
-
-                selection.currentSelection = null
-
-            }
-
+        function onFocus() {
+            cursorRef.current.style.display = "block"
         }
 
+        function onBlur() {
+            cursorRef.current.style.display = "none"
+        }
+
+        inputRef.current.addEventListener("focus", onFocus)
+        inputRef.current.addEventListener("blur", onBlur)
+
+        return () => {
+            inputRef.current.removeEventListener("focus", onFocus)
+            inputRef.current.removeEventListener("blur", onBlur)
+        }
+    }, [inputRef.current]);
+
+    useEffect(() => {
         function onDocumentClick() {
             setInspector({
                 current: null
             })
         }
 
-
-        document.addEventListener("selectionchange", onSelectionChange)
         document.addEventListener("click", onDocumentClick)
-
         return () => {
-            document.removeEventListener("selectionchange", onSelectionChange)
             document.removeEventListener("click", onDocumentClick)
         }
-    }, [selection.currentSelection]);
+    }, []);
 
     return (
         <div ref={ref} className={"editor"} style={{position: "relative", ...style}}>
             <Toolbar page={page}/>
             <Cursor ref={cursorRef}/>
+            <SelectionManager/>
+            <EditorInput inputRef={inputRef} inspector={inspector}/>
             {
                 inspector.current && <Inspector style={inspector.current}/>
             }
@@ -235,13 +172,6 @@ function Editor(properties: Editor.Attributes) {
                 <ProcessorFactory node={ast.root}/>
             </div>
             <Footer page={page} onPage={(value) => setPage(value)}/>
-            <textarea ref={inputRef}
-                      onKeyDown={onKeyDown}
-                      onInput={onInput}
-                      onFocus={onFocus}
-                      onBlur={onBlur}
-                      disabled={!!inspector.current}
-                      style={{position: "absolute", top: "-2000px", opacity: 1}}/>
         </div>
     )
 }
