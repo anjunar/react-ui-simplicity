@@ -7,7 +7,7 @@ export class ParagraphProvider extends AbstractProvider<typeof ParagraphCommand,
 
     command = ParagraphCommand
 
-    icon: string = "segment"
+    icon: string = "abc"
 
     processor = ParagraphProcessor
 
