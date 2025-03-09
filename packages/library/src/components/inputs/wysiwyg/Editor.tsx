@@ -32,15 +32,15 @@ function Editor(properties: Editor.Attributes) {
     return (
         <div ref={editorRef} className={"editor"} style={{position: "relative", ...style}}>
             <Toolbar page={page}/>
-            <CursorManager cursorRef={cursorRef} inputRef={inputRef} editorRef={editorRef} contentEditableRef={contentEditableRef} inspectorRef={inspectorRef}/>
-            <SelectionManager/>
-            <InspectorManager editorRef={editorRef} contentEditableRef={contentEditableRef} inputRef={inputRef} inspectorRef={inspectorRef}/>
-            <EditorInput inputRef={inputRef}/>
             <div ref={contentEditableRef} style={{flex: 1, overflow: "auto"}}>
                 <Cursor ref={cursorRef}/>
                 <Inspector inspectorRef={inspectorRef}/>
                 <ProcessorFactory node={ast.root}/>
             </div>
+            <CursorManager cursorRef={cursorRef} inputRef={inputRef} editorRef={editorRef} contentEditableRef={contentEditableRef} inspectorRef={inspectorRef}/>
+            <SelectionManager/>
+            <InspectorManager editorRef={editorRef} contentEditableRef={contentEditableRef} inputRef={inputRef} inspectorRef={inspectorRef}/>
+            <EditorInput inputRef={inputRef}/>
             <Footer page={page} onPage={(value) => setPage(value)}/>
         </div>
     )
