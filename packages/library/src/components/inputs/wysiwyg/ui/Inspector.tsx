@@ -5,7 +5,7 @@ import {AbstractNode} from "../core/TreeNode";
 
 function Inspector(properties: Inspector.Attributes) {
 
-    const {style} = properties
+    const {inspectorRef} = properties
 
     const [selectedNodeId, setSelectedNodeId] = useState<string>("")
 
@@ -55,7 +55,7 @@ function Inspector(properties: Inspector.Attributes) {
     }
 
     return (
-        <div className={"inspector"} style={style}>
+        <div className={"inspector"} ref={inspectorRef}>
             <div style={{display: "flex", flexDirection: "column"}}>
                 <select onClick={event => event.stopPropagation()} style={{padding: "4px"}} value={selectedNodeId} onChange={event => setSelectedNodeId(event.target.value)}>
                     {
@@ -78,7 +78,7 @@ function Inspector(properties: Inspector.Attributes) {
 
 namespace Inspector {
     export interface Attributes {
-        style : CSSProperties
+        inspectorRef : React.RefObject<HTMLDivElement>
     }
 }
 

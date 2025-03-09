@@ -3,7 +3,7 @@ import EditorContext from "./EditorContext";
 
 function EditorInput(properties: EditorInput.Attributes) {
 
-    const {inputRef, inspector} = properties
+    const {inputRef} = properties
 
     const {ast, event, cursor, providers, selection} = useContext(EditorContext)
 
@@ -42,7 +42,6 @@ function EditorInput(properties: EditorInput.Attributes) {
         <textarea ref={inputRef}
                   onKeyDown={onKeyDown}
                   onInput={onInput}
-                  disabled={!!inspector.current}
                   style={{position: "absolute", top: "-2000px", opacity: 1}}/>
     )
 }
@@ -50,7 +49,6 @@ function EditorInput(properties: EditorInput.Attributes) {
 namespace EditorInput {
     export interface Attributes {
         inputRef : React.RefObject<HTMLTextAreaElement>
-        inspector : {current : any}
     }
 }
 
