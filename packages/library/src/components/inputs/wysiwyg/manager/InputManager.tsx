@@ -1,4 +1,4 @@
-import React, {useContext} from "react"
+import React, {useContext, useEffect} from "react"
 
 import {EditorContext} from "../EditorState";
 
@@ -14,7 +14,7 @@ function InputManager(properties: EditorInput.Attributes) {
         let inputEvent = e.nativeEvent as InputEvent;
 
         event.currentEvent = {
-            handled : false,
+            queue : [],
             instance : {
                 type: inputEvent.inputType,
                 data: inputEvent.data
@@ -32,7 +32,7 @@ function InputManager(properties: EditorInput.Attributes) {
         if (whiteList.indexOf(e.key) > -1) {
 
             event.currentEvent = {
-                handled : false,
+                queue : [],
                 instance : {
                     type: e.type,
                     data: e.key
@@ -46,7 +46,7 @@ function InputManager(properties: EditorInput.Attributes) {
 
     function onCompositionUpdate(compositionEvent : React.CompositionEvent) {
         event.currentEvent = {
-            handled : false,
+            queue : [],
             instance : {
                 type: "compositionUpdate",
                 data: compositionEvent.data
@@ -55,6 +55,17 @@ function InputManager(properties: EditorInput.Attributes) {
 
         event.triggerEvent()
     }
+
+    useEffect(() => {
+
+        for (const command of event.currentEvent.queue) {
+            command.handle()
+        }
+
+        ast.triggerAST()
+        cursor.triggerCursor()
+
+    }, [event.currentEvent.queue]);
 
     return (
         <textarea ref={inputRef}

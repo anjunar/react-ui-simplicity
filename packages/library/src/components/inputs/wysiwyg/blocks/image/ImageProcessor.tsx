@@ -59,35 +59,42 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
 
     useEffect(() => {
 
-        if (currentEvent.instance && node === currentCursor?.container && !currentEvent.handled) {
+        if (currentEvent.instance && node === currentCursor?.container) {
 
             switch (currentEvent.instance.type) {
                 case "insertLineBreak" : {
-                    let index = node.parentIndex;
-                    let parent = node.parent;
-                    let textNode = new TextNode();
 
-                    currentCursor.container = textNode
-                    currentCursor.offset = 0
+                    currentEvent.queue.push({
+                        source : node,
+                        handle(): void {
+                            let index = node.parentIndex;
+                            let parent = node.parent;
+                            let textNode = new TextNode();
 
-                    parent.insertChild(index + 1, new ParagraphNode([textNode]));
+                            currentCursor.container = textNode
+                            currentCursor.offset = 0
 
-                    currentEvent.handled = true
+                            parent.insertChild(index + 1, new ParagraphNode([textNode]));
+                        }
+                    })
 
                 } break
                 case "deleteContentBackward" : {
 
-                    let flattened = root.flatten;
-                    let index = flattened.indexOf(node);
-                    let slice = flattened.slice(0, index);
-                    let textNode = slice.findLast(node => node instanceof TextNode);
+                    currentEvent.queue.push({
+                        source : node,
+                        handle(): void {
+                            let flattened = root.flatten;
+                            let index = flattened.indexOf(node);
+                            let slice = flattened.slice(0, index);
+                            let textNode = slice.findLast(node => node instanceof TextNode);
 
-                    currentCursor.container = textNode
-                    currentCursor.offset = textNode.text.length;
+                            currentCursor.container = textNode
+                            currentCursor.offset = textNode.text.length;
 
-                    node.remove()
-
-                    currentEvent.handled = true
+                            node.remove()
+                        }
+                    })
 
                 } break
             }

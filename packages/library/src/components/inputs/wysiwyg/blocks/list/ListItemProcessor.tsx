@@ -24,26 +24,40 @@ function ListItemProcessor(properties: ItemProcessor.Attributes) {
 
         let findParent1 = findParent(currentCursor?.container, item => node === item);
 
-        if (currentEvent.instance && node === findParent1 && !currentEvent.handled) {
+        if (currentEvent.instance && node === findParent1) {
 
             if (currentCursor.container instanceof TextNode) {
                 if (currentCursor.offset === currentCursor.container.text.length) {
 
                     if (currentEvent.instance.type === "insertLineBreak") {
 
-                        let parent = node.parent;
-                        let parentIndex = node.parentIndex;
+                        let index = currentEvent.queue.findIndex(command => command.source instanceof TextNode);
+                        if (index > -1) {
+                            currentEvent.queue.splice(index, 1)
+                        }
 
-                        let textNode = new TextNode("");
+                        currentEvent.queue.push({
+                            source : node,
+                            handle(): void {
+                                let parent = node.parent;
+                                let parentIndex = node.parentIndex;
 
-                        parent.insertChild(parentIndex + 1, new ItemNode([new ParagraphNode([textNode])]))
+                                let textNode = new TextNode();
 
-                        currentCursor.container = textNode
-                        currentCursor.offset = 0
+                                let firstChild = (node.children[0] as ParagraphNode).children[0] as TextNode
+                                if (firstChild.text === "") {
+                                    let grandParent = parent.parent;
+                                    let grandParentIndex = parent.parentIndex;
+                                    node.remove()
+                                    grandParent.insertChild(grandParentIndex + 1, new ParagraphNode([textNode]));
+                                } else {
+                                    parent.insertChild(parentIndex + 1, new ItemNode([new ParagraphNode([textNode])]));
+                                }
 
-                        currentEvent.handled = true
-
-                        triggerAST()
+                                currentCursor.container = textNode
+                                currentCursor.offset = 0
+                            }
+                        })
 
                     }
 

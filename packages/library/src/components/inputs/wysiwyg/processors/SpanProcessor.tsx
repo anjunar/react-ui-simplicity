@@ -330,14 +330,18 @@ function SpanProcessor(properties: SpanNode.Attributes) {
 
     useEffect(() => {
 
-        if (currentEvent.instance && node === currentCursor?.container && !currentEvent.handled) {
+        if (currentEvent.instance && node === currentCursor?.container) {
 
             for (const handler of registry) {
                 if (handler.test(currentEvent.instance)) {
-                    handler.process(currentCursor, node, currentEvent.instance, root)
-                    currentEvent.handled = true
-                    triggerAST()
-                    triggerCursor()
+
+                    currentEvent.queue.push({
+                        source : node,
+                        handle() {
+                            handler.process(currentCursor, node, currentEvent.instance, root)
+                        }
+                    })
+
                     break
                 }
             }

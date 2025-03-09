@@ -2,6 +2,7 @@ import React, {useState} from "react"
 import {AbstractNode, RootNode, TextNode} from "./core/TreeNode";
 import {ParagraphNode} from "./blocks/paragraph/ParagraphNode";
 import {AbstractProvider} from "./blocks/shared/AbstractProvider";
+import {EventCommand} from "./commands/EventCommand";
 
 export interface GeneralEvent {
     type: string
@@ -32,7 +33,7 @@ export interface Context {
     }
     event: {
         currentEvent: {
-            handled: boolean
+            queue: EventCommand[],
             instance: GeneralEvent
         }
         triggerEvent(): void
@@ -70,9 +71,9 @@ function EditorState(properties: EditorState.Attributes) {
         }
     })
 
-    const [event, setEvent] = useState<{ currentEvent: { handled: boolean, instance: GeneralEvent } }>({
+    const [event, setEvent] = useState<{ currentEvent: { queue: EventCommand[], instance: GeneralEvent } }>({
         currentEvent: {
-            handled: false,
+            queue: [],
             instance: null
         }
     })

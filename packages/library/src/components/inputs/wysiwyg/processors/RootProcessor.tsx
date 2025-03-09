@@ -16,7 +16,7 @@ function RootProcessor(properties: RootNode.Attributes) {
 
     useEffect(() => {
 
-        if (currentEvent.instance && node === currentCursor?.container && ! currentEvent.handled) {
+        if (currentEvent.instance && node === currentCursor?.container) {
             let e = currentEvent.instance
             let node = currentCursor.container as ParagraphNode
 
@@ -25,16 +25,18 @@ function RootProcessor(properties: RootNode.Attributes) {
                 case "insertText" : {
 
                     if (node.children.length === 0) {
-                        let textNode = new TextNode(e.data)
-                        node.appendChild(textNode)
 
-                        currentCursor.container = textNode
-                        currentCursor.offset = e.data.length
+                        currentEvent.queue.push({
+                            source : node,
+                            handle(): void {
+                                let textNode = new TextNode(e.data)
+                                node.appendChild(textNode)
 
-                        currentEvent.handled = true
+                                currentCursor.container = textNode
+                                currentCursor.offset = e.data.length
+                            }
+                        })
 
-                        triggerAST()
-                        triggerCursor()
 
                     }
 
@@ -44,19 +46,27 @@ function RootProcessor(properties: RootNode.Attributes) {
 
                     switch (e.data) {
                         case "ArrowLeft" : {
-                            onArrowLeft(root, currentCursor);
 
-                            currentEvent.handled = true
 
-                            triggerCursor()
+                            currentEvent.queue.push({
+                                source : node,
+                                handle(): void {
+                                    onArrowLeft(root, currentCursor);
+                                }
+                            })
 
                         } break
                         case "ArrowRight" : {
-                            onArrowRight(root, currentCursor);
 
-                            currentEvent.handled = true
 
-                            triggerCursor()
+                            currentEvent.queue.push({
+                                source : node,
+                                handle(): void {
+                                    onArrowRight(root, currentCursor);
+                                }
+
+                            })
+
                         }
                     }
 
