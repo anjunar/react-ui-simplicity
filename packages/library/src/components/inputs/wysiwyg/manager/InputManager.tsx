@@ -43,7 +43,7 @@ function InputManager(properties: EditorInput.Attributes) {
         <textarea ref={inputRef}
                   onKeyDown={onKeyDown}
                   onInput={onInput}
-                  style={{position: "absolute", top: "-2000px", opacity: 1}}/>
+                  style={{position: "absolute", left: "-2000px", opacity: 1}}/>
     )
 }
 

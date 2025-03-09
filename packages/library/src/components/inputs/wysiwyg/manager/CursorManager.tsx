@@ -33,33 +33,30 @@ function CursorManager(properties: CursorManager.Attributes) {
         let range = document.createRange();
         let container = cursor.currentCursor.container.dom;
 
-        if (container instanceof HTMLElement) {
-            range.selectNode(container);
-        } else {
-            range.setStart(container, cursor.currentCursor.offset);
-            range.collapse(true);
+        if (container.isConnected) {
+            if (container instanceof HTMLElement) {
+                range.selectNode(container);
+            } else {
+                range.setStart(container, cursor.currentCursor.offset);
+                range.collapse(true);
+            }
+
+            let clientRect = range.getBoundingClientRect();
+            let editorRect = editorRef.current.getBoundingClientRect();
+
+            let number = clientRect.top - editorRect.top + editorRef.current.scrollTop;
+            cursorRef.current.style.left = clientRect.left - editorRect.left + editorRef.current.scrollLeft + "px"
+            cursorRef.current.style.top = number + "px"
+            cursorRef.current.style.height = clientRect.height + "px"
+            cursorRef.current.style.display = "block"
+
+            inputRef.current?.focus();
+            inputRef.current.style.top = number + "px"
+
+
         }
 
-        let clientRect = range.getBoundingClientRect();
-        let editorRect = editorRef.current.getBoundingClientRect();
-
-        cursorRef.current.style.left = clientRect.left - editorRect.left + editorRef.current.scrollLeft + "px"
-        cursorRef.current.style.top = clientRect.top - editorRect.top + editorRef.current.scrollTop + "px"
-        cursorRef.current.style.height = clientRect.height + "px"
-        cursorRef.current.style.display = "block"
-
-        inputRef.current?.focus();
     }, [cursorDeferredValue]);
-
-    useEffect(() => {
-
-        inputRef.current.value = " " + inputRef.current.value;
-        if (cursor.currentCursor) {
-            inputRef.current.focus()
-        }
-
-
-    }, [cursor]);
 
     useEffect(() => {
         function onFocus() {
@@ -82,6 +79,7 @@ function CursorManager(properties: CursorManager.Attributes) {
     useEffect(() => {
 
         function onContentClick(event: MouseEvent) {
+
             if (event.composedPath().includes(inspectorRef.current)) {
                 return;
             }
