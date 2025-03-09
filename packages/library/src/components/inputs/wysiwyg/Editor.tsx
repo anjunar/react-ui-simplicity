@@ -1,56 +1,27 @@
 import "./Editor.css"
-import React, {useCallback, useDeferredValue, useEffect, useRef, useState} from "react"
+import React, {useContext, useDeferredValue, useEffect, useRef, useState} from "react"
 import ProcessorFactory from "./processors/ProcessorFactory";
 import Cursor from "./ui/Cursor";
-import {AbstractNode, RootNode, TextNode} from "./core/TreeNode";
-import EditorContext, {GeneralEvent} from "./EditorContext";
+import {AbstractNode} from "./core/TreeNode";
 import {findNode} from "./core/TreeNodes";
 import Toolbar from "./ui/Toolbar";
 import Footer from "./ui/Footer";
 import {AbstractProvider} from "./blocks/shared/AbstractProvider";
 import Inspector from "./ui/Inspector";
-import {ParagraphNode} from "./blocks/paragraph/ParagraphNode";
+import EditorContext from "./EditorContext";
 
 function Editor(properties: Editor.Attributes) {
 
-    const {style, providers} = properties
+    const {style} = properties
 
-    const [astState, setAstState] = useState(() => {
-        return {
-            root: new RootNode([new ParagraphNode([new TextNode()])])
-        }
-    })
+    const {ast, event, cursor, providers, selection} = useContext(EditorContext)
 
-    const [cursorState, setCursorState] = useState<{ currentCursor: { container: AbstractNode, offset: number } }>(() => {
-        return {
-            currentCursor: null
-        }
-    })
-
-    let cursorDeferredValue = useDeferredValue(cursorState);
-
-    const [selectionState, setSelectionState] = useState<{
-        currentSelection: {
-            startContainer: AbstractNode,
-            startOffset: number,
-            endContainer: AbstractNode,
-            endOffset: number
-        }
-    }>(() => {
-        return {
-            currentSelection: null
-        }
-    })
-
-    const [event, setEvent] = useState<{ handled: boolean, instance: GeneralEvent }>({
-        handled: false,
-        instance: null
-    })
+    let cursorDeferredValue = useDeferredValue(cursor);
 
     const [page, setPage] = useState(0)
 
     const [inspector, setInspector] = useState({
-        current : null
+        current: null
     })
 
     let ref = useRef<HTMLDivElement>(null)
@@ -69,23 +40,22 @@ function Editor(properties: Editor.Attributes) {
 
             let selectedNode: AbstractNode
             if (caretPosition.offsetNode instanceof HTMLSpanElement) {
-                selectedNode= findNode(astState.root, (node) => node.dom.parentElement === caretPosition.offsetNode);
+                selectedNode = findNode(ast.root, (node) => node.dom.parentElement === caretPosition.offsetNode);
             } else {
-                selectedNode= findNode(astState.root, (node) => node.dom === caretPosition.offsetNode);
+                selectedNode = findNode(ast.root, (node) => node.dom === caretPosition.offsetNode);
             }
 
             if (selectedNode) {
-                setCursorState({
-                    currentCursor: {
-                        container: selectedNode,
-                        offset: caretPosition.offset
-                    }
-                })
+                cursor.currentCursor = {
+                    container: selectedNode,
+                    offset: caretPosition.offset
+                }
             } else {
-                setCursorState({
-                    currentCursor: null
-                })
+                cursor.currentCursor = null
             }
+
+            cursor.triggerCursor()
+
             inputRef.current?.focus();
         }
 
@@ -94,28 +64,31 @@ function Editor(properties: Editor.Attributes) {
     function onInput(e: React.FormEvent<HTMLTextAreaElement>) {
         let inputEvent = e.nativeEvent as InputEvent;
 
-        setEvent({
+        event.currentEvent = {
             handled : false,
             instance : {
                 type: inputEvent.inputType,
                 data: inputEvent.data
             }
-        })
+        }
 
+        event.triggerEvent()
     }
 
-    function onKeyDown(event: React.KeyboardEvent) {
+    function onKeyDown(e: React.KeyboardEvent) {
         const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End"]
 
-        if (whiteList.indexOf(event.key) > -1) {
-            setEvent({
+        if (whiteList.indexOf(e.key) > -1) {
+
+            event.currentEvent = {
                 handled : false,
                 instance : {
-                    type: event.type,
-                    data: event.key
+                    type: e.type,
+                    data: e.key
                 }
-            })
+            }
 
+            event.triggerEvent()
         }
     }
 
@@ -152,22 +125,22 @@ function Editor(properties: Editor.Attributes) {
 
         setInspector({
             current: {
-                left : adjustedLeftOffset,
-                top : topOffset
+                left: adjustedLeftOffset,
+                top: topOffset
             }
         })
     }
 
     useEffect(() => {
-        if (!cursorState.currentCursor) return;
+        if (!cursor.currentCursor) return;
 
         let range = document.createRange();
-        let container = cursorState.currentCursor.container.dom;
+        let container = cursor.currentCursor.container.dom;
 
         if (container instanceof HTMLElement) {
             range.selectNode(container);
         } else {
-            range.setStart(container, cursorState.currentCursor.offset);
+            range.setStart(container, cursor.currentCursor.offset);
             range.collapse(true);
         }
 
@@ -183,55 +156,54 @@ function Editor(properties: Editor.Attributes) {
     }, [cursorDeferredValue]);
 
     useEffect(() => {
-        if (selectionState.currentSelection) {
+        if (selection.currentSelection) {
             let range = document.createRange();
-            range.setStart(selectionState.currentSelection.startContainer.dom, selectionState.currentSelection.startOffset);
-            range.setEnd(selectionState.currentSelection.endContainer.dom, selectionState.currentSelection.endOffset);
-            let selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
+            range.setStart(selection.currentSelection.startContainer.dom, selection.currentSelection.startOffset);
+            range.setEnd(selection.currentSelection.endContainer.dom, selection.currentSelection.endOffset);
+            let nativeSelection = window.getSelection();
+            nativeSelection.removeAllRanges();
+            nativeSelection.addRange(range);
         }
-    }, [selectionState]);
+    }, [selection]);
 
     useEffect(() => {
 
         inputRef.current.value = " " + inputRef.current.value;
-        if (cursorState.currentCursor) {
+        if (cursor.currentCursor) {
             inputRef.current.focus()
         }
 
 
-    }, [cursorState]);
+    }, [cursor]);
 
     useEffect(() => {
 
         let onSelectionChange = () => {
 
-            let selection = window.getSelection();
-            if (selection && !selection.isCollapsed) {
-                let rangeAt = selection.getRangeAt(0);
+            let nativeSelection = window.getSelection();
+            if (nativeSelection && !nativeSelection.isCollapsed) {
+                let rangeAt = nativeSelection.getRangeAt(0);
 
-                let start = findNode(astState.root, (node) => node.dom === rangeAt.startContainer)
-                let end = findNode(astState.root, (node) => node.dom === rangeAt.endContainer)
+                let start = findNode(ast.root, (node) => node.dom === rangeAt.startContainer)
+                let end = findNode(ast.root, (node) => node.dom === rangeAt.endContainer)
 
-                if (!(selectionState.currentSelection &&
-                    selectionState.currentSelection.startContainer === start &&
-                    selectionState.currentSelection.endContainer === end &&
-                    selectionState.currentSelection.startOffset === rangeAt.startOffset &&
-                    selectionState.currentSelection.endOffset === rangeAt.endOffset)) {
-                    setSelectionState({
-                        currentSelection: {
-                            startContainer: start,
-                            startOffset: rangeAt.startOffset,
-                            endContainer: end,
-                            endOffset: rangeAt.endOffset
-                        }
-                    })
+                if (!(selection.currentSelection &&
+                    selection.currentSelection.startContainer === start &&
+                    selection.currentSelection.endContainer === end &&
+                    selection.currentSelection.startOffset === rangeAt.startOffset &&
+                    selection.currentSelection.endOffset === rangeAt.endOffset)) {
+
+                    selection.currentSelection = {
+                        startContainer: start,
+                        startOffset: rangeAt.startOffset,
+                        endContainer: end,
+                        endOffset: rangeAt.endOffset
+                    }
                 }
             } else {
-                setSelectionState({
-                    currentSelection: null
-                })
+
+                selection.currentSelection = null
+
             }
 
         }
@@ -250,50 +222,25 @@ function Editor(properties: Editor.Attributes) {
             document.removeEventListener("selectionchange", onSelectionChange)
             document.removeEventListener("click", onDocumentClick)
         }
-    }, [selectionState.currentSelection]);
-
-    let value = {
-        ast: {
-            ...astState,
-            triggerAST() {
-                setAstState({...astState})
-            }
-        },
-        providers: providers,
-        cursor: {
-            ...cursorState,
-            triggerCursor() {
-                setCursorState({...cursorState})
-            }
-        },
-        selection: {
-            ...selectionState,
-            triggerSelection() {
-                setSelectionState({...selectionState})
-            }
-        },
-        event: event
-    };
+    }, [selection.currentSelection]);
 
     return (
         <div ref={ref} className={"editor"} style={{position: "relative", ...style}}>
-            <EditorContext value={value}>
-                <Toolbar page={page}/>
-                <Cursor ref={cursorRef}/>
-                {
-                    inspector.current && <Inspector style={inspector.current}/>
-                }
-                <div onClick={onContentClick} onContextMenu={onContextClick} style={{flex: 1, overflow : "auto"}}>
-                    <ProcessorFactory node={astState.root}/>
-                </div>
-                <Footer page={page} onPage={(value) => setPage(value)}/>
-            </EditorContext>
+            <Toolbar page={page}/>
+            <Cursor ref={cursorRef}/>
+            {
+                inspector.current && <Inspector style={inspector.current}/>
+            }
+            <div onClick={onContentClick} onContextMenu={onContextClick} style={{flex: 1, overflow: "auto"}}>
+                <ProcessorFactory node={ast.root}/>
+            </div>
+            <Footer page={page} onPage={(value) => setPage(value)}/>
             <textarea ref={inputRef}
                       onKeyDown={onKeyDown}
                       onInput={onInput}
                       onFocus={onFocus}
                       onBlur={onBlur}
-                      disabled={!! inspector.current}
+                      disabled={!!inspector.current}
                       style={{position: "absolute", top: "-2000px", opacity: 1}}/>
         </div>
     )
@@ -302,7 +249,6 @@ function Editor(properties: Editor.Attributes) {
 namespace Editor {
     export interface Attributes {
         style?: React.CSSProperties,
-        providers : AbstractProvider<any, any, any>[]
     }
 }
 

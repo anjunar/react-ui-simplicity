@@ -1,0 +1,103 @@
+import React, {useState} from "react"
+import {AbstractNode, RootNode, TextNode} from "./core/TreeNode";
+import {ParagraphNode} from "./blocks/paragraph/ParagraphNode";
+import EditorContext, {GeneralEvent} from "./EditorContext";
+import {AbstractProvider} from "./blocks/shared/AbstractProvider";
+
+function EditorState(properties: EditorState.Attributes) {
+
+    const {providers, children} = properties
+
+    const [astState, setAstState] = useState(() => {
+        return {
+            root: new RootNode([new ParagraphNode([new TextNode()])])
+        }
+    })
+
+    const [cursorState, setCursorState] = useState<{ currentCursor: { container: AbstractNode, offset: number } }>(() => {
+        return {
+            currentCursor: null
+        }
+    })
+
+    const [selectionState, setSelectionState] = useState<{
+        currentSelection: {
+            startContainer: AbstractNode,
+            startOffset: number,
+            endContainer: AbstractNode,
+            endOffset: number
+        }
+    }>(() => {
+        return {
+            currentSelection: null
+        }
+    })
+
+    const [event, setEvent] = useState<{ currentEvent: { handled: boolean, instance: GeneralEvent } }>({
+        currentEvent: {
+            handled: false,
+            instance: null
+        }
+    })
+
+    let value = {
+        ast: {
+            get root() {
+                return astState.root
+            },
+            set root(value) {
+                astState.root = value
+            },
+            triggerAST() {
+                setAstState({...astState})
+            }
+        },
+        providers: providers,
+        cursor: {
+            get currentCursor() {
+                return cursorState.currentCursor
+            },
+            set currentCursor(value) {
+                cursorState.currentCursor = value
+            },
+            triggerCursor() {
+                setCursorState({...cursorState})
+            }
+        },
+        selection: {
+            get currentSelection() {
+                return selectionState.currentSelection
+            },
+            set currentSelection(value) {
+                selectionState.currentSelection = value
+            },
+            triggerSelection() {
+                setSelectionState({...selectionState})
+            }
+        },
+        event: {
+            get currentEvent() {
+                return event.currentEvent
+            },
+            set currentEvent(value) {
+                event.currentEvent = value
+            },
+            triggerEvent() {
+                setEvent({...event})
+            }
+        }
+    };
+
+    return (
+        <EditorContext value={value}>{children}</EditorContext>
+    )
+}
+
+namespace EditorState {
+    export interface Attributes {
+        providers: AbstractProvider<any, any, any>[]
+        children: React.ReactNode
+    }
+}
+
+export default EditorState

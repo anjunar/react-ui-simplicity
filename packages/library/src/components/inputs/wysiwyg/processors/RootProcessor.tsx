@@ -10,14 +10,14 @@ function RootProcessor(properties: RootNode.Attributes) {
 
     const {node} = properties
 
-    const {ast : {root, triggerAST}, cursor : {currentCursor, triggerCursor}, event} = useContext(EditorContext)
+    const {ast : {root, triggerAST}, cursor : {currentCursor, triggerCursor}, event : {currentEvent}} = useContext(EditorContext)
 
     const divRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
 
-        if (event.instance && node === currentCursor?.container && ! event.handled) {
-            let e = event.instance
+        if (currentEvent.instance && node === currentCursor?.container && ! currentEvent.handled) {
+            let e = currentEvent.instance
             let node = currentCursor.container as ParagraphNode
 
             switch (e.type) {
@@ -32,7 +32,7 @@ function RootProcessor(properties: RootNode.Attributes) {
                         currentCursor.container = textNode
                         currentCursor.offset = e.data.length
 
-                        event.handled = true
+                        currentEvent.handled = true
 
                         triggerAST()
                         triggerCursor()
@@ -47,7 +47,7 @@ function RootProcessor(properties: RootNode.Attributes) {
                         case "ArrowLeft" : {
                             onArrowLeft(root, currentCursor);
 
-                            event.handled = true
+                            currentEvent.handled = true
 
                             triggerCursor()
 
@@ -55,7 +55,7 @@ function RootProcessor(properties: RootNode.Attributes) {
                         case "ArrowRight" : {
                             onArrowRight(root, currentCursor);
 
-                            event.handled = true
+                            currentEvent.handled = true
 
                             triggerCursor()
                         }
@@ -66,7 +66,7 @@ function RootProcessor(properties: RootNode.Attributes) {
 
         }
 
-    }, [event.instance]);
+    }, [currentEvent.instance]);
 
     useEffect(() => {
         node.dom = divRef.current

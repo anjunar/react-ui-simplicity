@@ -9,7 +9,7 @@ function TableProcessor(properties: TableProcessor.Attributes) {
 
     const {node} = properties
 
-    let {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, event} = useContext(EditorContext);
+    let {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, event : {currentEvent}} = useContext(EditorContext);
 
     const tableRef = useRef(null);
 
@@ -19,9 +19,9 @@ function TableProcessor(properties: TableProcessor.Attributes) {
 
     useEffect(() => {
 
-        if (event.instance && node === currentCursor?.container && !event.handled) {
+        if (currentEvent.instance && node === currentCursor?.container && !currentEvent.handled) {
 
-            switch (event.instance.type) {
+            switch (currentEvent.instance.type) {
                 case "insertLineBreak" : {
                     let index = node.parentIndex;
                     let parent = node.parent;
@@ -32,7 +32,7 @@ function TableProcessor(properties: TableProcessor.Attributes) {
 
                     parent.insertChild(index + 1, new ParagraphNode([textNode]));
 
-                    event.handled = true
+                    currentEvent.handled = true
 
                 }
                     break
@@ -48,7 +48,7 @@ function TableProcessor(properties: TableProcessor.Attributes) {
 
                     node.remove()
 
-                    event.handled = true
+                    currentEvent.handled = true
 
                 }
                     break
@@ -58,7 +58,7 @@ function TableProcessor(properties: TableProcessor.Attributes) {
             triggerAST()
         }
 
-    }, [event.instance]);
+    }, [currentEvent.instance]);
 
 
     return (

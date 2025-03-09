@@ -30,8 +30,11 @@ export interface Context {
         triggerSelection() : void
     }
     event : {
-        handled : boolean
-        instance : GeneralEvent
+        currentEvent : {
+            handled : boolean
+            instance : GeneralEvent
+        }
+        triggerEvent() : void
     }
 }
 

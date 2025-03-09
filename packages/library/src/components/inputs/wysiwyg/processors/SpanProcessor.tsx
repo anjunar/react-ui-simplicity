@@ -276,7 +276,7 @@ function SpanProcessor(properties: SpanNode.Attributes) {
 
     const {node} = properties
 
-    const {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, event} = useContext(EditorContext)
+    const {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, event : {currentEvent}} = useContext(EditorContext)
 
     const spanRef = useRef<HTMLDivElement>(null);
 
@@ -286,12 +286,12 @@ function SpanProcessor(properties: SpanNode.Attributes) {
 
     useEffect(() => {
 
-        if (event.instance && node === currentCursor?.container && !event.handled) {
+        if (currentEvent.instance && node === currentCursor?.container && !currentEvent.handled) {
 
             for (const handler of registry) {
-                if (handler.test(event.instance)) {
-                    handler.process(currentCursor, node, event.instance, root)
-                    event.handled = true
+                if (handler.test(currentEvent.instance)) {
+                    handler.process(currentCursor, node, currentEvent.instance, root)
+                    currentEvent.handled = true
                     triggerAST()
                     triggerCursor()
                     break
@@ -300,7 +300,7 @@ function SpanProcessor(properties: SpanNode.Attributes) {
 
         }
 
-    }, [event.instance]);
+    }, [currentEvent.instance]);
 
     let classNames = generateStyleClassNames(node);
     let style = generateStyleObject(node);

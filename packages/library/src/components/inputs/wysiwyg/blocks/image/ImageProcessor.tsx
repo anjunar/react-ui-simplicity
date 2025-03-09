@@ -10,7 +10,7 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
 
     const [image, setImage] = useState(node.src)
 
-    let {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, event} = useContext(EditorContext);
+    let {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, event : {currentEvent}} = useContext(EditorContext);
 
     const divRef = useRef(null);
 
@@ -59,9 +59,9 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
 
     useEffect(() => {
 
-        if (event.instance && node === currentCursor?.container && !event.handled) {
+        if (currentEvent.instance && node === currentCursor?.container && !currentEvent.handled) {
 
-            switch (event.instance.type) {
+            switch (currentEvent.instance.type) {
                 case "insertLineBreak" : {
                     let index = node.parentIndex;
                     let parent = node.parent;
@@ -72,7 +72,7 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
 
                     parent.insertChild(index + 1, new ParagraphNode([textNode]));
 
-                    event.handled = true
+                    currentEvent.handled = true
 
                 } break
                 case "deleteContentBackward" : {
@@ -87,7 +87,7 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
 
                     node.remove()
 
-                    event.handled = true
+                    currentEvent.handled = true
 
                 } break
             }
@@ -96,7 +96,7 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
             triggerAST()
         }
 
-    }, [event.instance]);
+    }, [currentEvent.instance]);
 
     return (
         <div ref={divRef} style={{display : "flex", justifyContent : "center", alignItems : "center", position : "relative"}}>
