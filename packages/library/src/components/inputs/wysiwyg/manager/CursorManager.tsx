@@ -1,13 +1,29 @@
 import React, {useContext, useDeferredValue, useEffect} from "react"
-import {AbstractNode} from "../core/TreeNode";
+import {AbstractContainerNode, AbstractNode} from "../core/TreeNode";
 import {findNode} from "../core/TreeNodes";
 import {EditorContext} from "../EditorState";
+import {ParagraphNode} from "../blocks/paragraph/ParagraphNode";
+
+function cleanUpAST(node : AbstractNode) {
+
+    if (node instanceof ParagraphNode) {
+        node.mergeAdjacentTextNodes()
+    }
+
+
+    if (node instanceof AbstractContainerNode) {
+        for (const child of node.children) {
+            cleanUpAST(child)
+        }
+    }
+
+}
 
 function CursorManager(properties: CursorManager.Attributes) {
 
     const {cursorRef, inputRef, editorRef, contentEditableRef, inspectorRef} = properties
 
-    const {ast, event, cursor, providers, selection} = useContext(EditorContext)
+    const {ast : {root, triggerAST}, cursor} = useContext(EditorContext)
 
     let cursorDeferredValue = useDeferredValue(cursor);
 
@@ -78,9 +94,9 @@ function CursorManager(properties: CursorManager.Attributes) {
 
                 let selectedNode: AbstractNode
                 if (caretPosition.offsetNode instanceof HTMLSpanElement) {
-                    selectedNode = findNode(ast.root, (node) => node.dom.parentElement === caretPosition.offsetNode);
+                    selectedNode = findNode(root, (node) => node.dom.parentElement === caretPosition.offsetNode);
                 } else {
-                    selectedNode = findNode(ast.root, (node) => node.dom === caretPosition.offsetNode);
+                    selectedNode = findNode(root, (node) => node.dom === caretPosition.offsetNode);
                 }
 
                 if (selectedNode) {
@@ -92,9 +108,14 @@ function CursorManager(properties: CursorManager.Attributes) {
                     cursor.currentCursor = null
                 }
 
+                cleanUpAST(root)
+
                 cursor.triggerCursor()
 
                 inputRef.current?.focus();
+
+
+
             }
 
         }
@@ -114,11 +135,11 @@ function CursorManager(properties: CursorManager.Attributes) {
 
 namespace CursorManager {
     export interface Attributes {
-        cursorRef : React.RefObject<HTMLDivElement>
-        inputRef : React.RefObject<HTMLTextAreaElement>
-        editorRef : React.RefObject<HTMLDivElement>
-        contentEditableRef : React.RefObject<HTMLDivElement>
-        inspectorRef : React.RefObject<HTMLDivElement>
+        cursorRef: React.RefObject<HTMLDivElement>
+        inputRef: React.RefObject<HTMLTextAreaElement>
+        editorRef: React.RefObject<HTMLDivElement>
+        contentEditableRef: React.RefObject<HTMLDivElement>
+        inspectorRef: React.RefObject<HTMLDivElement>
     }
 }
 

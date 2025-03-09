@@ -26,8 +26,7 @@ function RootProcessor(properties: RootNode.Attributes) {
 
                     if (node.children.length === 0) {
                         let textNode = new TextNode(e.data)
-                        let paragraphNode = new ParagraphNode([textNode])
-                        node.appendChild(paragraphNode)
+                        node.appendChild(textNode)
 
                         currentCursor.container = textNode
                         currentCursor.offset = e.data.length

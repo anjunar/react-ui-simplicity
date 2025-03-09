@@ -1,4 +1,5 @@
-import {AbstractContainerNode, AbstractNode} from "./TreeNode";
+import {AbstractContainerNode, AbstractNode, RootNode, TextNode} from "./TreeNode";
+import {ParagraphNode} from "../blocks/paragraph/ParagraphNode";
 
 export function findParent(node: AbstractNode, callback: (node: AbstractNode) => boolean) {
 

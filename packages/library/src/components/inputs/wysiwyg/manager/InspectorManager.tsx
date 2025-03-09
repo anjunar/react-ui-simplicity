@@ -1,13 +1,54 @@
-import React, {useEffect} from "react"
+import React, {useContext, useEffect} from "react"
+import {AbstractNode} from "../core/TreeNode";
+import {findNode} from "../core/TreeNodes";
+import {EditorContext} from "../EditorState";
 
 function InspectorManager(properties: InspectorManager.Attributes) {
 
     const {contentEditableRef, inputRef, editorRef, inspectorRef} = properties
 
+    const {ast, cursor} = useContext(EditorContext)
+
     useEffect(() => {
+        function onContentClick(event: MouseEvent) {
+            if (event.composedPath().includes(inspectorRef.current)) {
+                return;
+            }
+            let selection = window.getSelection();
+
+            if (selection && !selection.isCollapsed) {
+                return
+            } else {
+                let caretPosition = document.caretPositionFromPoint(event.clientX, event.clientY);
+
+                let selectedNode: AbstractNode
+                if (caretPosition.offsetNode instanceof HTMLSpanElement) {
+                    selectedNode = findNode(ast.root, (node) => node.dom.parentElement === caretPosition.offsetNode);
+                } else {
+                    selectedNode = findNode(ast.root, (node) => node.dom === caretPosition.offsetNode);
+                }
+
+                if (selectedNode) {
+                    cursor.currentCursor = {
+                        container: selectedNode,
+                        offset: caretPosition.offset
+                    }
+                } else {
+                    cursor.currentCursor = null
+                }
+
+                cursor.triggerCursor()
+
+                inputRef.current?.focus();
+            }
+
+        }
+
         function onContextClick(event: MouseEvent) {
             event.stopPropagation();
             event.preventDefault();
+
+            onContentClick(event)
 
             const container = editorRef.current;
 
