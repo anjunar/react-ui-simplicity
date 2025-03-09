@@ -2,7 +2,8 @@ import React, {useContext} from "react"
 import {AbstractNode, RootNode, TextNode} from "../core/TreeNode";
 import SpanProcessor from "./SpanProcessor";
 import RootProcessor from "./RootProcessor";
-import EditorContext from "../EditorContext";
+
+import {EditorContext} from "../EditorState";
 
 function ProcessorFactory(properties: TextFactory.Attributes) {
 

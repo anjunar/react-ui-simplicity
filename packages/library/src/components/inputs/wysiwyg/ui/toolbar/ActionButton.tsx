@@ -1,7 +1,8 @@
 import React, {useContext, useEffect, useState} from "react"
 import {AbstractCommand} from "../../commands/AbstractCommands";
 import {AbstractNode} from "../../core/TreeNode";
-import EditorContext from "../../EditorContext";
+
+import {EditorContext} from "../../EditorState";
 
 function ActionButton(properties: ActionButton.Attributes) {
 

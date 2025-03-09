@@ -1,7 +1,8 @@
 import React, {useContext, useEffect, useState} from "react"
 import {AbstractNode, TextNode} from "../../core/TreeNode";
 import {AbstractCommand} from "../../commands/AbstractCommands";
-import EditorContext from "../../EditorContext";
+
+import {EditorContext} from "../../EditorState";
 
 function FormatColor(properties: FormatColor.Attributes) {
 

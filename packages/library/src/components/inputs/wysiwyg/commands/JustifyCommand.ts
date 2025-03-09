@@ -1,5 +1,5 @@
-import { Context } from "../EditorContext";
 import {AbstractCommand} from "./AbstractCommands";
+import {Context} from "../EditorState";
 
 export class JustifyCommand extends AbstractCommand<string> {
 

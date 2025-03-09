@@ -5,11 +5,11 @@ import Cursor from "./ui/Cursor";
 import Toolbar from "./ui/Toolbar";
 import Footer from "./ui/Footer";
 import Inspector from "./ui/Inspector";
-import EditorContext from "./EditorContext";
-import SelectionManager from "./SelectionManager";
-import EditorInput from "./EditorInput";
-import CursorManager from "./CursorManager";
-import InspectorManager from "./InspectorManager";
+import SelectionManager from "./manager/SelectionManager";
+import InputManager from "./manager/InputManager";
+import CursorManager from "./manager/CursorManager";
+import InspectorManager from "./manager/InspectorManager";
+import {EditorContext} from "./EditorState";
 
 function Editor(properties: Editor.Attributes) {
 
@@ -40,7 +40,7 @@ function Editor(properties: Editor.Attributes) {
             <CursorManager cursorRef={cursorRef} inputRef={inputRef} editorRef={editorRef} contentEditableRef={contentEditableRef} inspectorRef={inspectorRef}/>
             <SelectionManager/>
             <InspectorManager editorRef={editorRef} contentEditableRef={contentEditableRef} inputRef={inputRef} inspectorRef={inspectorRef}/>
-            <EditorInput inputRef={inputRef}/>
+            <InputManager inputRef={inputRef}/>
             <Footer page={page} onPage={(value) => setPage(value)}/>
         </div>
     )

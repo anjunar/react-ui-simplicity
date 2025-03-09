@@ -9,10 +9,10 @@ import Pages from "../../../layout/pages/Pages";
 import Page from "../../../layout/pages/Page";
 import {JustifyCommand} from "../commands/JustifyCommand";
 import ActionButton from "./toolbar/ActionButton";
-import EditorContext from "../EditorContext";
 import {AbstractProvider} from "../blocks/shared/AbstractProvider";
 import {findParent} from "../core/TreeNodes";
 import Inspector from "./Inspector";
+import {EditorContext} from "../EditorState";
 
 const colors = [
     "--color-text",

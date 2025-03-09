@@ -1,7 +1,8 @@
 import React, {useContext} from "react"
-import EditorContext from "./EditorContext";
 
-function EditorInput(properties: EditorInput.Attributes) {
+import {EditorContext} from "../EditorState";
+
+function InputManager(properties: EditorInput.Attributes) {
 
     const {inputRef} = properties
 
@@ -52,4 +53,4 @@ namespace EditorInput {
     }
 }
 
-export default EditorInput
+export default InputManager

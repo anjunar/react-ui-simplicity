@@ -1,10 +1,10 @@
 import React, {useContext, useEffect, useRef} from "react"
 import {RootNode, TextNode} from "../core/TreeNode";
 import ProcessorFactory from "./ProcessorFactory";
-import EditorContext from "../EditorContext";
 import ParagraphProcessor from "../blocks/paragraph/ParagraphProcessor";
 import {onArrowLeft, onArrowRight} from "../utils/ProcessorUtils";
 import {ParagraphNode} from "../blocks/paragraph/ParagraphNode";
+import {EditorContext} from "../EditorState";
 
 function RootProcessor(properties: RootNode.Attributes) {
 

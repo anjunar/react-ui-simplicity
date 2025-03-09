@@ -1,6 +1,7 @@
 import React, {useContext, useEffect} from "react"
-import {findNode} from "./core/TreeNodes";
-import EditorContext from "./EditorContext";
+import {findNode} from "../core/TreeNodes";
+
+import {EditorContext} from "../EditorState";
 
 function SelectionManager(properties: SelectionManager.Attributes) {
 

@@ -1,10 +1,10 @@
 import React, {useContext} from "react"
 import {ItemNode, ListNode} from "./ListNode";
 import {TextNode} from "../../core/TreeNode";
-import EditorContext from "../../EditorContext";
 import {findParent} from "../../core/TreeNodes";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
 import OrderNode from "../shared/OrderNode";
+import {EditorContext} from "../../EditorState";
 
 function ListTool(properties: ListTool.Attributes) {
 

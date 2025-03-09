@@ -1,7 +1,7 @@
 import {AbstractCommand} from "../../commands/AbstractCommands";
 import {AbstractNode} from "../../core/TreeNode";
-import {Context} from "../../EditorContext";
 import {ImageNode} from "./ImageNode";
+import {Context} from "../../EditorState";
 
 export class ImageCommand extends AbstractCommand<AbstractNode> {
     execute(node: AbstractNode, context: Context): void {

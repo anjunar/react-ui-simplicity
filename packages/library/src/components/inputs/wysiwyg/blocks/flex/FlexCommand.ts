@@ -1,8 +1,8 @@
 import {AbstractCommand} from "../../commands/AbstractCommands";
 import {AbstractNode, TextNode} from "../../core/TreeNode";
-import {Context} from "../../EditorContext";
 import {FlexNode} from "./FlexNode";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
+import {Context} from "../../EditorState";
 
 export class FlexCommand extends AbstractCommand<AbstractNode> {
     execute(node: AbstractNode, context: Context): void {

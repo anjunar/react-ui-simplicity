@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from "react"
 import {TextNode} from "../../core/TreeNode";
-import EditorContext from "../../EditorContext";
 import {AbstractCommand} from "../../commands/AbstractCommands";
+import {EditorContext} from "../../EditorState";
 
 function FormatSelect(properties: FormatSelect.Attributes) {
 

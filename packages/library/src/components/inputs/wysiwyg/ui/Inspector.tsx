@@ -1,7 +1,7 @@
 import "./Inspector.css"
 import React, {CSSProperties, useContext, useEffect, useState} from "react"
-import EditorContext from "../EditorContext";
 import {AbstractNode} from "../core/TreeNode";
+import {EditorContext} from "../EditorState";
 
 function Inspector(properties: Inspector.Attributes) {
 

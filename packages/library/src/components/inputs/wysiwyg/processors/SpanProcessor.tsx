@@ -1,8 +1,8 @@
 import React, {CSSProperties, useContext, useEffect, useRef} from "react"
 import {AbstractNode, RootNode, TextNode} from "../core/TreeNode";
-import EditorContext, {GeneralEvent} from "../EditorContext";
 import {onArrowDown, onArrowLeft, onArrowRight, onArrowUp} from "../utils/ProcessorUtils";
 import {ParagraphNode} from "../blocks/paragraph/ParagraphNode";
+import {EditorContext, GeneralEvent} from "../EditorState";
 
 const deleteContentBackward = {
     test(value: GeneralEvent): boolean {

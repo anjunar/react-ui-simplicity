@@ -1,8 +1,8 @@
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {ImageNode} from "./ImageNode";
-import EditorContext from "../../EditorContext";
 import {TextNode} from "../../core/TreeNode";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
+import {EditorContext} from "../../EditorState";
 
 function ImageProcessor(properties: ImageProcessor.Attributes) {
 

@@ -1,7 +1,7 @@
 import {AbstractCommand} from "../../commands/AbstractCommands";
 import {AbstractNode, TextNode} from "../../core/TreeNode";
-import {Context} from "../../EditorContext";
 import {ParagraphNode} from "./ParagraphNode";
+import {Context} from "../../EditorState";
 
 export class ParagraphCommand extends AbstractCommand<AbstractNode> {
     execute(node: AbstractNode, context: Context): void {

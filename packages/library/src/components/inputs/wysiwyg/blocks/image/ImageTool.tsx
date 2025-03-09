@@ -1,9 +1,9 @@
 import React, {useContext, useEffect, useState} from "react"
 import {ImageNode} from "./ImageNode";
-import EditorContext from "../../EditorContext";
 import {TextNode} from "../../core/TreeNode";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
 import OrderNode from "../shared/OrderNode";
+import {EditorContext} from "../../EditorState";
 
 function ImageTool(properties: ImageTool.Attributes) {
 

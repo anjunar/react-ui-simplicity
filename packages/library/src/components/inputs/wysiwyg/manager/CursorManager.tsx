@@ -1,7 +1,7 @@
 import React, {useContext, useDeferredValue, useEffect} from "react"
-import EditorContext from "./EditorContext";
-import {AbstractNode} from "./core/TreeNode";
-import {findNode} from "./core/TreeNodes";
+import {AbstractNode} from "../core/TreeNode";
+import {findNode} from "../core/TreeNodes";
+import {EditorContext} from "../EditorState";
 
 function CursorManager(properties: CursorManager.Attributes) {
 

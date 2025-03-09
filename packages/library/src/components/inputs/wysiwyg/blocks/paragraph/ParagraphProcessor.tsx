@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef} from "react"
 import ProcessorFactory from "../../processors/ProcessorFactory";
-import EditorContext from "../../EditorContext";
 import {ParagraphNode} from "./ParagraphNode";
+import {EditorContext} from "../../EditorState";
 
 function ParagraphProcessor(properties: ParagraphProcessor.Attributes) {
 

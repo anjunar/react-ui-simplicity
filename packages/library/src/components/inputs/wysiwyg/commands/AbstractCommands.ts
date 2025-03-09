@@ -1,6 +1,6 @@
-import {Context} from "../EditorContext";
 import {TextNode} from "../core/TreeNode";
 import {over, partial} from "../utils/SelectionUtils";
+import {Context} from "../EditorState";
 
 export abstract class AbstractCommand<E> {
     abstract execute(value: E, context: Context): void;

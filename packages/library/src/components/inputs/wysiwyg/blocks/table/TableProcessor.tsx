@@ -1,9 +1,9 @@
 import React, {useContext, useEffect, useRef} from "react"
 import {TableNode} from "./TableNode";
 import TableRowProcessor from "./TableRowProcessor";
-import EditorContext from "../../EditorContext";
 import {TextNode} from "../../core/TreeNode";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
+import {EditorContext} from "../../EditorState";
 
 function TableProcessor(properties: TableProcessor.Attributes) {
 

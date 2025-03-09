@@ -1,6 +1,7 @@
 import React, {useContext} from "react"
 import {AbstractNode} from "../../core/TreeNode";
-import EditorContext from "../../EditorContext";
+
+import {EditorContext} from "../../EditorState";
 
 function OrderNode(properties: OrderNode.Attributes) {
 
