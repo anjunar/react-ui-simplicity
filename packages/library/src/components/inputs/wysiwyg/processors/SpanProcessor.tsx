@@ -6,7 +6,7 @@ import {EditorContext, GeneralEvent} from "../EditorState";
 
 const deleteContentBackward = {
     test(value: GeneralEvent): boolean {
-        return value.type === "deleteContentBackward"
+        return (value.type === "keydown" && value.data === "Backspace") || value.type === "deleteContentBackward"
     },
     process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
         if (current.offset > 0) {
@@ -51,6 +51,35 @@ const deleteContentBackward = {
     }
 }
 
+const compositionUpdate = {
+    test(value: GeneralEvent): boolean {
+        return value.type === "compositionUpdate"
+    },
+    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+
+        let subString = node.text.substring(current.offset - e.data.length, current.offset)
+
+        if (subString === e.data) {
+            let start = node.text.substring(0, current.offset - e.data.length)
+            let end = node.text.substring(current.offset)
+
+            node.text = start + end
+            node.text = node.text.replaceAll(" ", "\u00A0")
+            current.offset -= e.data.length;
+        } else {
+            let start = node.text.substring(0, current.offset)
+            let end = node.text.substring(current.offset)
+
+            node.text = start + e.data + end
+            node.text = node.text.replaceAll(" ", "\u00A0")
+            current.offset += e.data.length;
+
+        }
+
+
+    }
+}
+
 const insertText = {
     test(value: GeneralEvent): boolean {
         return value.type === "insertText" || value.type === "insertCompositionText"
@@ -60,7 +89,9 @@ const insertText = {
         let end = node.text.substring(current.offset)
 
         node.text = start + e.data + end
+        node.text = node.text.replaceAll(" ", "\u00A0")
         current.offset += e.data.length;
+
     }
 }
 
@@ -212,6 +243,7 @@ const homeKey = {
 const registry = [
     deleteContentBackward,
     insertText,
+    compositionUpdate,
     insertLineBreak,
     arrowLeft,
     arrowRight,

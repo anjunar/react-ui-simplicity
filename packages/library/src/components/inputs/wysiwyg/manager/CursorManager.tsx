@@ -74,7 +74,7 @@ function CursorManager(properties: CursorManager.Attributes) {
             inputRef.current.removeEventListener("focus", onFocus)
             inputRef.current.removeEventListener("blur", onBlur)
         }
-    }, [inputRef.current]);
+    }, [inputRef.current, cursorRef.current]);
 
     useEffect(() => {
 
@@ -136,7 +136,7 @@ namespace CursorManager {
         cursorRef: React.RefObject<HTMLDivElement>
         inputRef: React.RefObject<HTMLTextAreaElement>
         editorRef: React.RefObject<HTMLDivElement>
-        contentEditableRef: React.RefObject<HTMLDivElement>
+        contentEditableRef: React.RefObject<HTMLPreElement>
         inspectorRef: React.RefObject<HTMLDivElement>
     }
 }

@@ -95,7 +95,7 @@ namespace InspectorManager {
     export interface Attributes {
         editorRef: React.RefObject<HTMLDivElement>
         inputRef: React.RefObject<HTMLTextAreaElement>
-        contentEditableRef: React.RefObject<HTMLDivElement>
+        contentEditableRef: React.RefObject<HTMLPreElement>
         inspectorRef: React.RefObject<HTMLDivElement>
     }
 }

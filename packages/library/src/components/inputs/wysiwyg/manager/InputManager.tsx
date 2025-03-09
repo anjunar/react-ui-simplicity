@@ -2,6 +2,9 @@ import React, {useContext} from "react"
 
 import {EditorContext} from "../EditorState";
 
+const queue = []
+let isComposing = false
+
 function InputManager(properties: EditorInput.Attributes) {
 
     const {inputRef} = properties
@@ -20,12 +23,16 @@ function InputManager(properties: EditorInput.Attributes) {
         }
 
         event.triggerEvent()
+
+
     }
 
     function onKeyDown(e: React.KeyboardEvent) {
-        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End"]
+        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End", "Backspace"]
 
         if (whiteList.indexOf(e.key) > -1) {
+
+            console.log(e)
 
             event.currentEvent = {
                 handled : false,
@@ -36,13 +43,35 @@ function InputManager(properties: EditorInput.Attributes) {
             }
 
             event.triggerEvent()
+
         }
+    }
+
+    function onCompositionUpdate(compositionEvent : React.CompositionEvent) {
+        event.currentEvent = {
+            handled : false,
+            instance : {
+                type: "compositionUpdate",
+                data: compositionEvent.data
+            }
+        }
+
+        event.triggerEvent()
     }
 
     return (
         <textarea ref={inputRef}
                   onKeyDown={onKeyDown}
-                  onInput={onInput}
+                  onInput={(event) => {
+                      if (isComposing) return;
+                      onInput(event);
+                  }}
+                  onCompositionStart={() => isComposing = true}
+                  onCompositionUpdate={(event) => {
+                      if (!isComposing) return
+                      onCompositionUpdate(event)
+                  }}
+                  onCompositionEnd={() => isComposing = false}
                   style={{position: "absolute", left: "-2000px", opacity: 1}}/>
     )
 }
