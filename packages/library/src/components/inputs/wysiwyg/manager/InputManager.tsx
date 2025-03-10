@@ -8,7 +8,7 @@ function InputManager(properties: EditorInput.Attributes) {
 
     const {inputRef} = properties
 
-    const {ast, event, cursor, providers, selection} = useContext(EditorContext)
+    const {ast, event, cursor} = useContext(EditorContext)
 
     function onInput(e: React.FormEvent<HTMLTextAreaElement>) {
         let inputEvent = e.nativeEvent as InputEvent;

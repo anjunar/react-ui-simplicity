@@ -55,6 +55,6 @@ input {
   padding: 0;
 }
 
-select {
+select, textarea {
   outline: 0;
 }

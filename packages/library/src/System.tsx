@@ -1,5 +1,5 @@
 import "./System.css"
-import React, {createContext, Dispatch, SetStateAction, useLayoutEffect, useState} from "react";
+import React, {createContext, Dispatch, SetStateAction, useEffect, useLayoutEffect, useState} from "react";
 import {init} from "./domain/Persistence";
 import Router from "./components/navigation/router/Router";
 import Input from "./components/inputs/input/Input";
@@ -53,6 +53,16 @@ function System(properties : System.Attributes) {
 
     const [darkMode, setDarkMode] = useState(false)
 
+    const [height, setHeight] = useState(window.visualViewport.height);
+
+    useEffect(() => {
+        function updateHeight() {
+            setHeight(window.visualViewport.height);
+        }
+
+        window.addEventListener("resize", updateHeight);
+        return () => window.removeEventListener("resize", updateHeight);
+    }, []);
 
     useLayoutEffect(() => {
         let matchMedia = window.matchMedia('(prefers-color-scheme: dark)');
@@ -105,7 +115,7 @@ function System(properties : System.Attributes) {
     }, []);
 
     return (
-        <div className={"system"}>
+        <div className={"system"} style={{height : height}}>
             <SystemContext.Provider value={new SystemContextHolder(routes, [windows, setWindows])}>
                 <div style={{position: "absolute", zIndex: 9999, top: 0, left: 0, height: "4px", width: "100%"}}>
                     {

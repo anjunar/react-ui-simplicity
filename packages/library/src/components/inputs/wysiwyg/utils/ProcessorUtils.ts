@@ -5,11 +5,14 @@ export function onArrowLeft(root: RootNode, current: { container: AbstractNode; 
     let flattened = root.flatten
     let indexOf = flattened.indexOf(current.container);
     if (indexOf > 0) {
-        current.container = flattened.findLast((node, index) => index < indexOf && node instanceof TextNode)
-        if (current.container instanceof TextNode) {
-            current.offset = current.container.text.length
-        } else {
-            current.offset = 0
+        let container = flattened.findLast((node, index) => index < indexOf && node instanceof TextNode);
+        if (container) {
+            current.container = container
+            if (current.container instanceof TextNode) {
+                current.offset = current.container.text.length
+            } else {
+                current.offset = 0
+            }
         }
     }
 }
