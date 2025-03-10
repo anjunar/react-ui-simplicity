@@ -15,69 +15,6 @@ function RootProcessor(properties: RootNode.Attributes) {
     const divRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-
-        if (currentEvent.instance && node === currentCursor?.container) {
-            let e = currentEvent.instance
-            let node = currentCursor.container as ParagraphNode
-
-            switch (e.type) {
-                case "insertCompositionText" :
-                case "insertText" : {
-
-                    if (node.children.length === 0) {
-
-                        currentEvent.queue.push({
-                            source : node,
-                            handle(): void {
-                                let textNode = new TextNode(e.data)
-                                node.appendChild(textNode)
-
-                                currentCursor.container = textNode
-                                currentCursor.offset = e.data.length
-                            }
-                        })
-
-
-                    }
-
-                }
-                    break
-                case "keydown" : {
-
-                    switch (e.data) {
-                        case "ArrowLeft" : {
-
-
-                            currentEvent.queue.push({
-                                source : node,
-                                handle(): void {
-                                    onArrowLeft(root, currentCursor);
-                                }
-                            })
-
-                        } break
-                        case "ArrowRight" : {
-
-
-                            currentEvent.queue.push({
-                                source : node,
-                                handle(): void {
-                                    onArrowRight(root, currentCursor);
-                                }
-
-                            })
-
-                        }
-                    }
-
-                } break
-            }
-
-        }
-
-    }, [currentEvent.instance]);
-
-    useEffect(() => {
         node.dom = divRef.current
     }, [node]);
 

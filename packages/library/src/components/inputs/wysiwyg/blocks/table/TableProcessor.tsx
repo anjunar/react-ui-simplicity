@@ -17,58 +17,6 @@ function TableProcessor(properties: TableProcessor.Attributes) {
         node.dom = tableRef.current
     }, [node]);
 
-    useEffect(() => {
-
-        if (currentEvent.instance && node === currentCursor?.container) {
-
-            switch (currentEvent.instance.type) {
-                case "insertLineBreak" : {
-
-                    currentEvent.queue.push({
-                        source : node,
-                        handle(): void {
-                            let index = node.parentIndex;
-                            let parent = node.parent;
-                            let textNode = new TextNode();
-
-                            currentCursor.container = textNode
-                            currentCursor.offset = 0
-
-                            parent.insertChild(index + 1, new ParagraphNode([textNode]));
-                        }
-                    })
-
-                }
-                    break
-                case "deleteContentBackward" : {
-
-                    currentEvent.queue.push({
-                        source : node,
-                        handle(): void {
-                            let flattened = root.flatten;
-                            let index = flattened.indexOf(node);
-                            let slice = flattened.slice(0, index);
-                            let textNode = slice.findLast(node => node instanceof TextNode);
-
-                            currentCursor.container = textNode
-                            currentCursor.offset = textNode.text.length;
-
-                            node.remove()
-
-                        }
-                    })
-
-                }
-                    break
-            }
-
-            triggerCursor()
-            triggerAST()
-        }
-
-    }, [currentEvent.instance]);
-
-
     return (
         <table className={"table"} ref={tableRef}>
             <tbody>

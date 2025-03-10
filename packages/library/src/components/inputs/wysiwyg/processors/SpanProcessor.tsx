@@ -4,12 +4,13 @@ import {onArrowDown, onArrowLeft, onArrowRight, onArrowUp} from "../utils/Proces
 import {ParagraphNode} from "../blocks/paragraph/ParagraphNode";
 import {EditorContext, GeneralEvent} from "../EditorState";
 import {findNearestTextLeft, findNearestTextRight} from "../core/TreeNodes";
+import {CommandRule, KeyCommand} from "../commands/KeyCommand";
 
-const deleteContentBackward = {
-    test(value: GeneralEvent): boolean {
-        return (value.type === "keydown" && value.data === "Backspace") || value.type === "deleteContentBackward"
+const deleteContentBackward : CommandRule<TextNode> = {
+    test(value: GeneralEvent, node : AbstractNode, container : AbstractNode): boolean {
+        return (value.type === "Backspace" || value.type === "deleteContentBackward") && node === container
     },
-    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+    process(current, node, currentEvent, root) {
         if (current.offset > 0) {
             let start = node.text.substring(0, current.offset - 1);
             let end = node.text.substring(current.offset);
@@ -63,28 +64,28 @@ const deleteContentBackward = {
     }
 }
 
-const compositionUpdate = {
-    test(value: GeneralEvent): boolean {
-        return value.type === "compositionUpdate"
+const compositionUpdate : CommandRule<TextNode> = {
+    test(value: GeneralEvent, node : AbstractNode, container : AbstractNode): boolean {
+        return value.type === "compositionUpdate" && node === container
     },
-    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+    process(current, node: TextNode, currentEvent,) {
 
-        let subString = node.text.substring(current.offset - e.data.length, current.offset)
+        let subString = node.text.substring(current.offset - currentEvent.data.length, current.offset)
 
-        if (subString === e.data) {
-            let start = node.text.substring(0, current.offset - e.data.length)
+        if (subString === currentEvent.data) {
+            let start = node.text.substring(0, current.offset - currentEvent.data.length)
             let end = node.text.substring(current.offset)
 
             node.text = start + end
             node.text = node.text.replaceAll(" ", "\u00A0")
-            current.offset -= e.data.length;
+            current.offset -= currentEvent.data.length;
         } else {
             let start = node.text.substring(0, current.offset)
             let end = node.text.substring(current.offset)
 
-            node.text = start + e.data + end
+            node.text = start + currentEvent.data + end
             node.text = node.text.replaceAll(" ", "\u00A0")
-            current.offset += e.data.length;
+            current.offset += currentEvent.data.length;
 
         }
 
@@ -92,26 +93,26 @@ const compositionUpdate = {
     }
 }
 
-const insertText = {
-    test(value: GeneralEvent): boolean {
-        return value.type === "insertText" || value.type === "insertCompositionText"
+const insertText : CommandRule<TextNode> = {
+    test(value: GeneralEvent, node : AbstractNode, container : AbstractNode): boolean {
+        return (value.type === "insertText" || value.type === "insertCompositionText") && node === container
     },
-    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+    process(current, node, currentEvent, root) {
         let start = node.text.substring(0, current.offset)
         let end = node.text.substring(current.offset)
 
-        node.text = start + e.data + end
+        node.text = start + currentEvent.data + end
         node.text = node.text.replaceAll(" ", "\u00A0")
-        current.offset += e.data.length;
+        current.offset += currentEvent.data.length;
 
     }
 }
 
-const insertLineBreak = {
-    test(value: GeneralEvent): boolean {
-        return value.type === "insertLineBreak"
+const insertLineBreak : CommandRule<TextNode> = {
+    test(value: GeneralEvent, node : AbstractNode, container : AbstractNode): boolean {
+        return value.type === "insertLineBreak" && node === container
     },
-    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+    process(current, node: TextNode, currentEvent, root) {
         const parent = node.parent;
         const grandParent = parent.parent;
 
@@ -151,11 +152,11 @@ const insertLineBreak = {
     }
 }
 
-const arrowLeft = {
-    test(value: GeneralEvent) {
-        return value.data === "ArrowLeft" && value.type === "keydown"
+const arrowLeft : CommandRule<TextNode> = {
+    test(value: GeneralEvent, node : AbstractNode, container : AbstractNode) {
+        return value.type === "ArrowLeft" && node === container
     },
-    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+    process(current, node, currentEvent, root) {
         if (current.offset === 0) {
             onArrowLeft(root, current);
         } else {
@@ -164,11 +165,11 @@ const arrowLeft = {
     }
 }
 
-const arrowRight = {
-    test(value: GeneralEvent) {
-        return value.data === "ArrowRight" && value.type === "keydown"
+const arrowRight : CommandRule<TextNode> = {
+    test(value: GeneralEvent, node : AbstractNode, container : AbstractNode) {
+        return value.type === "ArrowRight" && node === container
     },
-    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+    process(current, node, currentEvent, root) {
         if (current.offset === node.text.length) {
             onArrowRight(root, current);
         } else {
@@ -177,29 +178,29 @@ const arrowRight = {
     }
 }
 
-const arrowUp = {
-    test(value: GeneralEvent) {
-        return value.data === "ArrowUp" && value.type === "keydown"
+const arrowUp : CommandRule<TextNode> = {
+    test(value: GeneralEvent, node : AbstractNode, container : AbstractNode) {
+        return value.type === "ArrowUp" && node === container
     },
-    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+    process(current, node, currentEvent, root) {
         onArrowUp(node, current, root)
     }
 }
 
-const arrowDown = {
-    test(value: GeneralEvent) {
-        return value.data === "ArrowDown" && value.type === "keydown"
+const arrowDown : CommandRule<TextNode> = {
+    test(value: GeneralEvent, node : AbstractNode, container : AbstractNode) {
+        return value.type === "ArrowDown" && node === container
     },
-    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+    process(current, node, currentEvent, root) {
         onArrowDown(node, current, root)
     }
 }
 
-const deleteKey = {
-    test(value: GeneralEvent) {
-        return value.data === "Delete" && value.type === "keydown"
+const deleteKey : CommandRule<TextNode> = {
+    test(value: GeneralEvent, node : AbstractNode, container : AbstractNode) {
+        return value.type === "Delete" && node === container
     },
-    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+    process(current, node, currentEvent, root) {
         if (current.offset < node.text.length) {
             let start = node.text.substring(0, current.offset);
             let end = node.text.substring(current.offset + 1);
@@ -234,25 +235,25 @@ const deleteKey = {
     }
 }
 
-const endKey = {
-    test(value: GeneralEvent) {
-        return value.data === "End" && value.type === "keydown"
+const endKey : CommandRule<TextNode> = {
+    test(value: GeneralEvent, node : AbstractNode, container : AbstractNode) {
+        return value.type === "End" && node === container
     },
-    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+    process(current, node, currentEvent, root) {
         current.offset = node.text.length
     }
 }
 
-const homeKey = {
-    test(value: GeneralEvent) {
-        return value.data === "Home" && value.type === "keydown"
+const homeKey : CommandRule<TextNode> = {
+    test(value: GeneralEvent, node : AbstractNode, container : AbstractNode) {
+        return value.type === "Home" && node === container
     },
-    process(current: { container: AbstractNode; offset: number }, node: TextNode, e: GeneralEvent, root: RootNode) {
+    process(current, node, currentEvent, root) {
         current.offset = 0
     }
 }
 
-const registry = [
+const registry : CommandRule<TextNode>[] = [
     deleteContentBackward,
     insertText,
     compositionUpdate,
@@ -330,13 +331,14 @@ function SpanProcessor(properties: SpanNode.Attributes) {
 
     useEffect(() => {
 
-        if (currentEvent.instance && node === currentCursor?.container) {
+        if (currentEvent.instance) {
 
             for (const handler of registry) {
-                if (handler.test(currentEvent.instance)) {
+                if (handler.test(currentEvent.instance, node, currentCursor.container)) {
 
                     currentEvent.queue.push({
                         source : node,
+                        type : currentEvent.instance.type,
                         handle() {
                             handler.process(currentCursor, node, currentEvent.instance, root)
                         }

@@ -34,7 +34,7 @@ function InputManager(properties: EditorInput.Attributes) {
             event.currentEvent = {
                 queue : [],
                 instance : {
-                    type: e.type,
+                    type: e.key,
                     data: e.key
                 }
             }

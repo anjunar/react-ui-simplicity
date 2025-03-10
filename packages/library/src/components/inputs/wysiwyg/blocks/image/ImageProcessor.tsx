@@ -65,6 +65,7 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
                 case "insertLineBreak" : {
 
                     currentEvent.queue.push({
+                        type : "insertLineBreak",
                         source : node,
                         handle(): void {
                             let index = node.parentIndex;
@@ -82,6 +83,7 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
                 case "deleteContentBackward" : {
 
                     currentEvent.queue.push({
+                        type : "deleteContentBackward",
                         source : node,
                         handle(): void {
                             let flattened = root.flatten;

@@ -3,6 +3,8 @@ import path from 'path';
 import HtmlPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import PreloadWebpackPlugin from "@vue/preload-webpack-plugin"
+
 
 export default (env) => {
     return {
@@ -67,6 +69,12 @@ export default (env) => {
             }),
             new webpack.DefinePlugin({
                 "process.env.PUBLIC_URL": JSON.stringify(env.publicPath),
+            }),
+            new PreloadWebpackPlugin({
+                rel: "preload",
+                as: "font",
+                include: "allAssets",
+                // fileWhitelist: [/\.woff2$/],
             })
         ]
     }
