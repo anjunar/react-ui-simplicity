@@ -51,7 +51,7 @@ function CursorManager(properties: CursorManager.Attributes) {
             cursorRef.current.style.display = "block"
 
             inputRef.current?.focus();
-            inputRef.current.style.top = number + "px"
+            inputRef.current.style.top = number + 6 + "px"
 
 
         }

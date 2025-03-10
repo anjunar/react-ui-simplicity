@@ -80,7 +80,7 @@ function InputManager(properties: EditorInput.Attributes) {
                       onCompositionUpdate(event)
                   }}
                   onCompositionEnd={() => isComposing = false}
-                  style={{position: "absolute", left: "-2000px", opacity: 1}}/>
+                  style={{position: "absolute", right: "0px", top : "0px", height : "1px", width : "1px", opacity: 1}}/>
     )
 }
 
