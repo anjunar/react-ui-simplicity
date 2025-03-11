@@ -95,8 +95,13 @@ function CursorManager(properties: CursorManager.Attributes) {
                 let caretPosition = document.caretPositionFromPoint(event.clientX, event.clientY);
 
                 let selectedNode: AbstractNode
-                if (caretPosition.offsetNode instanceof HTMLSpanElement) {
-                    selectedNode = findNode(root, (node) => node.dom.parentElement === caretPosition.offsetNode);
+                if (caretPosition.offsetNode instanceof HTMLElement) {
+                    if (caretPosition.offsetNode instanceof HTMLSpanElement) {
+                        selectedNode = findNode(root, (node) => node.dom.parentElement === caretPosition.offsetNode);
+                    }
+                    if (caretPosition.offsetNode instanceof HTMLImageElement) {
+                        selectedNode = findNode(root, (node) => node.dom === caretPosition.offsetNode.parentNode);
+                    }
                 } else {
                     selectedNode = findNode(root, (node) => node.dom === caretPosition.offsetNode);
                 }

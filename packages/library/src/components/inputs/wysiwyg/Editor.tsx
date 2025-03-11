@@ -10,12 +10,13 @@ import InputManager from "./manager/InputManager";
 import CursorManager from "./manager/CursorManager";
 import InspectorManager from "./manager/InspectorManager";
 import {EditorContext} from "./EditorState";
+import {TextNode} from "./core/TreeNode";
 
 function Editor(properties: Editor.Attributes) {
 
     const {style} = properties
 
-    const {ast} = useContext(EditorContext)
+    const {ast, cursor : {currentCursor}} = useContext(EditorContext)
 
     const [page, setPage] = useState(0)
 
@@ -29,9 +30,34 @@ function Editor(properties: Editor.Attributes) {
 
     const inspectorRef = useRef<HTMLDivElement>(null);
 
+    useEffect(() => {
+        function onPaste(event : ClipboardEvent) {
+            event.preventDefault()
+
+            let text = event.clipboardData.getData("text");
+
+            let container = currentCursor.container;
+
+            if (container instanceof TextNode) {
+                let start = container.text.substring(0, currentCursor.offset);
+                let end = container.text.substring(currentCursor.offset);
+
+                container.text = start + text + end
+            }
+
+            ast.triggerAST()
+        }
+
+        document.addEventListener("paste", onPaste)
+
+        return () => {
+            document.removeEventListener("paste", onPaste)
+        }
+    }, [ast]);
+
     return (
         <div ref={editorRef} className={"editor"} style={{position: "relative", ...style}}>
-            <Toolbar page={page}/>
+            <Toolbar page={page} onPage={value => setPage(value)}/>
             <div ref={contentEditableRef} style={{flex: 1, overflow: "auto"}}>
                 <Cursor ref={cursorRef}/>
                 <Inspector inspectorRef={inspectorRef}/>

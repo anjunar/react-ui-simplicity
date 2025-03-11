@@ -13,21 +13,22 @@ function InputManager(properties: EditorInput.Attributes) {
     function onInput(e: React.FormEvent<HTMLTextAreaElement>) {
         let inputEvent = e.nativeEvent as InputEvent;
 
-        event.currentEvent = {
-            queue : [],
-            instance : {
-                type: inputEvent.inputType,
-                data: inputEvent.data
+        if (Reflect.has(window, "ontouchmove") || ! (inputEvent.inputType === "deleteContentBackward")) {
+            event.currentEvent = {
+                queue : [],
+                instance : {
+                    type: inputEvent.inputType,
+                    data: inputEvent.data
+                }
             }
+
+            event.triggerEvent()
         }
-
-        event.triggerEvent()
-
 
     }
 
     function onKeyDown(e: React.KeyboardEvent) {
-        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End", Reflect.has(window, "ontouchmove") ? "Backspace" : ""]
+        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End", "Backspace"]
 
         if (whiteList.indexOf(e.key) > -1) {
 
