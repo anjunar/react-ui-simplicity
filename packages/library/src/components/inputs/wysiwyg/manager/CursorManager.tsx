@@ -27,7 +27,7 @@ function CursorManager(properties: CursorManager.Attributes) {
 
     let cursorDeferredValue = useDeferredValue(cursor);
 
-    useEffect(() => {
+    function positionCursor() {
         if (!cursor.currentCursor) return;
 
         let range = document.createRange();
@@ -45,6 +45,7 @@ function CursorManager(properties: CursorManager.Attributes) {
             let editorRect = editorRef.current.getBoundingClientRect();
 
             let number = clientRect.top - editorRect.top + editorRef.current.scrollTop;
+
             cursorRef.current.style.left = clientRect.left - editorRect.left + editorRef.current.scrollLeft + "px"
             cursorRef.current.style.top = number + "px"
             cursorRef.current.style.height = clientRect.height + "px"
@@ -55,7 +56,10 @@ function CursorManager(properties: CursorManager.Attributes) {
 
 
         }
+    }
 
+    useEffect(() => {
+        positionCursor();
     }, [cursorDeferredValue]);
 
     useEffect(() => {
@@ -118,16 +122,21 @@ function CursorManager(properties: CursorManager.Attributes) {
 
         }
 
-        contentEditableRef.current.addEventListener("click", onContentClick)
+        let onScroll = () => {
+            positionCursor()
+        };
 
+        contentEditableRef.current.addEventListener("scroll", onScroll)
+        contentEditableRef.current.addEventListener("click", onContentClick)
         return () => {
+            contentEditableRef.current.removeEventListener("scroll", onScroll)
             contentEditableRef.current.removeEventListener("click", onContentClick)
         }
     }, [contentEditableRef.current]);
 
 
     return (
-        <div></div>
+        <></>
     )
 }
 

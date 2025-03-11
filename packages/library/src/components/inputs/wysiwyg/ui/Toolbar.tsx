@@ -15,6 +15,7 @@ import Inspector from "./Inspector";
 import {EditorContext} from "../EditorState";
 
 const colors = [
+/*
     "--color-text",
     "--color-background-primary",
     "--color-background-secondary",
@@ -22,7 +23,7 @@ const colors = [
     "--color-warning",
     "--color-error",
     "--color-selected",
-
+*/
     "--color-theme-amber",
     "--color-theme-blue",
     "--color-theme-cyan",
@@ -98,11 +99,11 @@ function Toolbar(properties: Toolbar.Attributes) {
                         <option value="Courier New, serif">Couria New</option>
                         <option value="Lucida Console, serif">Lucida</option>
                     </FormatSelect>
-                    <FormatSelect style={{width : "100px"}} command={new JustifyCommand()} callback={node => node.parent.justify} className={"material-icons"}>
-                        <option value={"justify"} className={"material-icons"}>format_align_justify</option>
-                        <option value={"justify-left"} className={"material-icons"}>format_align_left</option>
-                        <option value={"justify-right"} className={"material-icons"}>format_align_right</option>
-                        <option value={"justify-center"} className={"material-icons"}>format_align_center</option>
+                    <FormatSelect command={new JustifyCommand()} callback={node => node.parent.justify}>
+                        <option value={"justify"}>Align Justify</option>
+                        <option value={"justify-left"}>Align Left</option>
+                        <option value={"justify-right"}>Align Right</option>
+                        <option value={"justify-center"}>Align Center</option>
                     </FormatSelect>
                     <FormatSelect command={new FontSizeCommand()} callback={node => node.fontSize}>
                         <option value="xx-small">xx-small</option>
@@ -117,18 +118,20 @@ function Toolbar(properties: Toolbar.Attributes) {
             </Page>
             <Page>
                 <div className={"editor-toolbar"}>
-                    <FormatColor id={"color"} command={new TextColorCommand()} callback={node => node.color} defaultValue={resolveVariable("--color-text")}/>
-                    <datalist id="color" defaultValue={resolveVariable("--color-text")}>
+                    <FormatSelect command={new TextColorCommand()} callback={node => node.color}>
                         {
-                            colors.map(color => <option key={color} value={resolveVariable(color)}></option>)
+                            colors.map(color => (
+                                <option key={color} value={`var(${color})`} style={{color : `var(${color})`}}>{color.substring(14)}</option>
+                            ))
                         }
-                    </datalist>
-                    <FormatColor id={"backgroundColor"} command={new BackgroundColorCommand()} callback={node => node.backgroundColor} defaultValue={resolveVariable("--color-background-primary")}/>
-                    <datalist id="backgroundColor" defaultValue={resolveVariable("--color-background-primary")}>
+                    </FormatSelect>
+                    <FormatSelect command={new BackgroundColorCommand()} callback={node => node.backgroundColor}>
                         {
-                            colors.map(color => <option key={color} value={resolveVariable(color)}></option>)
+                            colors.map(color => (
+                                <option key={color} value={`var(${color})`} style={{color : `var(${color})`}}>{color.substring(14)}</option>
+                            ))
                         }
-                    </datalist>
+                    </FormatSelect>
                 </div>
             </Page>
             <Page>

@@ -27,7 +27,7 @@ function InputManager(properties: EditorInput.Attributes) {
     }
 
     function onKeyDown(e: React.KeyboardEvent) {
-        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End", window.ontouchmove ? "Backspace" : ""]
+        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End", Reflect.has(window, "ontouchmove") ? "Backspace" : ""]
 
         if (whiteList.indexOf(e.key) > -1) {
 

@@ -87,7 +87,7 @@ function InspectorManager(properties: InspectorManager.Attributes) {
     }, []);
 
     return (
-        <div></div>
+        <></>
     )
 }
 

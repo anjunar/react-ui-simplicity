@@ -1,6 +1,6 @@
 import {AbstractCommand} from "../../commands/AbstractCommands";
 import {AbstractNode, TextNode} from "../../core/TreeNode";
-import {FlexNode} from "./FlexNode";
+import {BoxNode, FlexNode} from "./FlexNode";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
 import {Context} from "../../EditorState";
 
@@ -11,7 +11,7 @@ export class FlexCommand extends AbstractCommand<AbstractNode> {
         let grandParent = parent.parent;
 
         let textNode = new TextNode("");
-        let flexNode = new FlexNode([new ParagraphNode([textNode]), new ParagraphNode([new TextNode("")])])
+        let flexNode = new FlexNode([new BoxNode([new ParagraphNode([textNode])]), new BoxNode([new ParagraphNode([new TextNode("")])])] )
 
         grandParent.insertChild(index + 1, flexNode)
 

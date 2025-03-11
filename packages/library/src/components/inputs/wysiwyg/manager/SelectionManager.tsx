@@ -61,7 +61,7 @@ function SelectionManager(properties: SelectionManager.Attributes) {
     }, [selection.currentSelection]);
 
     return (
-        <div></div>
+        <></>
     )
 }
 

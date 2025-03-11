@@ -53,16 +53,20 @@ function System(properties : System.Attributes) {
 
     const [darkMode, setDarkMode] = useState(false)
 
-    const [height, setHeight] = useState(window.visualViewport.height);
-
+/*
     useEffect(() => {
         function updateHeight() {
-            setHeight(window.visualViewport.height);
+            const height = window.visualViewport.height + "px";
+            document.body.style.height = height;
         }
 
-        window.addEventListener("resize", updateHeight);
-        return () => window.removeEventListener("resize", updateHeight);
+        updateHeight();
+
+        window.visualViewport.addEventListener("resize", updateHeight);
+
+        return () => window.visualViewport.removeEventListener("resize", updateHeight);
     }, []);
+*/
 
     useLayoutEffect(() => {
         let matchMedia = window.matchMedia('(prefers-color-scheme: dark)');
@@ -115,7 +119,7 @@ function System(properties : System.Attributes) {
     }, []);
 
     return (
-        <div className={"system"} style={{height : height}}>
+        <div className={"system"}>
             <SystemContext.Provider value={new SystemContextHolder(routes, [windows, setWindows])}>
                 <div style={{position: "absolute", zIndex: 9999, top: 0, left: 0, height: "4px", width: "100%"}}>
                     {
