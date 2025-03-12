@@ -1,4 +1,4 @@
-import {Dialog, mapForm, mapTable, Router, Window} from "react-ui-simplicity";
+import {Dialog, mapForm, mapTable, Markdown, Router, Window} from "react-ui-simplicity";
 import App from "./App";
 import HomePage from "./pages/home/HomePage";
 import FormsPage from "./pages/component/FormsPage";
@@ -26,6 +26,7 @@ import UseInputHookPage from "./pages/platform/hooks/UseInputHookPage";
 import UseMatchMediaHookPage from "./pages/platform/hooks/UseMatchMediaHookPage";
 import JSONMapperPage from "./pages/platform/mapper/JSONMapperPage";
 import WysiwygPage from "./pages/component/input/WysiwygPage";
+import MarkdownPage from "./pages/component/input/MarkdownPage";
 
 export const routes : Router.Route[] = [
     {
@@ -66,6 +67,10 @@ export const routes : Router.Route[] = [
                             {
                                 path : "/wysiwyg",
                                 component : WysiwygPage
+                            },
+                            {
+                                path : "/markdown",
+                                component : MarkdownPage
                             }
                         ]
                     },

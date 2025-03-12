@@ -36,7 +36,7 @@ function FontInputStyle(properties: FontInputStyle.Attributes) {
         }
         return () => {
             if (editableContent.current) {
-                editableContent.current.removeEventListener("click", handler)
+                editableContent.current?.removeEventListener("click", handler)
             }
         }
     }, [])

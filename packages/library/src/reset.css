@@ -24,7 +24,7 @@ body {
   margin: 0;
 }
 ol, ul {
-  list-style: decimal;
+  list-style: circle;
 }
 blockquote, q {
   quotes: none;

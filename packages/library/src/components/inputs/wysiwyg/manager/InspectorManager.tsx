@@ -82,7 +82,7 @@ function InspectorManager(properties: InspectorManager.Attributes) {
         contentEditableRef.current.addEventListener("contextmenu", onContextClick)
         return () => {
             document.removeEventListener("click", onDocumentClick)
-            contentEditableRef.current.removeEventListener("contextmenu", onContextClick)
+            contentEditableRef.current?.removeEventListener("contextmenu", onContextClick)
         }
     }, []);
 

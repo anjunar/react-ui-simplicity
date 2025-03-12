@@ -48,8 +48,8 @@ function Inspector(properties: Inspector.Attributes) {
 
         return () => {
             if (contentRef.current) {
-                contentRef.current.removeEventListener("click", clickListener)
-                contentRef.current.removeEventListener("action", actionListener)
+                contentRef.current?.removeEventListener("click", clickListener)
+                contentRef.current?.removeEventListener("action", actionListener)
 
                 let iterator = document.createNodeIterator(contentRef.current, NodeFilter.SHOW_ELEMENT);
                 let cursor = iterator.nextNode();

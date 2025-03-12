@@ -24,7 +24,7 @@ function FontSelectStyle(properties: FontSelectStyle.Attributes) {
         }
         return () => {
             if (editableContent.current) {
-                editableContent.current.removeEventListener("click", handler)
+                editableContent.current?.removeEventListener("click", handler)
             }
         }
     }, [])

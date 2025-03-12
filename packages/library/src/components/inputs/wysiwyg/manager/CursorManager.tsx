@@ -68,15 +68,17 @@ function CursorManager(properties: CursorManager.Attributes) {
         }
 
         function onBlur() {
-            cursorRef.current.style.display = "none"
+            if (cursorRef.current) {
+                cursorRef.current.style.display = "none"
+            }
         }
 
         inputRef.current.addEventListener("focus", onFocus)
         inputRef.current.addEventListener("blur", onBlur)
 
         return () => {
-            inputRef.current.removeEventListener("focus", onFocus)
-            inputRef.current.removeEventListener("blur", onBlur)
+            inputRef.current?.removeEventListener("focus", onFocus)
+            inputRef.current?.removeEventListener("blur", onBlur)
         }
     }, [inputRef.current, cursorRef.current]);
 
@@ -134,8 +136,8 @@ function CursorManager(properties: CursorManager.Attributes) {
         contentEditableRef.current.addEventListener("scroll", onScroll)
         contentEditableRef.current.addEventListener("click", onContentClick)
         return () => {
-            contentEditableRef.current.removeEventListener("scroll", onScroll)
-            contentEditableRef.current.removeEventListener("click", onContentClick)
+            contentEditableRef.current?.removeEventListener("scroll", onScroll)
+            contentEditableRef.current?.removeEventListener("click", onContentClick)
         }
     }, [contentEditableRef.current]);
 

@@ -40,7 +40,7 @@ function FontStyle(properties: FontStyle.Attributes) {
         }
         return () => {
             if (editableContent.current) {
-                editableContent.current.removeEventListener("click", handler)
+                editableContent.current?.removeEventListener("click", handler)
             }
 
         }

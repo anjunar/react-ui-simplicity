@@ -11,6 +11,7 @@ import CursorManager from "./manager/CursorManager";
 import InspectorManager from "./manager/InspectorManager";
 import {EditorContext} from "./EditorState";
 import {TextNode} from "./core/TreeNode";
+import Markdown from "./markdown/Markdown";
 
 function Editor(properties: Editor.Attributes) {
 
@@ -18,7 +19,9 @@ function Editor(properties: Editor.Attributes) {
 
     const {ast, cursor : {currentCursor}} = useContext(EditorContext)
 
-    const [page, setPage] = useState(0)
+    const [page, setPage] = useState(5)
+
+    const [markdown, setMarkdown] = useState(true)
 
     const editorRef = useRef<HTMLDivElement>(null)
 
@@ -55,18 +58,34 @@ function Editor(properties: Editor.Attributes) {
         }
     }, [ast]);
 
+    useEffect(() => {
+        if (page === 5) {
+            setMarkdown(true)
+        } else {
+            setMarkdown(false)
+        }
+    }, [page]);
+
     return (
         <div ref={editorRef} className={"editor"} style={{position: "relative", ...style}}>
-            <Toolbar page={page} onPage={value => setPage(value)}/>
-            <div ref={contentEditableRef} style={{flex: 1, overflow: "auto"}}>
-                <Cursor ref={cursorRef}/>
-                <Inspector inspectorRef={inspectorRef}/>
-                <ProcessorFactory node={ast.root}/>
-            </div>
-            <CursorManager cursorRef={cursorRef} inputRef={inputRef} editorRef={editorRef} contentEditableRef={contentEditableRef} inspectorRef={inspectorRef}/>
-            <SelectionManager/>
-            <InspectorManager editorRef={editorRef} contentEditableRef={contentEditableRef} inputRef={inputRef} inspectorRef={inspectorRef}/>
-            <InputManager inputRef={inputRef}/>
+            {
+                markdown ? (
+                    <Markdown/>
+                ) : (
+                    <div style={{flex: 1}}>
+                        <Toolbar page={page} onPage={value => setPage(value)}/>
+                        <div ref={contentEditableRef} style={{height : "100%", overflow: "auto"}}>
+                            <Cursor ref={cursorRef}/>
+                            <Inspector inspectorRef={inspectorRef}/>
+                            <ProcessorFactory node={ast.root}/>
+                        </div>
+                        <CursorManager cursorRef={cursorRef} inputRef={inputRef} editorRef={editorRef} contentEditableRef={contentEditableRef} inspectorRef={inspectorRef}/>
+                        <SelectionManager/>
+                        <InspectorManager editorRef={editorRef} contentEditableRef={contentEditableRef} inputRef={inputRef} inspectorRef={inspectorRef}/>
+                        <InputManager inputRef={inputRef}/>
+                    </div>
+                )
+            }
             <Footer page={page} onPage={(value) => setPage(value)}/>
         </div>
     )
