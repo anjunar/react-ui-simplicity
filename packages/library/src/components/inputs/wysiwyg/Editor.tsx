@@ -19,7 +19,7 @@ function Editor(properties: Editor.Attributes) {
 
     const {ast, cursor : {currentCursor}} = useContext(EditorContext)
 
-    const [page, setPage] = useState(5)
+    const [page, setPage] = useState(0)
 
     const [markdown, setMarkdown] = useState(true)
 

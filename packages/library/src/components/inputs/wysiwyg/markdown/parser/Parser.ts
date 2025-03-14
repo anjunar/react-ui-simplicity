@@ -51,14 +51,24 @@ function parseUnorderedList(iterator: Iterator<Literal>, depth = 0) : ListNode {
     while (iterator.hasNext && token.type === "ul") {
 
         let itemNode : ItemNode
-        if (token?.value.length !== depth) {
-            itemNode = new ItemNode([parseUnorderedList(iterator, token.value.length)])
+        if (token?.value.length > depth) {
+            let item = unorderedListNode.children.findLast(node => node instanceof ItemNode);
+            if (item) {
+                item.appendChild(parseUnorderedList(iterator, token.value.length))
+            } else  {
+                token = iterator.next()
+                itemNode = new ItemNode(parse(iterator))
+                unorderedListNode.appendChild(itemNode)
+            }
+        } else if (token.value.length === depth) {
+            iterator.next();
+            itemNode = new ItemNode(parse(iterator));
+            unorderedListNode.appendChild(itemNode);
         } else {
-            token = iterator.next()
-            itemNode = new ItemNode(parse(iterator))
+            token = iterator.last()
+            break;
         }
 
-        unorderedListNode.appendChild(itemNode)
         token = iterator.next()
 
     }
@@ -166,6 +176,10 @@ export function parseString(text : string) {
     let iterator = new Iterator(literals);
 
     let node = parseRoot(iterator);
+
+    if (node.length === 0) {
+        return new RootNode([new ParagraphNode([new TextNode("")])])
+    }
 
     return new RootNode(node)
 
