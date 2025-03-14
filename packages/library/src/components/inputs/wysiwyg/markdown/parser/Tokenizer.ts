@@ -9,9 +9,11 @@ const tokens : Token[] = [
     new Token("italic", /\*([^* ]+)\*/y),
     new Token("bold", /\*\*([^* ]+)\*\*/y),
     new Token("bold-italic", /\*\*\*([^* ]+)\*\*\*/y),
-    new Token("text", /([\S ]+)/y),
+    new Token("text", /([^*\n^#]+)/y),
+    new Token("text", /(\*)/y),
+    new Token("text", /(#)/y),
     new Token("newLine", /(\n)/y),
-    new Token("whitespace", /(\s+)/y)
+    new Token("whitespace", /(\s+)/y),
 ]
 
 export function tokenizer(text : string) {
