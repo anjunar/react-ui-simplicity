@@ -18,6 +18,10 @@ class Iterator<E> {
         return this.array[++this.index]
     }
 
+    lookAhead(value : number) : E {
+        return this.array[this.index + value]
+    }
+
     current() : E {
         return this.array[this.index]
     }
@@ -61,7 +65,7 @@ function parseUnorderedList(iterator: Iterator<Literal>, depth = 0) : ListNode {
                 unorderedListNode.appendChild(itemNode)
             }
         } else if (token.value.length === depth) {
-            iterator.next();
+            token = iterator.next();
             itemNode = new ItemNode(parse(iterator));
             unorderedListNode.appendChild(itemNode);
         } else {
@@ -69,7 +73,12 @@ function parseUnorderedList(iterator: Iterator<Literal>, depth = 0) : ListNode {
             break;
         }
 
-        token = iterator.next()
+        let lookAhead = iterator.lookAhead(1);
+        if (lookAhead?.type === "ul") {
+            token = iterator.next()
+        } else {
+            token = iterator.current()
+        }
 
     }
 

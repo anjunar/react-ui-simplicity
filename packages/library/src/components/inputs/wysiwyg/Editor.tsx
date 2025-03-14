@@ -21,7 +21,7 @@ function Editor(properties: Editor.Attributes) {
 
     const [page, setPage] = useState(0)
 
-    const [markdown, setMarkdown] = useState(true)
+    const [markdown, setMarkdown] = useState(false)
 
     const editorRef = useRef<HTMLDivElement>(null)
 
@@ -58,14 +58,6 @@ function Editor(properties: Editor.Attributes) {
         }
     }, [ast]);
 
-    useEffect(() => {
-        if (page === 5) {
-            setMarkdown(true)
-        } else {
-            setMarkdown(false)
-        }
-    }, [page]);
-
     return (
         <div ref={editorRef} className={"editor"} style={{position: "relative", ...style}}>
             {
@@ -86,7 +78,7 @@ function Editor(properties: Editor.Attributes) {
                     </div>
                 )
             }
-            <Footer page={page} onPage={(value) => setPage(value)}/>
+            <Footer page={page} onPage={(value) => setPage(value)} onMarkDown={value => setMarkdown(value)}/>
         </div>
     )
 }
