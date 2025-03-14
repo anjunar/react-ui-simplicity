@@ -1,8 +1,8 @@
 import React, {useState} from "react"
-import {AbstractNode, RootNode, TextNode} from "./core/TreeNode";
-import {ParagraphNode} from "./blocks/paragraph/ParagraphNode";
-import {AbstractProvider} from "./blocks/shared/AbstractProvider";
-import {KeyCommand} from "./commands/KeyCommand";
+import {AbstractNode, RootNode, TextNode} from "./shared/core/TreeNode";
+import {ParagraphNode} from "./shared/blocks/paragraph/ParagraphNode";
+import {AbstractProvider} from "./shared/blocks/shared/AbstractProvider";
+import {KeyCommand} from "./wysiwyg/commands/KeyCommand";
 
 export interface GeneralEvent {
     type: string

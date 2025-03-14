@@ -1,7 +1,7 @@
-import {AbstractNode, RootNode, TextNode} from "../../core/TreeNode";
+import {AbstractNode, RootNode, TextNode} from "../../shared/core/TreeNode";
 import {match} from "../../../../../pattern-match/PatternMatching";
-import {ParagraphNode} from "../../blocks/paragraph/ParagraphNode";
-import {ItemNode, ListNode} from "../../blocks/list/ListNode";
+import {ParagraphNode} from "../../shared/blocks/paragraph/ParagraphNode";
+import {ItemNode, ListNode} from "../../shared/blocks/list/ListNode";
 
 function generateText(node: TextNode) {
 

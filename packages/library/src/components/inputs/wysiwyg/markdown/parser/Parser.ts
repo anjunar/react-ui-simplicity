@@ -1,8 +1,8 @@
 import {Literal} from "./Literal";
 import {tokenizer} from "./Tokenizer";
-import {ParagraphNode} from "../../blocks/paragraph/ParagraphNode";
-import {AbstractNode, RootNode, TextNode} from "../../core/TreeNode";
-import {ItemNode, ListNode} from "../../blocks/list/ListNode";
+import {ParagraphNode} from "../../shared/blocks/paragraph/ParagraphNode";
+import {AbstractNode, RootNode, TextNode} from "../../shared/core/TreeNode";
+import {ItemNode, ListNode} from "../../shared/blocks/list/ListNode";
 
 class Iterator<E> {
 

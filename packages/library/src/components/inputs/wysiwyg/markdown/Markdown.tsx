@@ -1,14 +1,14 @@
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {tokenizer} from "./parser/Tokenizer";
 import {parseString} from "./parser/Parser";
-import ProcessorFactory from "../processors/ProcessorFactory";
-import {RootNode} from "../core/TreeNode";
+import ProcessorFactory from "../shared/blocks/shared/ProcessorFactory";
+import {RootNode} from "../shared/core/TreeNode";
 import {EditorContext} from "../EditorState";
 import {generate} from "./generator/Generator";
 
 function Markdown(properties: Markdown.Attributes) {
 
-    const {} = properties
+    const {page} = properties
 
     const divRef = useRef<HTMLDivElement>(null);
 
@@ -33,7 +33,7 @@ function Markdown(properties: Markdown.Attributes) {
 
 namespace Markdown {
     export interface Attributes {
-
+        page : number
     }
 }
 

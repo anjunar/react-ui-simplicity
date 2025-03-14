@@ -94,13 +94,6 @@ function App(properties: App.Attributes) {
                                                         </div>
                                                     </Link>
                                                 </li>
-                                                <li>
-                                                    <Link value={"/forms/markdown"}>
-                                                        <div>
-                                                            <span>Markdown</span>
-                                                        </div>
-                                                    </Link>
-                                                </li>
                                             </ul>
                                         </li>
                                         <li>
