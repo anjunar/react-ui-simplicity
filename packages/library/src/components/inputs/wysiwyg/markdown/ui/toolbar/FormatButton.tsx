@@ -1,28 +1,43 @@
-import React, {useContext} from "react"
+import React, {useContext, useEffect, useState} from "react"
 import {AbstractCommand} from "../../commands/AbstractCommand";
-import {EditorContext} from "../../../EditorState";
+import {MarkdownContext} from "../../../shared/contexts/MarkdownState";
+import {AbstractNode, TextNode} from "../../../shared/core/TreeNode";
+import {NodeRange} from "../../selection/ASTSelection";
 
 function FormatButton(properties: FormatButton.Attributes) {
 
-    const {children, command, textArea} = properties
+    const {children, command, textArea, isActiveCallback, isDisabledCallback} = properties
 
-    const {ast : {triggerAST}, markdown} = useContext(EditorContext)
+    const {markdown, selection : {currentSelection}} = useContext(MarkdownContext)
+
+    const [active, setActive] = useState(false)
+
+    const [disabled, setDisabled] = useState(false)
 
     function onClick() {
-        command.execute(textArea, markdown);
+        command.execute(! active, textArea, markdown);
         markdown.triggerMarkdown()
     }
 
+    useEffect(() => {
+        setActive(isActiveCallback(currentSelection))
+
+        setDisabled(isDisabledCallback(currentSelection))
+
+    }, [currentSelection]);
+
     return (
-        <button className={"material-icons"} onClick={onClick}>{children}</button>
+        <button disabled={disabled} className={`material-icons${active ? " active" : ""}`} onClick={onClick}>{children}</button>
     )
 }
 
 namespace FormatButton {
     export interface Attributes {
-        children : React.ReactNode
-        command : AbstractCommand
-        textArea : HTMLTextAreaElement
+        children: React.ReactNode
+        command: AbstractCommand
+        textArea: HTMLTextAreaElement,
+        isActiveCallback : (node : NodeRange[]) => boolean
+        isDisabledCallback : (node : NodeRange[]) => boolean
     }
 }
 

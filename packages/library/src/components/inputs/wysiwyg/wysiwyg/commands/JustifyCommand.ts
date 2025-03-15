@@ -1,11 +1,14 @@
 import {AbstractCommand} from "./AbstractCommands";
-import {Context} from "../../EditorState";
+import WysiwygState from "../../shared/contexts/WysiwygState";
+import EditorState from "../../shared/contexts/EditorState";
 
 export class JustifyCommand extends AbstractCommand<string> {
 
-    execute(value: string, context: Context): void {
+    execute(value: string, context: WysiwygState.Context, editor : EditorState.Context): void {
 
-        const { ast : {triggerAST}, cursor : {currentCursor} } = context;
+        const { cursor : {currentCursor} } = context;
+
+        const { ast : {triggerAST}} = editor
 
         if (currentCursor) {
 

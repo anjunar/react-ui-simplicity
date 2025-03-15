@@ -4,13 +4,12 @@ import ProcessorFactory from "./ProcessorFactory";
 import ParagraphProcessor from "../paragraph/ParagraphProcessor";
 import {onArrowLeft, onArrowRight} from "../../../wysiwyg/utils/ProcessorUtils";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../contexts/WysiwygState";
+import {EditorContext} from "../../contexts/EditorState";
 
 function RootProcessor(properties: RootNode.Attributes) {
 
     const {node} = properties
-
-    const {ast : {root, triggerAST}, cursor : {currentCursor, triggerCursor}, event : {currentEvent}} = useContext(EditorContext)
 
     const divRef = useRef<HTMLDivElement>(null);
 

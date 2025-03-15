@@ -136,5 +136,17 @@ export class TextNode extends AbstractNode {
         this.text = text;
     }
 
+    hasFormat(except : string[] = []) {
+        const whiteList = ["bold", "italic", "deleted", "sub", "sup"]
+
+        for (const string of except) {
+            let indexOf = whiteList.indexOf(string);
+            whiteList.splice(indexOf, 1)
+        }
+
+        return whiteList.some(item => this[item])
+
+    }
+
 }
 

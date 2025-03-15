@@ -1,7 +1,8 @@
 import "./Inspector.css"
 import React, {CSSProperties, useContext, useEffect, useState} from "react"
 import {AbstractNode} from "../../shared/core/TreeNode";
-import {EditorContext} from "../../EditorState";
+import {WysiwygContext} from "../../shared/contexts/WysiwygState";
+import {EditorContext} from "../../shared/contexts/EditorState";
 
 function Inspector(properties: Inspector.Attributes) {
 
@@ -11,7 +12,9 @@ function Inspector(properties: Inspector.Attributes) {
 
     const [hierarchicalNodes, setHierarchicalNodes] = useState<AbstractNode[]>([])
 
-    const {providers, cursor: {currentCursor}} = useContext(EditorContext)
+    const {cursor: {currentCursor}} = useContext(WysiwygContext)
+
+    const {providers} = useContext(EditorContext)
 
     useEffect(() => {
 

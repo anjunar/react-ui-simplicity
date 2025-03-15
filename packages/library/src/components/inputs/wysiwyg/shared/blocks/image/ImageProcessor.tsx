@@ -2,7 +2,8 @@ import React, {useContext, useEffect, useRef, useState} from "react"
 import {ImageNode} from "./ImageNode";
 import {TextNode} from "../../core/TreeNode";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../contexts/WysiwygState";
+import {EditorContext} from "../../contexts/EditorState";
 
 function ImageProcessor(properties: ImageProcessor.Attributes) {
 
@@ -10,7 +11,9 @@ function ImageProcessor(properties: ImageProcessor.Attributes) {
 
     const [image, setImage] = useState(node.src)
 
-    let {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, event : {currentEvent}} = useContext(EditorContext);
+    let { cursor: {currentCursor, triggerCursor}, event : {currentEvent}} = useContext(WysiwygContext)
+
+    const {ast: {root, triggerAST}} = useContext(EditorContext)
 
     const divRef = useRef(null);
 

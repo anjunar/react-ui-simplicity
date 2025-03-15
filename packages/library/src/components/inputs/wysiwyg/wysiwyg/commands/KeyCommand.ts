@@ -1,5 +1,5 @@
 import {AbstractNode, RootNode} from "../../shared/core/TreeNode";
-import {GeneralEvent} from "../../EditorState";
+import WysiwygState from "../../shared/contexts/WysiwygState";
 
 export interface KeyCommand {
     type : string
@@ -8,7 +8,7 @@ export interface KeyCommand {
 }
 
 export interface CommandRule<A extends AbstractNode> {
-    test(value: GeneralEvent, node: AbstractNode, cursor: AbstractNode): boolean
+    test(value: WysiwygState.GeneralEvent, node: AbstractNode, cursor: AbstractNode): boolean
 
-    process(currentCursor: { container: AbstractNode; offset: number }, node: A, currentEvent: GeneralEvent, root: RootNode): void
+    process(currentCursor: { container: AbstractNode; offset: number }, node: A, currentEvent: WysiwygState.GeneralEvent, root: RootNode): void
 }

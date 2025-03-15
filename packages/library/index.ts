@@ -13,6 +13,7 @@ export {default as VideoUpload} from "./src/components/inputs/upload/video/Video
 export {default as Image} from "./src/components/inputs/upload/image/Image"
 export {default as ImageUpload} from "./src/components/inputs/upload/image/ImageUpload"
 export {default as Editor} from "./src/components/inputs/wysiwyg/Editor"
+export {default as EditorState} from "./src/components/inputs/wysiwyg/shared/contexts/EditorState"
 export * from "./src/components/inputs/wysiwyg/shared/blocks/table/TableProvider"
 export * from "./src/components/inputs/wysiwyg/shared/blocks/list/ListProvider"
 export * from "./src/components/inputs/wysiwyg/shared/blocks/image/ImageProvider"

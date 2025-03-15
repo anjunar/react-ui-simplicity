@@ -12,7 +12,8 @@ import ActionButton from "./toolbar/ActionButton";
 import {AbstractProvider} from "../../shared/blocks/shared/AbstractProvider";
 import {findParent} from "../../shared/core/TreeNodes";
 import Inspector from "./Inspector";
-import {EditorContext} from "../../EditorState";
+import {WysiwygContext} from "../../shared/contexts/WysiwygState";
+import {EditorContext} from "../../shared/contexts/EditorState";
 
 const colors = [
 /*
@@ -49,7 +50,9 @@ function Toolbar(properties: Toolbar.Attributes) {
 
     const {page, onPage} = properties
 
-    const {providers, cursor : {currentCursor}} = useContext(EditorContext)
+    const {cursor : {currentCursor}} = useContext(WysiwygContext)
+
+    const {providers} = useContext(EditorContext)
 
     function onBlockCallback(node : AbstractNode): string {
         if (node instanceof TextNode) {

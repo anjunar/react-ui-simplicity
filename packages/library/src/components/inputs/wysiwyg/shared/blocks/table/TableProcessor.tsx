@@ -3,13 +3,16 @@ import {TableNode} from "./TableNode";
 import TableRowProcessor from "./TableRowProcessor";
 import {TextNode} from "../../core/TreeNode";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../contexts/WysiwygState";
+import {EditorContext} from "../../contexts/EditorState";
 
 function TableProcessor(properties: TableProcessor.Attributes) {
 
     const {node} = properties
 
-    let {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, event : {currentEvent}} = useContext(EditorContext);
+    let {cursor: {currentCursor, triggerCursor}, event : {currentEvent}} = useContext(WysiwygContext);
+
+    const {ast: {root, triggerAST}} = useContext(EditorContext)
 
     const tableRef = useRef(null);
 

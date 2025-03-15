@@ -1,13 +1,12 @@
 import React, {useContext, useEffect, useRef} from "react"
 import ProcessorFactory from "../shared/ProcessorFactory";
 import {ParagraphNode} from "./ParagraphNode";
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../contexts/WysiwygState";
+import {EditorContext} from "../../contexts/EditorState";
 
 function ParagraphProcessor(properties: ParagraphProcessor.Attributes) {
 
     const {node} = properties
-
-    const {ast: {root, triggerAST}, cursor: {currentCursor, triggerCursor}, event} = useContext(EditorContext)
 
     const divRef = useRef<HTMLDivElement>(null);
 

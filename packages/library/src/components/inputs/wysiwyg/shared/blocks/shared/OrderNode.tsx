@@ -1,13 +1,14 @@
 import React, {useContext} from "react"
 import {AbstractNode} from "../../core/TreeNode";
 
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../contexts/WysiwygState";
+import {EditorContext} from "../../contexts/EditorState";
 
 function OrderNode(properties: OrderNode.Attributes) {
 
     const {node} = properties
 
-    const {ast : {triggerAST}} = useContext(EditorContext)
+    const {ast: {root, triggerAST}} = useContext(EditorContext)
 
     function moveUp() {
         let parent = node.parent;

@@ -1,14 +1,15 @@
 import React, {useContext, useEffect, useRef} from "react"
 import {ItemNode} from "./ListNode";
 import ProcessorFactory from "../shared/ProcessorFactory";
-import {EditorContext, GeneralEvent} from "../../../EditorState";
+import WysiwygState, {WysiwygContext} from "../../contexts/WysiwygState";
 import {findNearestTextRight, findParent} from "../../core/TreeNodes";
 import {AbstractNode, RootNode, TextNode} from "../../core/TreeNode";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
 import {CommandRule, KeyCommand} from "../../../wysiwyg/commands/KeyCommand";
+import {EditorContext} from "../../contexts/EditorState";
 
 const deleteContentBackward : CommandRule<ItemNode> = {
-    test(value: GeneralEvent, node: AbstractNode, container: AbstractNode): boolean {
+    test(value: WysiwygState.GeneralEvent, node: AbstractNode, container: AbstractNode): boolean {
         return (value.type === "Backspace" || value.type === "deleteContentBackward") && findParent(container, item => node === item) === node
     },
     process(currentCursor, node, currentEvent, root) {
@@ -35,7 +36,7 @@ const deleteContentBackward : CommandRule<ItemNode> = {
 }
 
 const insertLineBreak : CommandRule<ItemNode> = {
-    test(value: GeneralEvent, node : AbstractNode, container : AbstractNode): boolean {
+    test(value: WysiwygState.GeneralEvent, node : AbstractNode, container : AbstractNode): boolean {
         return value.type === "insertLineBreak" && findParent(container, item => node === item) === node
     },
     process(currentCursor, node, currentEvent, root) {
@@ -77,7 +78,9 @@ function ListItemProcessor(properties: ItemProcessor.Attributes) {
 
     const {node} = properties
 
-    const {ast: {root, triggerAST}, cursor: {currentCursor}, event : {currentEvent}} = useContext(EditorContext)
+    const {cursor: {currentCursor}, event : {currentEvent}} = useContext(WysiwygContext)
+
+    const {ast: {root, triggerAST}} = useContext(EditorContext)
 
     const liRef = useRef(null);
 

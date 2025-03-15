@@ -8,13 +8,16 @@ import SelectionManager from "./manager/SelectionManager";
 import InspectorManager from "./manager/InspectorManager";
 import InputManager from "./manager/InputManager";
 import {TextNode} from "../shared/core/TreeNode";
-import {EditorContext} from "../EditorState";
+import {WysiwygContext} from "../shared/contexts/WysiwygState";
+import {EditorContext} from "../shared/contexts/EditorState";
 
 function Wysiwyg(properties: Wysiwyg.Attributes) {
 
     const {page, editorRef, onPage} = properties
 
-    const {ast, cursor : {currentCursor}} = useContext(EditorContext)
+    const {cursor : {currentCursor}} = useContext(WysiwygContext)
+
+    const {ast} = useContext(EditorContext)
 
     const inputRef = useRef<HTMLTextAreaElement>(null);
 

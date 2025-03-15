@@ -2,7 +2,8 @@ import React, {useContext, useEffect, useState} from "react"
 import {AbstractNode, TextNode} from "../../../shared/core/TreeNode";
 import {AbstractCommand} from "../../commands/AbstractCommands";
 
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../../shared/contexts/WysiwygState";
+import {EditorContext} from "../../../shared/contexts/EditorState";
 
 function FormatColor(properties: FormatColor.Attributes) {
 
@@ -12,7 +13,9 @@ function FormatColor(properties: FormatColor.Attributes) {
 
     const [disabled, setDisabled] = useState(false)
 
-    const context = useContext(EditorContext)
+    const context = useContext(WysiwygContext)
+
+    const editor = useContext(EditorContext)
 
     function resolveVariable(value : string) {
         const rootStyles = getComputedStyle(document.documentElement);
@@ -23,7 +26,7 @@ function FormatColor(properties: FormatColor.Attributes) {
         const value = event.target.value
         setValue(value)
 
-        command.execute(value, context)
+        command.execute(value, context, editor)
     }
 
     useEffect(() => {
@@ -42,7 +45,7 @@ function FormatColor(properties: FormatColor.Attributes) {
                 setValue(result)
             }
         }
-    }, [context.ast]);
+    }, [editor.ast]);
 
     return (
         <input disabled={disabled} list={id} type={"color"} value={value} onChange={onChange}></input>

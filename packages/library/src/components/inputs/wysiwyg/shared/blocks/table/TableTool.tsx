@@ -4,13 +4,16 @@ import {TableCellNode, TableNode, TableRowNode} from "./TableNode";
 import {TextNode} from "../../core/TreeNode";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
 import OrderNode from "../shared/OrderNode";
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../contexts/WysiwygState";
+import {EditorContext} from "../../contexts/EditorState";
 
 function TableTool(properties: TableTool.Attributes) {
 
     const {node} = properties
 
-    let {ast: {triggerAST}, cursor: {currentCursor, triggerCursor}} = useContext(EditorContext);
+    let {cursor: {currentCursor, triggerCursor}} = useContext(WysiwygContext);
+
+    const {ast: {root, triggerAST}} = useContext(EditorContext)
 
     function onAddRowAbove() {
         let tableCell = findParent(currentCursor.container, (node) => node instanceof TableCellNode)

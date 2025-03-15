@@ -1,18 +1,10 @@
 import "./Editor.css"
-import React, {useContext, useEffect, useRef, useState} from "react"
-import ProcessorFactory from "./shared/blocks/shared/ProcessorFactory";
-import Cursor from "./wysiwyg/ui/Cursor";
-import Toolbar from "./wysiwyg/ui/Toolbar";
+import React, {useRef, useState} from "react"
 import Footer from "./shared/ui/Footer";
-import Inspector from "./wysiwyg/ui/Inspector";
-import SelectionManager from "./wysiwyg/manager/SelectionManager";
-import InputManager from "./wysiwyg/manager/InputManager";
-import CursorManager from "./wysiwyg/manager/CursorManager";
-import InspectorManager from "./wysiwyg/manager/InspectorManager";
-import {EditorContext} from "./EditorState";
-import {TextNode} from "./shared/core/TreeNode";
+import WysiwygState from "./shared/contexts/WysiwygState";
 import Markdown from "./markdown/Markdown";
 import Wysiwyg from "./wysiwyg/Wysiwyg";
+import MarkdownState from "./shared/contexts/MarkdownState";
 
 function Editor(properties: Editor.Attributes) {
 
@@ -28,9 +20,13 @@ function Editor(properties: Editor.Attributes) {
         <div ref={editorRef} className={"editor"} style={{position: "relative", ...style}}>
             {
                 markdown ? (
-                    <Markdown page={page}/>
+                    <MarkdownState>
+                        <Markdown page={page}/>
+                    </MarkdownState>
                 ) : (
-                    <Wysiwyg page={page} onPage={value => setPage(value)} editorRef={editorRef}/>
+                    <WysiwygState>
+                        <Wysiwyg page={page} onPage={value => setPage(value)} editorRef={editorRef}/>
+                    </WysiwygState>
                 )
             }
             <Footer page={page} onPage={(value) => setPage(value)} onMarkDown={value => setMarkdown(value)}/>

@@ -2,10 +2,10 @@ import {AbstractCommand} from "../../../wysiwyg/commands/AbstractCommands";
 import {AbstractNode, TextNode} from "../../core/TreeNode";
 import {TableCellNode, TableNode, TableRowNode} from "./TableNode";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
-import {Context} from "../../../EditorState";
+import WysiwygState from "../../contexts/WysiwygState";
 
 export class TableCommand extends AbstractCommand<AbstractNode> {
-    execute(node: AbstractNode, context: Context) {
+    execute(node: AbstractNode, context: WysiwygState.Context) {
 
         let parent = node.parent;
         let index = parent.parentIndex

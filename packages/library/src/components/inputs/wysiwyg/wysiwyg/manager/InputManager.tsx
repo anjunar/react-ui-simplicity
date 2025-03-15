@@ -1,6 +1,7 @@
 import React, {useContext, useEffect} from "react"
 
-import {EditorContext} from "../../EditorState";
+import {WysiwygContext} from "../../shared/contexts/WysiwygState";
+import {EditorContext} from "../../shared/contexts/EditorState";
 
 let isComposing = false
 
@@ -8,7 +9,9 @@ function InputManager(properties: EditorInput.Attributes) {
 
     const {inputRef} = properties
 
-    const {ast, event, cursor} = useContext(EditorContext)
+    const {event, cursor} = useContext(WysiwygContext)
+
+    const {ast} = useContext(EditorContext)
 
     function onInput(e: React.FormEvent<HTMLTextAreaElement>) {
         let inputEvent = e.nativeEvent as InputEvent;

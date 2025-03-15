@@ -1,8 +1,9 @@
 import React, {useContext, useDeferredValue, useEffect} from "react"
 import {AbstractContainerNode, AbstractNode} from "../../shared/core/TreeNode";
 import {findNode} from "../../shared/core/TreeNodes";
-import {EditorContext} from "../../EditorState";
+import {WysiwygContext} from "../../shared/contexts/WysiwygState";
 import {ParagraphNode} from "../../shared/blocks/paragraph/ParagraphNode";
+import {EditorContext} from "../../shared/contexts/EditorState";
 
 function cleanUpAST(node : AbstractNode) {
 
@@ -23,7 +24,9 @@ function CursorManager(properties: CursorManager.Attributes) {
 
     const {cursorRef, inputRef, editorRef, contentEditableRef, inspectorRef} = properties
 
-    const {ast : {root, triggerAST}, cursor} = useContext(EditorContext)
+    const {cursor} = useContext(WysiwygContext)
+
+    const {ast: {root, triggerAST}} = useContext(EditorContext)
 
     let cursorDeferredValue = useDeferredValue(cursor);
 

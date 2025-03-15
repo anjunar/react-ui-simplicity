@@ -3,7 +3,8 @@ import {AbstractNode, RootNode, TextNode} from "../../core/TreeNode";
 import SpanProcessor from "./SpanProcessor";
 import RootProcessor from "./RootProcessor";
 
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../contexts/WysiwygState";
+import {EditorContext} from "../../contexts/EditorState";
 
 function ProcessorFactory(properties: TextFactory.Attributes) {
 

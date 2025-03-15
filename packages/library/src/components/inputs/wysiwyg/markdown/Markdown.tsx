@@ -1,10 +1,13 @@
 import React, {useContext, useEffect, useRef} from "react"
 import {parseString} from "./parser/Parser";
 import ProcessorFactory from "../shared/blocks/shared/ProcessorFactory";
-import {EditorContext} from "../EditorState";
+import {WysiwygContext} from "../shared/contexts/WysiwygState";
 import Toolbar from "./ui/Toolbar";
 import {findSelectedNodes, flattenAST} from "./selection/ASTSelection";
 import {generate} from "./generator/Generator";
+import {EditorContext} from "../shared/contexts/EditorState";
+import {MarkdownContext} from "../shared/contexts/MarkdownState";
+import SelectionManager from "./manager/SelectionManager";
 
 function Markdown(properties: Markdown.Attributes) {
 
@@ -12,7 +15,9 @@ function Markdown(properties: Markdown.Attributes) {
 
     const divRef = useRef<HTMLDivElement>(null);
 
-    const {ast, markdown} = useContext(EditorContext)
+    const {ast} = useContext(EditorContext)
+
+    const {markdown} = useContext(MarkdownContext)
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -31,21 +36,14 @@ function Markdown(properties: Markdown.Attributes) {
         markdown.triggerMarkdown()
     }
 
-    function onSelect(event: React.SyntheticEvent<HTMLTextAreaElement>) {
-        let textArea = event.target as HTMLTextAreaElement
-        let nodeRanges = flattenAST(ast.root.children);
-        let abstractNodes = findSelectedNodes(nodeRanges, textArea.selectionStart, textArea.selectionEnd);
-
-        console.log(abstractNodes)
-    }
-
     return (
         <div style={{height: "100%", display: "flex", flexDirection: "column"}} ref={divRef}>
             <Toolbar page={page} textarea={textareaRef}/>
-            <textarea ref={textareaRef} onSelect={onSelect} style={{width: "100%", flex: 0.5}} value={markdown.currentMarkdown} onChange={onTextareaChange}/>
+            <textarea ref={textareaRef} style={{width: "100%", flex: 0.5}} value={markdown.currentMarkdown} onChange={onTextareaChange}/>
             <div style={{flex: 0.5}}>
                 <ProcessorFactory node={ast.root}/>
             </div>
+            <SelectionManager textareaRef={textareaRef}/>
         </div>
     )
 }

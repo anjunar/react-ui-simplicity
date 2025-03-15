@@ -1,7 +1,8 @@
 import React, {useContext, useEffect, useState} from "react"
 import {TextNode} from "../../../shared/core/TreeNode";
 import {AbstractCommand} from "../../commands/AbstractCommands";
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../../shared/contexts/WysiwygState";
+import {EditorContext} from "../../../shared/contexts/EditorState";
 
 function FormatSelect(properties: FormatSelect.Attributes) {
 
@@ -11,13 +12,16 @@ function FormatSelect(properties: FormatSelect.Attributes) {
 
     const [disabled, setDisabled] = useState(false)
 
-    const context = useContext(EditorContext)
+    const context = useContext(WysiwygContext)
+
+    const editor = useContext(EditorContext)
+
 
     function onChange(event: React.ChangeEvent<HTMLSelectElement>) {
         const value = event.target.value
         setValue(value)
 
-        command.execute(value, context)
+        command.execute(value, context, editor)
     }
 
     useEffect(() => {

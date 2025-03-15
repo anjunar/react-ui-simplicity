@@ -4,13 +4,17 @@ import {TextNode} from "../../core/TreeNode";
 import {findParent} from "../../core/TreeNodes";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
 import OrderNode from "../shared/OrderNode";
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../contexts/WysiwygState";
+import {EditorContext} from "../../contexts/EditorState";
 
 function ListTool(properties: ListTool.Attributes) {
 
     const {node} = properties
 
-    let {ast: {triggerAST}, cursor: {currentCursor, triggerCursor}} = useContext(EditorContext);
+    let {cursor: {currentCursor, triggerCursor}} = useContext(WysiwygContext);
+
+    const {ast: {root, triggerAST}} = useContext(EditorContext)
+
 
     function addClick() {
         let liNode = findParent(currentCursor.container, element => element instanceof ItemNode && element.parent === node) as ItemNode

@@ -1,13 +1,16 @@
 import React, {useContext, useEffect} from "react"
 import {AbstractNode} from "../../shared/core/TreeNode";
 import {findNode} from "../../shared/core/TreeNodes";
-import {EditorContext} from "../../EditorState";
+import {WysiwygContext} from "../../shared/contexts/WysiwygState";
+import {EditorContext} from "../../shared/contexts/EditorState";
 
 function InspectorManager(properties: InspectorManager.Attributes) {
 
     const {contentEditableRef, inputRef, editorRef, inspectorRef} = properties
 
-    const {ast, cursor} = useContext(EditorContext)
+    const {cursor} = useContext(WysiwygContext)
+
+    const {ast} = useContext(EditorContext)
 
     useEffect(() => {
         function onContentClick(event: MouseEvent) {

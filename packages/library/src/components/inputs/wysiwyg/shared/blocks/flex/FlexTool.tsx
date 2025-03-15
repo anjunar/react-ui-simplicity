@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from "react"
 import {FlexNode} from "./FlexNode";
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../contexts/WysiwygState";
+import {EditorContext} from "../../contexts/EditorState";
 
 function FlexTool(properties: FlexTool.Attributes) {
 

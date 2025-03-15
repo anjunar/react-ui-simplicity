@@ -2,7 +2,8 @@ import React, {useContext, useEffect, useState} from "react"
 import {AbstractNode, TextNode} from "../../../shared/core/TreeNode";
 
 import {AbstractCommand} from "../../commands/AbstractCommands";
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../../shared/contexts/WysiwygState";
+import {EditorContext} from "../../../shared/contexts/EditorState";
 
 function FormatButton(properties: FormatButton.Attributes) {
 
@@ -12,10 +13,12 @@ function FormatButton(properties: FormatButton.Attributes) {
 
     const [disabled, setDisabled] = useState(false)
 
-    const context = useContext(EditorContext)
+    const context = useContext(WysiwygContext)
+
+    const editor = useContext(EditorContext)
 
     function onClick() {
-        command.execute(! active, context)
+        command.execute(! active, context, editor)
         setActive(!active)
     }
 

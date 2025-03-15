@@ -1,10 +1,10 @@
 import {AbstractCommand} from "../../../wysiwyg/commands/AbstractCommands";
 import {AbstractNode} from "../../core/TreeNode";
 import {ImageNode} from "./ImageNode";
-import {Context} from "../../../EditorState";
+import WysiwygState from "../../contexts/WysiwygState";
 
 export class ImageCommand extends AbstractCommand<AbstractNode> {
-    execute(node: AbstractNode, context: Context): void {
+    execute(node: AbstractNode, context: WysiwygState.Context): void {
         let parent = node.parent;
         let index = parent.parentIndex
         let grandParent = parent.parent;

@@ -3,13 +3,16 @@ import {ParagraphNode} from "./ParagraphNode";
 import OrderNode from "../shared/OrderNode";
 import {findNearestTextRight} from "../../core/TreeNodes";
 import {TextNode} from "../../core/TreeNode";
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../contexts/WysiwygState";
+import {EditorContext} from "../../contexts/EditorState";
 
 function ParagraphTool(properties: ParagraphTool.Attributes) {
 
     const {node} = properties
 
-    const {ast: {root, triggerAST}, cursor: {currentCursor}} = useContext(EditorContext)
+    const {cursor: {currentCursor}} = useContext(WysiwygContext)
+
+    const {ast: {root, triggerAST}} = useContext(EditorContext)
 
     function onDeleteParagraph() {
         let textRight = findNearestTextRight(root, node) as TextNode;

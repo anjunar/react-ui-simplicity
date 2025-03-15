@@ -2,18 +2,22 @@ import React, {useContext, useEffect, useState} from "react"
 import {AbstractCommand} from "../../commands/AbstractCommands";
 import {AbstractNode} from "../../../shared/core/TreeNode";
 
-import {EditorContext} from "../../../EditorState";
+import {WysiwygContext} from "../../../shared/contexts/WysiwygState";
+import {EditorContext} from "../../../shared/contexts/EditorState";
 
 function ActionButton(properties: ActionButton.Attributes) {
 
     const {children, command} = properties
 
-    const context = useContext(EditorContext)
+    const context = useContext(WysiwygContext)
+
+    const editor = useContext(EditorContext)
+
 
     const [disabled, setDisabled] = useState(false)
 
     function onClick() {
-        command.execute(context.cursor.currentCursor?.container, context)
+        command.execute(context.cursor.currentCursor?.container, context, editor)
     }
 
     useEffect(() => {

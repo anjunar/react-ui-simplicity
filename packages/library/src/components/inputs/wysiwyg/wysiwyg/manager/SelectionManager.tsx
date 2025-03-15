@@ -1,13 +1,16 @@
 import React, {useContext, useEffect} from "react"
 import {findNode} from "../../shared/core/TreeNodes";
 
-import {EditorContext} from "../../EditorState";
+import {WysiwygContext} from "../../shared/contexts/WysiwygState";
+import {EditorContext} from "../../shared/contexts/EditorState";
 
 function SelectionManager(properties: SelectionManager.Attributes) {
 
     const {} = properties
 
-    const {ast, event, cursor, providers, selection} = useContext(EditorContext)
+    const {selection} = useContext(WysiwygContext)
+
+    const {ast} = useContext(EditorContext)
 
     useEffect(() => {
 
