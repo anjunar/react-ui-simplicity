@@ -1,6 +1,7 @@
 import {v4} from "uuid";
 import {flatten} from "./TreeNodes";
 import {NodeRange} from "../../markdown/selection/ASTSelection";
+import {membrane} from "./Membrane";
 
 export abstract class AbstractNode {
     id : string = v4()
@@ -29,63 +30,36 @@ export abstract class AbstractNode {
 
     remove() {
         if (this.parent) {
-            return this.parent.removeChild(this)
+            let indexOf = this.parent.children.indexOf(this);
+            this.parent.children.splice(indexOf, 1)
         }
     }
 
     after(node : AbstractNode) {
         let index = this.parentIndex;
         let parent = this.parent
-
-        parent.insertChild(index + 1, node)
+        parent.children.splice(index + 1, 1, node)
     }
 
 }
 
 export abstract class AbstractContainerNode<C extends AbstractNode> extends AbstractNode {
 
-    private readonly _children : C[] = []
+    readonly children : C[] = membrane([], this)
 
     justify : string
 
     protected constructor(children: C[]) {
         super();
-        children.forEach(child => {
-            this.appendChild(child)
-        })
+        this.children.push(...children)
     }
 
     appendChild(node: C) {
-        node.remove()
-        node.parent = this;
-        this._children.push(node);
-    }
-
-    removeChild(node: C) {
-        node.parent = null;
-        const index = this._children.indexOf(node)
-        if (index >= 0) {
-            this._children.splice(index, 1)
-        }
+        this.children.push(node);
     }
 
     insertChild(index: number, node: C) {
-        node.remove()
-        node.parent = this
-        this._children.splice(index, 0, node)
-    }
-
-    replaceWith(heading: C) {
-        const parent = this.parent;
-        const index = this.parentIndex;
-        if (parent && index >= 0) {
-            parent.removeChild(this);
-            parent.insertChild(index, heading);
-        }
-    }
-
-    get children(): ReadonlyArray<C> {
-        return this._children;
+        this.children.splice(index, 0, node)
     }
 
 }

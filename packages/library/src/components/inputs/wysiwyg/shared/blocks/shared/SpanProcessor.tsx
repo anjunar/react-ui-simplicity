@@ -220,7 +220,7 @@ const deleteKey : CommandRule<TextNode> = {
                 let nodeLength = node.text.length;
                 node.text += firstTextNode.text;
 
-                sibling.removeChild(firstTextNode);
+                firstTextNode.remove()
 
                 for (const child of Array.from(sibling.children)) {
                     parent.appendChild(child);
