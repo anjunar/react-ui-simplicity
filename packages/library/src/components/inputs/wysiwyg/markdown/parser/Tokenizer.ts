@@ -1,48 +1,48 @@
+import {Rule} from "./Rule";
 import {Token} from "./Token";
-import {Literal} from "./Literal";
 
-const tokens : Token[] = [
-    new Token("ul", /^(\s*)\* /ym),
-    new Token("h1", /# (\S+)/y),
-    new Token("h2", /## (\S+)/y),
-    new Token("h3", /### (\S+)/y),
-    new Token("italic", /\*([^* ]+)\*/y),
-    new Token("bold", /\*\*([^* ]+)\*\*/y),
-    new Token("bold-italic", /\*\*\*([^* ]+)\*\*\*/y),
-    new Token("text", /([^*\n^#]+)/y),
-    new Token("text", /(\*)/y),
-    new Token("text", /(#)/y),
-    new Token("newLine", /(\n)/y),
-    new Token("whitespace", /(\s+)/y),
+const rules : Rule[] = [
+    new Rule("ul", /^(\s*)\* /ym),
+    new Rule("h1", /# (\S+)/y),
+    new Rule("h2", /## (\S+)/y),
+    new Rule("h3", /### (\S+)/y),
+    new Rule("italic", /\*([^* ]+)\*/y),
+    new Rule("bold", /\*\*([^* ]+)\*\*/y),
+    new Rule("bold-italic", /\*\*\*([^* ]+)\*\*\*/y),
+    new Rule("text", /([^*\n^#]+)/y),
+    new Rule("text", /(\*)/y),
+    new Rule("text", /(#)/y),
+    new Rule("newLine", /(\n)/y),
+    new Rule("whitespace", /(\s+)/y),
 ]
 
 export function tokenizer(text : string) {
 
-    let literals : Literal[] = []
+    let tokens : Token[] = []
     let oldLength = - 1
     let index = 0
 
     while (index <  text.length) {
 
-        for (const token of tokens) {
+        for (const token of rules) {
             token.regex.lastIndex = index
             let exec = token.regex.exec(text);
             if (exec) {
                 let value = exec[1]
                 index = exec.index + exec[0].length
-                literals.push(new Literal(token.type, value))
+                tokens.push(new Token(token.type, value, exec.index, index))
                 break
             }
         }
 
-        if (oldLength === literals.length) {
+        if (oldLength === tokens.length) {
             break
         }
 
-        oldLength = literals.length
+        oldLength = tokens.length
 
     }
 
-    return literals
+    return tokens
 
 }

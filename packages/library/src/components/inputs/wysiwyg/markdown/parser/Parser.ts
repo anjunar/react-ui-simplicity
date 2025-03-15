@@ -1,4 +1,4 @@
-import {Literal} from "./Literal";
+import {Token} from "./Token";
 import {tokenizer} from "./Tokenizer";
 import {ParagraphNode} from "../../shared/blocks/paragraph/ParagraphNode";
 import {AbstractNode, RootNode, TextNode} from "../../shared/core/TreeNode";
@@ -35,7 +35,7 @@ class Iterator<E> {
     }
 }
 
-function isText(result : Literal) {
+function isText(result : Token) {
     return result.type === "h1" ||
         result.type === "h2" ||
         result.type === "h3" ||
@@ -46,7 +46,7 @@ function isText(result : Literal) {
 
 }
 
-function parseUnorderedList(iterator: Iterator<Literal>, depth = 0) : ListNode {
+function parseUnorderedList(iterator: Iterator<Token>, depth = 0) : ListNode {
 
     let unorderedListNode = new ListNode()
 
@@ -85,7 +85,7 @@ function parseUnorderedList(iterator: Iterator<Literal>, depth = 0) : ListNode {
     return unorderedListNode
 }
 
-function parseParagraph(iterator: Iterator<Literal>) : ParagraphNode {
+function parseParagraph(iterator: Iterator<Token>) : ParagraphNode {
 
     let paragraphNode = new ParagraphNode()
 
@@ -96,35 +96,43 @@ function parseParagraph(iterator: Iterator<Literal>) : ParagraphNode {
             case "h1" : {
                 let textNode = new TextNode(token.value);
                 textNode.block = "h1"
+                textNode.markdown = {node : textNode, start : token.startOffset, end : token.endOffset}
                 paragraphNode.appendChild(textNode)
             } break
             case "h2" : {
                 let textNode = new TextNode(token.value);
                 textNode.block = "h2"
+                textNode.markdown = {node : textNode, start : token.startOffset, end : token.endOffset}
                 paragraphNode.appendChild(textNode)
             } break
             case "h3" : {
                 let textNode = new TextNode(token.value);
                 textNode.block = "h3"
+                textNode.markdown = {node : textNode, start : token.startOffset, end : token.endOffset}
                 paragraphNode.appendChild(textNode)
             } break
             case "text" : {
-                paragraphNode.appendChild(new TextNode(token.value))
+                let textNode = new TextNode(token.value);
+                textNode.markdown = {node : textNode, start : token.startOffset, end : token.endOffset}
+                paragraphNode.appendChild(textNode)
             } break
             case "bold" : {
                 let textNode = new TextNode(token.value);
                 textNode.bold = true
+                textNode.markdown = {node : textNode, start : token.startOffset, end : token.endOffset}
                 paragraphNode.appendChild(textNode)
             } break
             case "italic" : {
                 let textNode = new TextNode(token.value);
                 textNode.italic = true
+                textNode.markdown = {node : textNode, start : token.startOffset, end : token.endOffset}
                 paragraphNode.appendChild(textNode)
             } break
             case "bold-italic" : {
                 let textNode = new TextNode(token.value);
                 textNode.bold = true
                 textNode.italic = true
+                textNode.markdown = {node : textNode, start : token.startOffset, end : token.endOffset}
                 paragraphNode.appendChild(textNode)
             } break
         }
@@ -135,7 +143,7 @@ function parseParagraph(iterator: Iterator<Literal>) : ParagraphNode {
     return paragraphNode
 }
 
-function parse(iterator: Iterator<Literal>) {
+function parse(iterator: Iterator<Token>) {
 
     let token = iterator.current()
 
@@ -163,7 +171,7 @@ function parse(iterator: Iterator<Literal>) {
 
 }
 
-function parseRoot(iterator : Iterator<Literal>) : AbstractNode[] {
+function parseRoot(iterator : Iterator<Token>) : AbstractNode[] {
 
     let nodes : AbstractNode[] = []
 
@@ -180,9 +188,9 @@ function parseRoot(iterator : Iterator<Literal>) : AbstractNode[] {
 
 export function parseString(text : string) {
 
-    let literals = tokenizer(text);
+    let tokens = tokenizer(text);
 
-    let iterator = new Iterator(literals);
+    let iterator = new Iterator(tokens);
 
     let node = parseRoot(iterator);
 

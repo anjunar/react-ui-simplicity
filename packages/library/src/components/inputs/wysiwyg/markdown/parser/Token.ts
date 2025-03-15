@@ -2,11 +2,17 @@ export class Token {
 
     readonly type : string
 
-    readonly regex : RegExp
+    readonly value : string
 
-    constructor(type: string, regex: RegExp) {
+    readonly startOffset : number
+
+    readonly endOffset : number
+
+
+    constructor(type: string, value: string, startOffset: number, endOffset: number) {
         this.type = type;
-        this.regex = regex;
+        this.value = value;
+        this.startOffset = startOffset;
+        this.endOffset = endOffset;
     }
-
 }

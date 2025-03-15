@@ -1,9 +1,9 @@
-import React, {useContext, useEffect, useRef, useState} from "react"
-import {tokenizer} from "./parser/Tokenizer";
+import React, {useContext, useEffect, useRef} from "react"
 import {parseString} from "./parser/Parser";
 import ProcessorFactory from "../shared/blocks/shared/ProcessorFactory";
-import {RootNode} from "../shared/core/TreeNode";
 import {EditorContext} from "../EditorState";
+import Toolbar from "./ui/Toolbar";
+import {findSelectedNodes, flattenAST} from "./selection/ASTSelection";
 import {generate} from "./generator/Generator";
 
 function Markdown(properties: Markdown.Attributes) {
@@ -12,19 +12,38 @@ function Markdown(properties: Markdown.Attributes) {
 
     const divRef = useRef<HTMLDivElement>(null);
 
-    const {ast} = useContext(EditorContext)
+    const {ast, markdown} = useContext(EditorContext)
 
-    const [text, setText] = useState(generate(ast.root))
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
-        ast.root = parseString(text)
+        markdown.currentMarkdown = generate(ast.root)
+        markdown.triggerMarkdown()
+    }, []);
+
+    useEffect(() => {
+        ast.root = parseString(markdown.currentMarkdown)
         ast.triggerAST()
-    }, [text]);
+    }, [markdown.currentMarkdown]);
+
+    function onTextareaChange(event : React.ChangeEvent<HTMLTextAreaElement>) {
+        markdown.currentMarkdown = event.target.value
+        markdown.triggerMarkdown()
+    }
+
+    function onSelect(event: React.SyntheticEvent<HTMLTextAreaElement>) {
+        let textArea = event.target as HTMLTextAreaElement
+        let nodeRanges = flattenAST(ast.root.children);
+        let abstractNodes = findSelectedNodes(nodeRanges, textArea.selectionStart, textArea.selectionEnd);
+
+        console.log(abstractNodes)
+    }
 
     return (
-        <div style={{height : "100%"}} ref={divRef}>
-            <textarea style={{width : "100%", height : "50%"}} value={text} onChange={event => setText(event.target.value)}/>
-            <div style={{height : "50%"}}>
+        <div style={{height: "100%", display: "flex", flexDirection: "column"}} ref={divRef}>
+            <Toolbar page={page} textarea={textareaRef}/>
+            <textarea ref={textareaRef} onSelect={onSelect} style={{width: "100%", flex: 0.5}} value={markdown.currentMarkdown} onChange={onTextareaChange}/>
+            <div style={{flex: 0.5}}>
                 <ProcessorFactory node={ast.root}/>
             </div>
         </div>
@@ -33,7 +52,7 @@ function Markdown(properties: Markdown.Attributes) {
 
 namespace Markdown {
     export interface Attributes {
-        page : number
+        page: number
     }
 }
 

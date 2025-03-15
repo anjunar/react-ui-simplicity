@@ -1,5 +1,6 @@
 import {v4} from "uuid";
 import {flatten} from "./TreeNodes";
+import {NodeRange} from "../../markdown/selection/ASTSelection";
 
 export abstract class AbstractNode {
     id : string = v4()
@@ -127,6 +128,8 @@ export class TextNode extends AbstractNode {
     color : string = ""
 
     backgroundColor : string = ""
+
+    markdown : NodeRange = {node : this, start : -1, end : -1}
 
     constructor(text: string = "") {
         super();

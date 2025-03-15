@@ -14,6 +14,10 @@ export interface Context {
         root: RootNode,
         triggerAST(): void
     }
+    markdown : {
+        currentMarkdown : string,
+        triggerMarkdown() : void
+    }
     providers: AbstractProvider<any, any, any>[]
     cursor: {
         currentCursor: {
@@ -52,6 +56,10 @@ function EditorState(properties: EditorState.Attributes) {
         }
     })
 
+    const [markdown, setMarkdown] = useState({
+        currentMarkdown : ""
+    })
+
     const [cursorState, setCursorState] = useState<{ currentCursor: { container: AbstractNode, offset: number } }>(() => {
         return {
             currentCursor: null
@@ -88,6 +96,17 @@ function EditorState(properties: EditorState.Attributes) {
             },
             triggerAST() {
                 setAstState({...astState})
+            }
+        },
+        markdown : {
+            get currentMarkdown() {
+                return markdown.currentMarkdown
+            },
+            set currentMarkdown(value : string) {
+                markdown.currentMarkdown = value
+            },
+            triggerMarkdown() {
+                setMarkdown({...markdown})
             }
         },
         providers: providers,
