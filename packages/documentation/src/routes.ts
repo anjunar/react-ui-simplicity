@@ -1,4 +1,4 @@
-import {Dialog, mapForm, mapTable, Markdown, Router, Window} from "react-ui-simplicity";
+import {mapForm, mapTable, Router} from "react-ui-simplicity";
 import App from "./App";
 import HomePage from "./pages/home/HomePage";
 import FormsPage from "./pages/component/FormsPage";
@@ -27,89 +27,89 @@ import UseMatchMediaHookPage from "./pages/platform/hooks/UseMatchMediaHookPage"
 import JSONMapperPage from "./pages/platform/mapper/JSONMapperPage";
 import WysiwygPage from "./pages/component/input/WysiwygPage";
 
-export const routes : Router.Route[] = [
+export const routes: Router.Route[] = [
     {
-        path : "/",
-        subRouter : true,
-        component : App,
-        children : [
+        path: "/",
+        subRouter: true,
+        component: App,
+        children: [
             {
-                path : "/",
-                component : HomePage,
-                children : [
+                path: "/",
+                component: HomePage,
+                children: [
                     {
-                        path : "/forms",
-                        component : FormsPage,
-                        children : [
+                        path: "/forms",
+                        component: FormsPage,
+                        children: [
                             {
-                                path : "/editor",
-                                component : EditorPage
+                                path: "/editor",
+                                component: EditorPage
                             },
                             {
-                                path : "/input",
-                                component : InputPage
+                                path: "/input",
+                                component: InputPage
                             },
                             {
-                                path : "/select",
-                                component : SelectPage,
-                                children : [
+                                path: "/select",
+                                component: SelectPage,
+                                children: [
                                     {
-                                        path : "/lazy",
-                                        component : LazySelectPage
+                                        path: "/lazy",
+                                        component: LazySelectPage
                                     }
                                 ]
                             },
                             {
-                                path : "/image",
-                                component : ImagePage
+                                path: "/image",
+                                component: ImagePage
                             },
                             {
-                                path : "/wysiwyg",
-                                component : WysiwygPage
+                                path: "/wysiwyg",
+                                component: WysiwygPage
                             }
                         ]
                     },
                     {
-                        path : "/layout",
-                        component : LayoutPage,
-                        children : [
+                        path: "/layout",
+                        component: LayoutPage,
+                        children: [
                             {
                                 path: "/drawer",
-                                component : DrawerPage
+                                component: DrawerPage
                             },
                             {
                                 path: "/tabs",
-                                component : TabsPage
+                                component: TabsPage
                             },
                             {
                                 path: "/pages",
-                                component : PagesPage
+                                component: PagesPage
                             },
                             {
                                 path: "/toolbar",
-                                component : ToolbarPage
+                                component: ToolbarPage
                             }
                         ]
                     },
                     {
-                        path : "/lists",
-                        children : [
+                        path: "/lists",
+                        children: [
                             {
                                 path: "/list",
-                                component : ListPage
+                                component: ListPage
                             },
                             {
                                 path: "/table",
-                                component : TablePage
+                                component: TablePage
                             }
                         ]
                     },
                     {
-                        path : "/meta",
-                        children : [
+                        path: "/meta",
+                        children: [
                             {
                                 path: "/form",
-                                component : SchemaFormPage,
+                                component: SchemaFormPage,
                                 loader: {
                                     async user(path, query) {
                                         const response = await fetch("./assets/person.json")
@@ -123,45 +123,45 @@ export const routes : Router.Route[] = [
                                 }
                             },
                             {
-                                path : "/table",
-                                component : SchemaTablePage
+                                path: "/table",
+                                component: SchemaTablePage
                             }
                         ]
                     },
                     {
-                        path : "/modal",
-                        children : [
+                        path: "/modal",
+                        children: [
                             {
                                 path: "/window",
-                                component : WindowPage
+                                component: WindowPage
                             },
                             {
                                 path: "/dialog",
-                                component : DialogPage
+                                component: DialogPage
                             }
 
                         ]
                     },
                     {
-                        path : "/navigation",
-                        children : [
+                        path: "/navigation",
+                        children: [
                             {
                                 path: "/link",
-                                component : LinkPage
+                                component: LinkPage
                             },
                             {
                                 path: "/router",
-                                component : RouterPage
+                                component: RouterPage
                             }
                         ]
                     },
                     {
-                        path : "/hooks",
-                        children : [
+                        path: "/hooks",
+                        children: [
                             {
                                 path: "/use-array",
-                                component : UseArrayHookPage,
-                                loader : {
+                                component: UseArrayHookPage,
+                                loader: {
                                     async table(path, query) {
                                         const response = await fetch("./assets/materials.json")
 
@@ -175,7 +175,7 @@ export const routes : Router.Route[] = [
                             },
                             {
                                 path: "/use-form",
-                                component : UseFormHookPage,
+                                component: UseFormHookPage,
                                 loader: {
                                     async user(path, query) {
                                         const response = await fetch("./assets/person.json")
@@ -190,17 +190,17 @@ export const routes : Router.Route[] = [
                             },
                             {
                                 path: "/use-input",
-                                component : UseInputHookPage
+                                component: UseInputHookPage
                             },
                             {
                                 path: "/use-match-media",
-                                component : UseMatchMediaHookPage
+                                component: UseMatchMediaHookPage
                             }
                         ]
                     },
                     {
-                        path : "/mapper",
-                        component : JSONMapperPage,
+                        path: "/mapper",
+                        component: JSONMapperPage,
                         loader: {
                             async user(path, query) {
                                 const response = await fetch("./assets/person.json")

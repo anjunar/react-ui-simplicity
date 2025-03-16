@@ -19,7 +19,6 @@ export * from "./src/components/inputs/wysiwyg/shared/blocks/list/ListProvider"
 export * from "./src/components/inputs/wysiwyg/shared/blocks/image/ImageProvider"
 export * from "./src/components/inputs/wysiwyg/shared/blocks/paragraph/ParagraphProvider"
 export * from "./src/components/inputs/wysiwyg/shared/blocks/flex/FlexProvider"
-export {default as Markdown} from "./src/components/inputs/wysiwyg/markdown/Markdown"
 
 export {default as Drawer} from "./src/components/layout/drawer/Drawer"
 export {default as Page} from "./src/components/layout/pages/Page"

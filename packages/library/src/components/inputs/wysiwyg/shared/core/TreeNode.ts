@@ -1,6 +1,5 @@
 import {v4} from "uuid";
 import {flatten} from "./TreeNodes";
-import {NodeRange} from "../../markdown/selection/ASTSelection";
 import {membrane} from "./Membrane";
 
 export abstract class AbstractNode {
@@ -45,12 +44,21 @@ export abstract class AbstractNode {
 
 export abstract class AbstractContainerNode<C extends AbstractNode> extends AbstractNode {
 
-    readonly children : C[] = membrane([], this)
+    readonly children : C[]
 
     justify : string
 
     protected constructor(children: C[]) {
         super();
+
+        let membraneArray = membrane([], this);
+
+        Object.defineProperty(this, "children", {
+            get(): any {
+                return membraneArray
+            }
+        })
+
         this.children.push(...children)
     }
 
@@ -103,23 +111,9 @@ export class TextNode extends AbstractNode {
 
     backgroundColor : string = ""
 
-    markdown : NodeRange = {node : this, start : -1, end : -1}
-
     constructor(text: string = "") {
         super();
         this.text = text;
-    }
-
-    hasFormat(except : string[] = []) {
-        const whiteList = ["bold", "italic", "deleted", "sub", "sup"]
-
-        for (const string of except) {
-            let indexOf = whiteList.indexOf(string);
-            whiteList.splice(indexOf, 1)
-        }
-
-        return whiteList.some(item => this[item])
-
     }
 
 }

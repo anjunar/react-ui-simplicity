@@ -45,11 +45,10 @@ function CursorManager(properties: CursorManager.Attributes) {
             }
 
             let clientRect = range.getBoundingClientRect();
-            let editorRect = editorRef.current.getBoundingClientRect();
+            let contentEditableRect = contentEditableRef.current.getBoundingClientRect();
 
-            let number = clientRect.top - editorRect.top + editorRef.current.scrollTop;
-
-            cursorRef.current.style.left = clientRect.left - editorRect.left + editorRef.current.scrollLeft + "px"
+            cursorRef.current.style.left = clientRect.left - contentEditableRect.left + "px"
+            let number = clientRect.top - contentEditableRect.top + contentEditableRef.current.scrollTop;
             cursorRef.current.style.top = number + "px"
             cursorRef.current.style.height = clientRect.height + "px"
             cursorRef.current.style.display = "block"

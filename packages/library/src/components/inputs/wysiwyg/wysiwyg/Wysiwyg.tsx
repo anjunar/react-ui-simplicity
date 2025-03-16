@@ -53,17 +53,17 @@ function Wysiwyg(properties: Wysiwyg.Attributes) {
     }, [ast]);
 
     return (
-        <div style={{flex: 1}}>
+        <div style={{flex: 1, height : "50%", display : "flex", flexDirection : "column"}}>
             <Toolbar page={page} onPage={value => onPage(value)}/>
-            <div ref={contentEditableRef} style={{height : "100%", overflow: "auto"}}>
+            <div ref={contentEditableRef} style={{position : "relative", height : "50%", overflow: "auto", flex : 1}}>
                 <Cursor ref={cursorRef}/>
                 <Inspector inspectorRef={inspectorRef}/>
                 <ProcessorFactory node={ast.root}/>
+                <InputManager inputRef={inputRef}/>
             </div>
             <CursorManager cursorRef={cursorRef} inputRef={inputRef} editorRef={editorRef} contentEditableRef={contentEditableRef} inspectorRef={inspectorRef}/>
             <SelectionManager/>
             <InspectorManager editorRef={editorRef} contentEditableRef={contentEditableRef} inputRef={inputRef} inspectorRef={inspectorRef}/>
-            <InputManager inputRef={inputRef}/>
         </div>
     )
 }
