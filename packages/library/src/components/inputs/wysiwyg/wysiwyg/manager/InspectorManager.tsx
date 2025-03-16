@@ -29,6 +29,15 @@ function InspectorManager(properties: InspectorManager.Attributes) {
                     selectedNode = findNode(ast.root, (node) => node.dom.parentElement === caretPosition.offsetNode);
                 } else {
                     selectedNode = findNode(ast.root, (node) => node.dom === caretPosition.offsetNode);
+
+                    if (! selectedNode) {
+                        selectedNode = findNode(ast.root, (node) => {
+                            if (node.type === "root") {
+                                return false
+                            }
+                            return node.dom.contains(caretPosition.offsetNode)
+                        });
+                    }
                 }
 
                 if (selectedNode) {

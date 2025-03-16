@@ -108,6 +108,15 @@ function CursorManager(properties: CursorManager.Attributes) {
                     }
                 } else {
                     selectedNode = findNode(root, (node) => node.dom === caretPosition.offsetNode);
+
+                    if (! selectedNode) {
+                        selectedNode = findNode(root, (node) => {
+                            if (node.type === "root") {
+                                return false
+                            }
+                            return node.dom.contains(caretPosition.offsetNode)
+                        });
+                    }
                 }
 
                 if (selectedNode) {
