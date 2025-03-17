@@ -3,7 +3,6 @@ import React, {createContext, Dispatch, SetStateAction, useEffect, useLayoutEffe
 import {init} from "./domain/Persistence";
 import Router from "./components/navigation/router/Router";
 import Input from "./components/inputs/input/Input";
-import Link from "./components/navigation/link/Link";
 import ToolBar from "./components/layout/toolbar/ToolBar";
 import Progress from "./components/indicators/Progress";
 
