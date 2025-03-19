@@ -1,8 +1,10 @@
 import React, {useContext, useDeferredValue, useEffect} from "react"
-import {AbstractContainerNode, AbstractNode} from "../core/TreeNode";
+import {AbstractContainerNode, AbstractNode, TextNode} from "../core/TreeNode";
 import {findNode} from "../core/TreeNodes";
 import {ParagraphNode} from "../blocks/paragraph/ParagraphNode";
 import {EditorContext} from "../contexts/EditorState";
+import {DomContext} from "../contexts/DomState";
+import {CodeLineNode} from "../blocks/code/CodeLineNode";
 
 function cleanUpAST(node: AbstractNode) {
 
@@ -21,7 +23,7 @@ function cleanUpAST(node: AbstractNode) {
 
 function CursorManager(properties: CursorManager.Attributes) {
 
-    const {cursorRef, inputRef, editorRef, contentEditableRef, inspectorRef} = properties
+    const {cursorRef, inputRef, contentEditableRef, inspectorRef} = useContext(DomContext)
 
     const {ast: {root, triggerAST}, cursor} = useContext(EditorContext)
 
@@ -31,13 +33,15 @@ function CursorManager(properties: CursorManager.Attributes) {
         if (!cursor.currentCursor) return;
 
         let range = document.createRange();
-        let container = cursor.currentCursor.container.dom;
+        let abstractNode = cursor.currentCursor.container as (TextNode | CodeLineNode);
+        let container = abstractNode.dom;
 
         if (container.isConnected) {
             if (container instanceof HTMLElement) {
                 range.selectNode(container);
             } else {
-                range.setStart(container, cursor.currentCursor.offset);
+                let offset = cursor.currentCursor.offset > abstractNode.text.length ? abstractNode.text.length : cursor.currentCursor.offset;
+                range.setStart(container, offset);
                 range.collapse(true);
             }
 
@@ -52,8 +56,6 @@ function CursorManager(properties: CursorManager.Attributes) {
 
             inputRef.current?.focus();
             inputRef.current.style.top = number + 6 + "px"
-
-
         }
     }
 
@@ -97,9 +99,6 @@ function CursorManager(properties: CursorManager.Attributes) {
 
                 let selectedNode: AbstractNode
                 if (caretPosition.offsetNode instanceof HTMLElement) {
-                    if (caretPosition.offsetNode instanceof HTMLSpanElement) {
-                        selectedNode = findNode(root, (node) => node.dom.parentElement === caretPosition.offsetNode);
-                    }
                     if (caretPosition.offsetNode instanceof HTMLImageElement) {
                         selectedNode = findNode(root, (node) => node.dom === caretPosition.offsetNode.parentNode);
                     }
@@ -108,10 +107,10 @@ function CursorManager(properties: CursorManager.Attributes) {
 
                     if (!selectedNode) {
                         selectedNode = findNode(root, (node) => {
-                            if (node.type === "root") {
-                                return false
+                            if (node.type === "code") {
+                                return node.dom.contains(caretPosition.offsetNode)
                             }
-                            return node.dom.contains(caretPosition.offsetNode)
+                            return false
                         });
                     }
                 }
@@ -142,6 +141,7 @@ function CursorManager(properties: CursorManager.Attributes) {
 
         contentEditableRef.current.addEventListener("scroll", onScroll)
         contentEditableRef.current.addEventListener("click", onContentClick)
+
         return () => {
             contentEditableRef.current?.removeEventListener("scroll", onScroll)
             contentEditableRef.current?.removeEventListener("click", onContentClick)
@@ -155,13 +155,7 @@ function CursorManager(properties: CursorManager.Attributes) {
 }
 
 namespace CursorManager {
-    export interface Attributes {
-        cursorRef: React.RefObject<HTMLDivElement>
-        inputRef: React.RefObject<HTMLTextAreaElement>
-        editorRef: React.RefObject<HTMLDivElement>
-        contentEditableRef: React.RefObject<HTMLDivElement>
-        inspectorRef: React.RefObject<HTMLDivElement>
-    }
+    export interface Attributes {}
 }
 
 export default CursorManager

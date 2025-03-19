@@ -2,10 +2,11 @@ import React, {useContext, useEffect} from "react"
 import {AbstractNode} from "../core/TreeNode";
 import {findNode} from "../core/TreeNodes";
 import {EditorContext} from "../contexts/EditorState";
+import {DomContext} from "../contexts/DomState";
 
 function InspectorManager(properties: InspectorManager.Attributes) {
 
-    const {contentEditableRef, inputRef, editorRef, inspectorRef} = properties
+    const {contentEditableRef, inputRef, editorRef, inspectorRef} = useContext(DomContext)
 
     const {ast, cursor} = useContext(EditorContext)
 
@@ -21,20 +22,15 @@ function InspectorManager(properties: InspectorManager.Attributes) {
             } else {
                 let caretPosition = document.caretPositionFromPoint(event.clientX, event.clientY);
 
-                let selectedNode: AbstractNode
-                if (caretPosition.offsetNode instanceof HTMLSpanElement) {
-                    selectedNode = findNode(ast.root, (node) => node.dom.parentElement === caretPosition.offsetNode);
-                } else {
-                    selectedNode = findNode(ast.root, (node) => node.dom === caretPosition.offsetNode);
+                let selectedNode: AbstractNode = findNode(ast.root, (node) => node.dom === caretPosition.offsetNode);
 
-                    if (! selectedNode) {
-                        selectedNode = findNode(ast.root, (node) => {
-                            if (node.type === "root") {
-                                return false
-                            }
+                if (!selectedNode) {
+                    selectedNode = findNode(ast.root, (node) => {
+                        if (node.type === "code") {
                             return node.dom.contains(caretPosition.offsetNode)
-                        });
-                    }
+                        }
+                        return false
+                    });
                 }
 
                 if (selectedNode) {
@@ -101,12 +97,7 @@ function InspectorManager(properties: InspectorManager.Attributes) {
 }
 
 namespace InspectorManager {
-    export interface Attributes {
-        editorRef: React.RefObject<HTMLDivElement>
-        inputRef: React.RefObject<HTMLTextAreaElement>
-        contentEditableRef: React.RefObject<HTMLDivElement>
-        inspectorRef: React.RefObject<HTMLDivElement>
-    }
+    export interface Attributes {}
 }
 
 export default InspectorManager

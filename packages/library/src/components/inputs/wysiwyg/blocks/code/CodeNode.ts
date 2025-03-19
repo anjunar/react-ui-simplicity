@@ -1,8 +1,10 @@
-import {AbstractNode} from "../../core/TreeNode";
+import {AbstractContainerNode} from "../../core/TreeNode";
+import {CodeLineNode} from "./CodeLineNode";
 
-export class CodeNode extends AbstractNode {
+export class CodeNode extends AbstractContainerNode<CodeLineNode> {
     type: string = "code"
 
-    source: string = "let a = 1"
-
+    constructor(children: CodeLineNode[]) {
+        super(children);
+    }
 }

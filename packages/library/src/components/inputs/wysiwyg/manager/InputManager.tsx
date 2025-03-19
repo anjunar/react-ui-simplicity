@@ -1,13 +1,14 @@
 import React, {useContext, useEffect} from "react"
 import {EditorContext} from "../contexts/EditorState";
+import {DomContext} from "../contexts/DomState";
 
 let isComposing = false
 
 function InputManager(properties: EditorInput.Attributes) {
 
-    const {inputRef} = properties
-
     const {ast, event, cursor} = useContext(EditorContext)
+
+    const {inputRef} = useContext(DomContext)
 
     function onInput(e: React.FormEvent<HTMLTextAreaElement>) {
         let inputEvent = e.nativeEvent as InputEvent;
@@ -85,9 +86,7 @@ function InputManager(properties: EditorInput.Attributes) {
 }
 
 namespace EditorInput {
-    export interface Attributes {
-        inputRef: React.RefObject<HTMLTextAreaElement>
-    }
+    export interface Attributes {}
 }
 
 export default InputManager

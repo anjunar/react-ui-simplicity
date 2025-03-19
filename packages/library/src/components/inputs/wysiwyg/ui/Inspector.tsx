@@ -2,10 +2,11 @@ import "./Inspector.css"
 import React, {useContext, useEffect, useState} from "react"
 import {AbstractNode} from "../core/TreeNode";
 import {EditorContext} from "../contexts/EditorState";
+import {DomContext} from "../contexts/DomState";
 
 function Inspector(properties: Inspector.Attributes) {
 
-    const {inspectorRef} = properties
+    const {inspectorRef} = useContext(DomContext)
 
     const [selectedNodeId, setSelectedNodeId] = useState<string>("")
 
@@ -77,9 +78,7 @@ function Inspector(properties: Inspector.Attributes) {
 }
 
 namespace Inspector {
-    export interface Attributes {
-        inspectorRef: React.RefObject<HTMLDivElement>
-    }
+    export interface Attributes {}
 }
 
 export default Inspector

@@ -310,7 +310,7 @@ function SpanProcessor(properties: SpanNode.Attributes) {
         <span ref={spanRef}
               style={Object.keys(style).length === 0 ? null : style}
               className={classNames.length === 0 ? null : classNames.join(" ")}>
-            {node.text.length === 0 ? <br/> : node.text}
+            {node.text.length === 0 ? "\u200B" : node.text}
         </span>
     )
 }

@@ -60,3 +60,7 @@ select, textarea {
   resize: none;
   border: 0;
 }
+
+pre {
+  white-space: pre-wrap;
+}

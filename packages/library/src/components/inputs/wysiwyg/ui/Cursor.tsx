@@ -1,19 +1,18 @@
 import "./Cursor.css"
-import React from "react"
+import React, {useContext} from "react"
+import {DomContext} from "../contexts/DomState";
 
 function Cursor(properties: Cursor.Attributes) {
 
-    const {ref} = properties
+    const {cursorRef} = useContext(DomContext)
 
     return (
-        <div style={{display: "none"}} className={"cursor"} ref={ref}></div>
+        <div style={{display: "none"}} className={"cursor"} ref={cursorRef}></div>
     )
 }
 
 namespace Cursor {
-    export interface Attributes {
-        ref: React.RefObject<HTMLDivElement>
-    }
+    export interface Attributes {}
 }
 
 export default Cursor

@@ -6,7 +6,7 @@ function CodeTool(properties: CodeTool.Attributes) {
 
     const {node} = properties
 
-    const [text, setText] = useState(node.source)
+    const [text, setText] = useState(node.children.map(node => node.text).join(""))
 
     const {ast : {triggerAST}} = useContext(EditorContext)
 
@@ -21,7 +21,6 @@ function CodeTool(properties: CodeTool.Attributes) {
 
             const { selectionStart, selectionEnd } = currentTarget;
 
-            // Füge den Text korrekt in den State ein
             const newText =
                 text.substring(0, selectionStart) +
                 pastedText +
@@ -29,7 +28,6 @@ function CodeTool(properties: CodeTool.Attributes) {
 
             setText(newText); // State aktualisieren
 
-            // Cursor-Position nach dem Einfügen setzen
             requestAnimationFrame(() => {
                 currentTarget.setSelectionRange(selectionStart + pastedText.length, selectionStart + pastedText.length);
             });
@@ -47,7 +45,7 @@ function CodeTool(properties: CodeTool.Attributes) {
         };
     }, []);
     useEffect(() => {
-        node.source = text
+        // node.block.source = text
         triggerAST()
     }, [text]);
 

@@ -11,6 +11,7 @@ import SelectionManager from "./manager/SelectionManager";
 import InspectorManager from "./manager/InspectorManager";
 import {EditorContext} from "./contexts/EditorState";
 import {TextNode} from "./core/TreeNode";
+import DomState, {DomContext} from "./contexts/DomState";
 
 function Editor(properties: Editor.Attributes) {
 
@@ -20,15 +21,7 @@ function Editor(properties: Editor.Attributes) {
 
     const {ast, cursor : {currentCursor}} = useContext(EditorContext)
 
-    const editorRef = useRef<HTMLDivElement>(null)
-
-    const inspectorRef = useRef<HTMLDivElement>(null);
-
-    const inputRef = useRef<HTMLTextAreaElement>(null);
-
-    const cursorRef = useRef<HTMLDivElement>(null)
-
-    const contentEditableRef = useRef<HTMLDivElement>(null);
+    const {editorRef, contentEditableRef} = useContext(DomContext)
 
     useEffect(() => {
         function onPaste(event : ClipboardEvent) {
@@ -57,17 +50,17 @@ function Editor(properties: Editor.Attributes) {
 
     return (
         <div ref={editorRef} className={"editor"} style={{position: "relative", ...style}}>
-            <Toolbar page={page} onPage={value => setPage(value)}/>
-            <div ref={contentEditableRef} style={{position : "relative", height : "50%", overflow: "auto", flex : 1}}>
-                <Cursor ref={cursorRef}/>
-                <ProcessorFactory node={ast.root}/>
-                <InputManager inputRef={inputRef}/>
-            </div>
-            <CursorManager cursorRef={cursorRef} inputRef={inputRef} editorRef={editorRef} contentEditableRef={contentEditableRef} inspectorRef={inspectorRef}/>
-            <SelectionManager/>
-            <InspectorManager editorRef={editorRef} contentEditableRef={contentEditableRef} inputRef={inputRef} inspectorRef={inspectorRef}/>
-            <Footer page={page} onPage={(value) => setPage(value)}/>
-            <Inspector inspectorRef={inspectorRef}/>
+                <Toolbar page={page} onPage={value => setPage(value)}/>
+                <div ref={contentEditableRef} style={{position : "relative", height : "50%", overflow: "auto", flex : 1}}>
+                    <Cursor />
+                    <ProcessorFactory node={ast.root}/>
+                    <Inspector/>
+                </div>
+                <CursorManager/>
+                <SelectionManager/>
+                <InspectorManager/>
+                <InputManager/>
+                <Footer page={page} onPage={(value) => setPage(value)}/>
         </div>
     )
 }
