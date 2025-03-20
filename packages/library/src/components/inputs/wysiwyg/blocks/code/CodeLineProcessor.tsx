@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useRef} from "react"
 import {CodeLineNode} from "./CodeLineNode";
 import EditorState, {EditorContext} from "../../contexts/EditorState";
 import {CommandRule} from "../../commands/KeyCommand";
-import {onArrowLeft, onArrowRight} from "../../utils/ProcessorUtils";
+import {onArrowDown, onArrowLeft, onArrowRight, onArrowUp} from "../../utils/ProcessorUtils";
 import {AbstractNode} from "../../core/TreeNode";
 
 const deleteContentBackward: CommandRule<CodeLineNode> = {
@@ -127,11 +127,15 @@ const arrowUp: CommandRule<CodeLineNode> = {
         return value.type === "ArrowUp" && node === container
     },
     process(current, node, currentEvent, root) {
-        let prevSibling = node.prevSibling as CodeLineNode
+        let prevSibling = node.prevSibling
 
-        current.container = prevSibling
-        if (prevSibling.text.length < node.text.length) {
-            current.offset = prevSibling.text.length
+        if (prevSibling instanceof CodeLineNode) {
+            current.container = prevSibling
+            if (current.offset > prevSibling.text.length) {
+                current.offset = prevSibling.text.length
+            }
+        } else {
+            onArrowUp(node, current, root)
         }
     }
 }
@@ -141,11 +145,15 @@ const arrowDown: CommandRule<CodeLineNode> = {
         return value.type === "ArrowDown" && node === container
     },
     process(current, node, currentEvent, root) {
-        let nextSibling = node.nextSibling as CodeLineNode
+        let nextSibling = node.nextSibling
 
-        current.container = nextSibling
-        if (nextSibling.text.length < node.text.length) {
-            current.offset = nextSibling.text.length
+        if (nextSibling instanceof CodeLineNode) {
+            current.container = nextSibling
+            if (current.offset > nextSibling.text.length) {
+                current.offset = nextSibling.text.length
+            }
+        } else {
+            onArrowDown(node, current, root)
         }
     }
 }
@@ -205,7 +213,7 @@ function CodeLineProcessor(properties: CodeBlockProcessor.Attributes) {
 
     useEffect(() => {
         node.dom = divRef.current.firstChild
-    }, [node.text]);
+    }, [node.text, divRef.current?.firstChild]);
 
     useEffect(() => {
 
@@ -231,7 +239,14 @@ function CodeLineProcessor(properties: CodeBlockProcessor.Attributes) {
     }, [currentEvent.instance]);
 
     return (
-        <div ref={divRef} style={{whiteSpace : "pre-wrap"}} dangerouslySetInnerHTML={{__html : node.text ? node.text : "\u200B"}}></div>
+        <div ref={divRef} style={{width : "max-content"}}>
+            {
+                node.text ? node.text : "\u200B"
+            }
+            {
+                node.text.length === 0 ? <br/> : ""
+            }
+        </div>
     )
 }
 

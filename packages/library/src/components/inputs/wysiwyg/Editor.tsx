@@ -55,11 +55,11 @@ function Editor(properties: Editor.Attributes) {
                     <Cursor />
                     <ProcessorFactory node={ast.root}/>
                     <Inspector/>
+                    <InputManager/>
                 </div>
                 <CursorManager/>
                 <SelectionManager/>
                 <InspectorManager/>
-                <InputManager/>
                 <Footer page={page} onPage={(value) => setPage(value)}/>
         </div>
     )

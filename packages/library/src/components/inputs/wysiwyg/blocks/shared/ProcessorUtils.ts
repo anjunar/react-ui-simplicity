@@ -1,10 +1,5 @@
-import {AbstractNode, TextNode} from "../../core/TreeNode";
+import {TextNode} from "../../core/TreeNode";
 import {CSSProperties} from "react";
-import {CommandRule} from "../../commands/KeyCommand";
-import {ParagraphNode} from "../paragraph/ParagraphNode";
-import {findNearestTextRight} from "../../core/TreeNodes";
-import {onArrowDown, onArrowLeft, onArrowRight, onArrowUp} from "../../utils/ProcessorUtils";
-import EditorState from "../../contexts/EditorState";
 
 export function generateStyleObject(node: TextNode) {
     let style: CSSProperties = {};

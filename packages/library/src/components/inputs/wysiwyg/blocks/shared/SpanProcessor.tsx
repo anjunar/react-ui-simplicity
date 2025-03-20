@@ -1,8 +1,7 @@
 import React, {useContext, useEffect, useRef} from "react"
 import {AbstractNode, TextNode} from "../../core/TreeNode";
-import {onArrowDown, onArrowLeft, onArrowRight, onArrowUp} from "../../utils/ProcessorUtils";
+import {findNearestTextRight, onArrowDown, onArrowLeft, onArrowRight, onArrowUp} from "../../utils/ProcessorUtils";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
-import {findNearestTextRight} from "../../core/TreeNodes";
 import {CommandRule} from "../../commands/KeyCommand";
 import EditorState, {EditorContext} from "../../contexts/EditorState";
 import {generateStyleClassNames, generateStyleObject} from "./ProcessorUtils";

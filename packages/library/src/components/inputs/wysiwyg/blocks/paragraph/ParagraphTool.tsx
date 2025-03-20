@@ -1,9 +1,9 @@
 import React, {useContext} from "react"
 import {ParagraphNode} from "./ParagraphNode";
 import OrderNode from "../shared/OrderNode";
-import {findNearestTextRight} from "../../core/TreeNodes";
 import {TextNode} from "../../core/TreeNode";
 import {EditorContext} from "../../contexts/EditorState";
+import {findNearestTextRight} from "../../utils/ProcessorUtils";
 
 function ParagraphTool(properties: ParagraphTool.Attributes) {
 

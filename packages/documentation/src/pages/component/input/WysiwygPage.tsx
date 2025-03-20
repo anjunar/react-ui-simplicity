@@ -8,7 +8,7 @@ export default function WysiwygPage() {
         <div className={"wysiwyg-page"} style={{height: "100%"}}>
             <EditorState providers={[new ParagraphProvider(), new ListProvider(), new ImageProvider(), new TableProvider(), new CodeProvider()]}>
                 <DomState>
-                    <Editor style={{height: "100%", maxWidth : "600px"}}/>
+                    <Editor style={{height: "99%", maxWidth : "600px"}}/>
                 </DomState>
             </EditorState>
         </div>

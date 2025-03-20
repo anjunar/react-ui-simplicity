@@ -1,11 +1,12 @@
 import React, {useContext, useEffect, useRef} from "react"
 import {ItemNode} from "./ListNode";
 import ProcessorFactory from "../shared/ProcessorFactory";
-import {findNearestTextRight, findParent} from "../../core/TreeNodes";
+import {findParent} from "../../core/TreeNodes";
 import {AbstractNode, TextNode} from "../../core/TreeNode";
 import {ParagraphNode} from "../paragraph/ParagraphNode";
 import {CommandRule} from "../../commands/KeyCommand";
 import EditorState, {EditorContext} from "../../contexts/EditorState";
+import {findNearestTextRight} from "../../utils/ProcessorUtils";
 
 const deleteContentBackward: CommandRule<ItemNode> = {
     test(value: EditorState.GeneralEvent, node: AbstractNode, container: AbstractNode): boolean {

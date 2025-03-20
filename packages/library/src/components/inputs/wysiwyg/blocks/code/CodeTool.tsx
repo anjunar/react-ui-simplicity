@@ -13,38 +13,6 @@ function CodeTool(properties: CodeTool.Attributes) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
-        function handlePaste(event: ClipboardEvent) {
-            event.preventDefault(); // Standardverhalten verhindern
-
-            const pastedText = event.clipboardData.getData("text");
-            let currentTarget = event.currentTarget as HTMLTextAreaElement;
-
-            const { selectionStart, selectionEnd } = currentTarget;
-
-            const newText =
-                text.substring(0, selectionStart) +
-                pastedText +
-                text.substring(selectionEnd);
-
-            setText(newText); // State aktualisieren
-
-            requestAnimationFrame(() => {
-                currentTarget.setSelectionRange(selectionStart + pastedText.length, selectionStart + pastedText.length);
-            });
-        }
-
-        const textarea = textareaRef.current;
-        if (textarea) {
-            textarea.addEventListener("paste", handlePaste);
-        }
-
-        return () => {
-            if (textarea) {
-                textarea.removeEventListener("paste", handlePaste);
-            }
-        };
-    }, []);
-    useEffect(() => {
         // node.block.source = text
         triggerAST()
     }, [text]);

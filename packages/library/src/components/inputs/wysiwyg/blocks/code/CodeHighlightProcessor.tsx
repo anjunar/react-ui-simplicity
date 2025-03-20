@@ -20,7 +20,7 @@ function CodeHighlightProcessor(properties: CodeHighlightProcessor.Attributes) {
     }, [node.children]);
 
     return (
-        <div dangerouslySetInnerHTML={{__html : __html}}></div>
+        <div style={{width : "max-content"}} dangerouslySetInnerHTML={{__html : __html}}></div>
     )
 }
 
