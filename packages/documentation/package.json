@@ -12,7 +12,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@editorjs/editorjs": "^2.30.8",
     "@js-joda/core": "^5.6.4",
     "@js-joda/locale_de": "^4.15.1",
     "highlight.js": "^11.11.1",
@@ -20,7 +19,8 @@
     "react-dom": "^19.0.0",
     "react-ui-simplicity": "^1.2.8",
     "url": "^0.11.4",
-    "uuid": "^11.0.5"
+    "uuid": "^11.0.5",
+    "prismjs": "^1.30.0"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",

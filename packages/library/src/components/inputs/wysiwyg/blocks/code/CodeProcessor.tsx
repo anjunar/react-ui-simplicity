@@ -1,14 +1,11 @@
-import React, {useContext, useEffect, useRef, useState} from "react"
+import "./CodeProcessor.css"
+import React, {useContext, useEffect, useMemo, useRef} from "react"
 import {CodeNode} from "./CodeNode";
-import CodeLineProcessor from "./CodeLineProcessor";
-import CodeHighlightProcessor from "./CodeHighlightProcessor";
 import {EditorContext} from "../../contexts/EditorState";
-import {findParent} from "../../core/TreeNodes";
-import {DomContext} from "../../contexts/DomState";
-import {CodeLineNode} from "./CodeLineNode";
-
-let lastClientX = 0
-let lastClientY = 0
+import Prism, {Token} from "prismjs"
+import "prismjs/components/prism-typescript";
+import {TokenNode} from "./TokenNode";
+import TokenProcessor from "./TokenProcessor";
 
 function CodeProcessor(properties: CodeProcessor.Attributes) {
 
@@ -16,105 +13,53 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
 
     const {ast: {root}, cursor, event: {currentEvent}} = useContext(EditorContext)
 
-    const {contentEditableRef, inputRef} = useContext(DomContext)
-
     const preRef = useRef<HTMLPreElement>(null);
 
-    const [active, setActive] = useState(false)
-
-    useEffect(() => {
-        let currentCursor = cursor.currentCursor
-        if (currentCursor) {
-            if (findParent(currentCursor.container, elem => elem === node)) {
-                setActive(true)
-
-                if (currentCursor.container === node) {
-                    setTimeout(() => {
-                        currentCursor.container = node.children[0]
-                        currentCursor.offset = 0
-                        cursor.triggerCursor()
-
-                        if (lastClientY > 0 && lastClientX > 0) {
-                            let mouseEvent = new MouseEvent("click", {
-                                bubbles : true,
-                                cancelable : true,
-                                view : window,
-                                clientX : lastClientX,
-                                clientY : lastClientY}
-                            );
-
-                            contentEditableRef.current.dispatchEvent(mouseEvent)
-                        }
-                    }, 100)
-                }
-
+    function toTokenNodes(tokens: (string | Token)[], startIndex = 0): TokenNode[] {
+        let currentIndex = startIndex;
+        return tokens.map(token => {
+            if (typeof token === "string") {
+                let node = new TokenNode(token, "text", currentIndex);
+                currentIndex += token.length;
+                return node;
             } else {
-                setActive(false)
+                let tokenStartIndex = currentIndex;
+
+                if (Array.isArray(token.content)) {
+                    let content = toTokenNodes(token.content, tokenStartIndex);
+                    currentIndex = content.length > 0
+                        ? content[content.length - 1].index + content[content.length - 1].text.length
+                        : tokenStartIndex;
+                    return new TokenNode(content, token.type, tokenStartIndex);
+                } else {
+                    currentIndex += (token.content as string).length;
+                    return new TokenNode(token.content as string, token.type, tokenStartIndex);
+                }
             }
-        }
-    }, [cursor]);
+        });
+    }
 
     useEffect(() => {
         node.dom = preRef.current
     }, [node]);
 
-    useEffect(() => {
-        let listener = (event) => {
-            lastClientX = event.clientX
-            lastClientY = event.clientY
+    const tokenNodes = useMemo(() => {
 
-            setTimeout(() => {
-                lastClientY = -1
-                lastClientX = -1
-            }, 200)
-        };
-        document.addEventListener("click", listener)
+        let tokens = Prism.tokenize(node.text, Prism.languages.typescript)
 
-        return () => {
-            return document.removeEventListener("click", listener)
-        }
-    }, []);
+        let nodes = toTokenNodes(tokens);
 
-    useEffect(() => {
-        function handlePaste(event: ClipboardEvent) {
-            event.preventDefault();
+        node.children.length = 0
+        node.children.push(...nodes)
 
-            const pastedText = event.clipboardData.getData("text");
-
-            let codeLine = cursor.currentCursor.container as CodeLineNode
-
-            let start = codeLine.text.substring(0, cursor.currentCursor.offset)
-            let end = codeLine.text.substring(cursor.currentCursor.offset)
-
-            let parent = codeLine.parent;
-            let parentIndex = codeLine.parentIndex;
-
-            codeLine.text = start
-
-            for (const line of pastedText.split("\n").reverse()) {
-                let newCodeLine = new CodeLineNode(line.replace(/^\s+$/, ""))
-                parent.insertChild(parentIndex + 1, newCodeLine)
-            }
-
-            let endLineNode = new CodeLineNode(end);
-            parent.insertChild(parentIndex + 1, endLineNode)
-        }
-
-        inputRef.current.addEventListener("paste", handlePaste);
-        return () => {
-            inputRef.current.removeEventListener("paste", handlePaste);
-        };
-    }, []);
+        return nodes
+    }, [node.text]);
 
     return (
         <pre ref={preRef} style={{overflowX: "auto", overflowY: "hidden"}}>
-            <code style={{display: "block", fontFamily: "monospace"}}>
+            <code style={{display: "block", fontFamily: "monospace", width : "max-content"}}>
                 {
-                    active ? (
-                        node.children.map(node => <CodeLineProcessor key={node.id} node={node}/>)
-                    ) : (
-                        <CodeHighlightProcessor key={node.id} node={node}/>
-                    )
+                    tokenNodes.map(node => <TokenProcessor key={node.id} node={node}/>)
                 }
             </code>
         </pre>

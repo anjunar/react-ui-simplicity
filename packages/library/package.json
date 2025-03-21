@@ -12,14 +12,14 @@
   "license": "MIT",
   "description": "",
   "peerDependencies": {
-    "@editorjs/editorjs": "^2.30.8",
     "@js-joda/core": "^5.6.4",
     "@js-joda/locale_de": "^4.15.1",
     "highlightjs": "^9.16.2",
     "marked": "^15.0.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "uuid": "^11.0.5"
+    "uuid": "^11.0.5",
+    "prismjs": "^1.30.0"
   },
   "devDependencies": {
     "@types/prismjs": "^1.26.5",
@@ -35,8 +35,5 @@
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1",
     "webpack-node-externals": "^3.0.0"
-  },
-  "dependencies": {
-    "prismjs": "^1.30.0"
   }
 }

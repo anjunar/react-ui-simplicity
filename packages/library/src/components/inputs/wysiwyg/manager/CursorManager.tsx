@@ -4,7 +4,7 @@ import {findNode} from "../core/TreeNodes";
 import {ParagraphNode} from "../blocks/paragraph/ParagraphNode";
 import {EditorContext} from "../contexts/EditorState";
 import {DomContext} from "../contexts/DomState";
-import {CodeLineNode} from "../blocks/code/CodeLineNode";
+import {TokenNode} from "../blocks/code/TokenNode";
 
 function cleanUpAST(node: AbstractNode) {
 
@@ -29,33 +29,67 @@ function CursorManager(properties: CursorManager.Attributes) {
 
     let cursorDeferredValue = useDeferredValue(cursor);
 
+    function setCursor(container: Node | HTMLElement, range: Range, node: AbstractNode) {
+
+        let abstractNode = node as TextNode
+
+        if (container instanceof HTMLElement) {
+            range.selectNode(container);
+        } else {
+            let offset = cursor.currentCursor.offset > abstractNode.text.length ? abstractNode.text.length : cursor.currentCursor.offset;
+            range.setStart(container, offset);
+            range.collapse(true);
+        }
+
+        let clientRect = range.getBoundingClientRect();
+        let contentEditableRect = contentEditableRef.current.getBoundingClientRect();
+
+        cursorRef.current.style.left = clientRect.left - contentEditableRect.left + "px"
+        let number = clientRect.top - contentEditableRect.top + contentEditableRef.current.scrollTop;
+        cursorRef.current.style.top = number + "px"
+        cursorRef.current.style.height = clientRect.height + "px"
+        cursorRef.current.style.display = "block"
+
+        inputRef.current?.focus();
+        inputRef.current.style.top = number + 6 + "px"
+    }
+
     function positionCursor() {
         if (!cursor.currentCursor) return;
 
         let range = document.createRange();
-        let abstractNode = cursor.currentCursor.container as (TextNode | CodeLineNode);
-        let container = abstractNode.dom;
 
-        if (container.isConnected) {
-            if (container instanceof HTMLElement) {
-                range.selectNode(container);
-            } else {
-                let offset = cursor.currentCursor.offset > abstractNode.text.length ? abstractNode.text.length : cursor.currentCursor.offset;
-                range.setStart(container, offset);
-                range.collapse(true);
+        let abstractNode = cursor.currentCursor.container as (TextNode);
+
+        if (abstractNode.dom.isConnected) {
+            setCursor(abstractNode.dom, range, abstractNode)
+        } else {
+
+            let tokenNode = cursor.currentCursor.container;
+            if (tokenNode instanceof TokenNode) {
+
+                function findTokenNodeByIndex(tokens: TokenNode[], targetIndex: number): TokenNode | null {
+                    for (let token of tokens) {
+                        if (typeof token.text === "string") {
+                            if (token.index <= targetIndex && targetIndex < token.index + token.text.length) {
+                                return token;
+                            }
+                        } else {
+                            let found = findTokenNodeByIndex(token.text, targetIndex);
+                            if (found) return found;
+                        }
+                    }
+                    return null;
+                }
+
+                let foundNode = findTokenNodeByIndex(root.flatten.filter(node => node instanceof TokenNode), tokenNode.index + cursor.currentCursor.offset - 1)
+
+                cursor.currentCursor.container = foundNode
+
+                setCursor(foundNode.dom, range, foundNode)
             }
 
-            let clientRect = range.getBoundingClientRect();
-            let contentEditableRect = contentEditableRef.current.getBoundingClientRect();
 
-            cursorRef.current.style.left = clientRect.left - contentEditableRect.left + "px"
-            let number = clientRect.top - contentEditableRect.top + contentEditableRef.current.scrollTop;
-            cursorRef.current.style.top = number + "px"
-            cursorRef.current.style.height = clientRect.height + "px"
-            cursorRef.current.style.display = "block"
-
-            inputRef.current?.focus();
-            inputRef.current.style.top = number + 6 + "px"
         }
     }
 

@@ -2,7 +2,7 @@ import {AbstractCommand} from "../../commands/AbstractCommands";
 import {AbstractNode, TextNode} from "../../core/TreeNode";
 import {CodeNode} from "./CodeNode";
 import EditorState from "../../contexts/EditorState";
-import {CodeLineNode} from "./CodeLineNode";
+import {TokenNode} from "./TokenNode";
 
 export class CodeCommand extends AbstractCommand<AbstractNode> {
     execute(node: AbstractNode, context: EditorState.Context): void {
@@ -10,12 +10,12 @@ export class CodeCommand extends AbstractCommand<AbstractNode> {
         let index = parent.parentIndex
         let grandParent = parent.parent;
 
-        let codeBlock = new CodeLineNode("")
-        let codeNode = new CodeNode([codeBlock]);
+        // let tokenNode = new TokenNode("", "text", 0);
+        let codeNode = new CodeNode([]);
 
         grandParent.insertChild(index + 1, codeNode)
 
-        context.cursor.currentCursor.container = codeBlock
+        context.cursor.currentCursor.container = codeNode
         context.cursor.currentCursor.offset = 0
         context.cursor.triggerCursor()
     }
