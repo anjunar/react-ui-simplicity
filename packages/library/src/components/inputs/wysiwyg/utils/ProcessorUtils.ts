@@ -1,4 +1,5 @@
 import {AbstractContainerNode, AbstractNode, RootNode, TextNode} from "../core/TreeNode";
+import {TokenNode} from "../blocks/code/TokenNode";
 
 export function findNearestTextLeft(root: RootNode, parent: AbstractContainerNode<any>) : TextNode  {
     let flattened = root.flatten;
@@ -18,7 +19,7 @@ export function onArrowLeft(root: RootNode, current: { container: AbstractNode; 
     let flattened = root.flatten
     let indexOf = flattened.indexOf(current.container);
     if (indexOf > 0) {
-        let container = flattened.findLast((node, index) => index < indexOf && (node instanceof TextNode));
+        let container = flattened.findLast((node, index) => index < indexOf && (node instanceof TextNode || node instanceof TokenNode));
         if (container) {
             current.container = container
             if (current.container instanceof TextNode) {
@@ -34,7 +35,7 @@ export function onArrowRight(root: RootNode, current: { container: AbstractNode;
     let flattened = root.flatten
     let indexOf = flattened.lastIndexOf(current.container);
     if (indexOf < flattened.length - 1) {
-        current.container = flattened.find((node, index) => index > indexOf && (node instanceof TextNode))
+        current.container = flattened.find((node, index) => index > indexOf && (node instanceof TextNode || node instanceof TokenNode))
         current.offset = 0
     }
 }

@@ -2,8 +2,8 @@ import React, {useContext, useEffect, useRef} from "react"
 import {TokenNode} from "./TokenNode";
 import {CommandRule} from "../../commands/KeyCommand";
 import EditorState, {EditorContext} from "../../contexts/EditorState";
-import {onArrowLeft, onArrowRight} from "../../utils/ProcessorUtils";
-import {AbstractNode} from "../../core/TreeNode";
+import {onArrowLeft, onArrowRight, onArrowUp} from "../../utils/ProcessorUtils";
+import {AbstractContainerNode, AbstractNode} from "../../core/TreeNode";
 import {findParent} from "../../core/TreeNodes";
 import {CodeNode} from "./CodeNode";
 
@@ -12,6 +12,23 @@ const deleteContentBackward: CommandRule<TokenNode> = {
         return (value.type === "Backspace" || value.type === "deleteContentBackward") && node === container
     },
     process(current, node, currentEvent, root) {
+        if (typeof node.text === "string") {
+            let code = findParent(node, elem => elem.type === "code") as CodeNode
+            let index = node.index + current.offset
+
+            let start = code.text.substring(0, index - 1)
+            let end = code.text.substring(index)
+
+            code.text = start + end
+
+            current.offset -= 1
+
+            if (current.offset < 1) {
+                let prevSibling = current.container.prevSibling as TokenNode
+                current.container = prevSibling
+                current.offset = prevSibling.text.length
+            }
+        }
     }
 }
 
@@ -22,18 +39,20 @@ const compositionUpdate: CommandRule<TokenNode> = {
     process(current, node: TokenNode, currentEvent,) {
 
         if (typeof node.text === "string") {
-            let subString = node.text.substring(current.offset - currentEvent.data.length, current.offset)
+            let offset = node.index + current.offset;
+
+            let subString = node.text.substring(offset - currentEvent.data.length, offset)
 
             if (subString === currentEvent.data) {
-                let start = node.text.substring(0, current.offset - currentEvent.data.length)
-                let end = node.text.substring(current.offset)
+                let start = node.text.substring(0, offset - currentEvent.data.length)
+                let end = node.text.substring(offset)
 
                 node.text = start + end
                 node.text = node.text.replaceAll(" ", "\u00A0")
                 current.offset -= currentEvent.data.length;
             } else {
-                let start = node.text.substring(0, current.offset)
-                let end = node.text.substring(current.offset)
+                let start = node.text.substring(0, offset)
+                let end = node.text.substring(offset)
 
                 node.text = start + currentEvent.data + end
                 node.text = node.text.replaceAll(" ", "\u00A0")
@@ -102,8 +121,67 @@ const arrowUp: CommandRule<TokenNode> = {
     test(value: EditorState.GeneralEvent, node: AbstractNode, container: AbstractNode) {
         return value.type === "ArrowUp" && node === container
     },
-    process(current, node, currentEvent, root) {
-        // onArrowUp(node, current, root)
+    process(currentCursor, node, currentEvent, root) {
+        const currentNode = currentCursor.container as TokenNode;
+        if (!currentNode || typeof currentNode.text !== "string") return;
+
+        const codeNode = findParent(currentNode, node => node.type === "code") as CodeNode;
+        if (!codeNode) return;
+
+        const lines = codeNode.text.split("\n");
+
+        let charCount = 0;
+        let currentLine = 0;
+        let column = currentCursor.offset;
+
+        for (let i = 0; i < lines.length; i++) {
+            if (charCount + lines[i].length >= currentNode.index) {
+                currentLine = i;
+                column = currentNode.index - charCount + currentCursor.offset;
+                break;
+            }
+            charCount += lines[i].length + 1;
+        }
+
+        if (currentLine === 0) return;
+
+        let prevLineStart = charCount - (lines[currentLine - 1].length + 1);
+        let prevLineEnd = charCount - 1;
+
+        // Anpassung für leere Zeilen
+        let prevLine = lines[currentLine - 1];
+        while (prevLine.length === 0 && currentLine > 1) {
+            currentLine--;
+            prevLineStart -= (lines[currentLine - 1].length + 1);
+            prevLineEnd = prevLineStart + lines[currentLine - 1].length;
+            prevLine = lines[currentLine - 1];
+        }
+
+        let newIndex = Math.min(prevLineStart + column, prevLineEnd);
+
+        function findNodeByIndex(node: AbstractNode): TokenNode | null {
+            if (node instanceof CodeNode) {
+                for (const child of node.children) {
+                    let result = findNodeByIndex(child);
+                    if (result) return result
+                }
+            }
+            if (!(node instanceof TokenNode) || typeof node.text !== "string") return null;
+            if (node.index <= newIndex && node.index + node.text.length >= newIndex) return node;
+            if (Array.isArray(node.text)) {
+                for (let child of node.text) {
+                    let found = findNodeByIndex(child);
+                    if (found) return found;
+                }
+            }
+            return null;
+        }
+
+        let newNode = findNodeByIndex(codeNode);
+        if (newNode) {
+            currentCursor.container = newNode;
+            currentCursor.offset = newIndex - newNode.index;
+        }
     }
 }
 
@@ -111,8 +189,68 @@ const arrowDown: CommandRule<TokenNode> = {
     test(value: EditorState.GeneralEvent, node: AbstractNode, container: AbstractNode) {
         return value.type === "ArrowDown" && node === container
     },
-    process(current, node, currentEvent, root) {
-        // onArrowDown(node, current, root)
+    process(currentCursor, node, currentEvent, root) {
+
+        const currentNode = currentCursor.container as TokenNode;
+        if (!currentNode || typeof currentNode.text !== "string") return;
+
+        const codeNode = findParent(currentNode, node => node.type === "code") as CodeNode;
+        if (!codeNode) return;
+
+        const lines = codeNode.text.split("\n");
+
+        let charCount = 0;
+        let currentLine = 0;
+        let column = currentCursor.offset;
+
+        for (let i = 0; i < lines.length; i++) {
+            if (charCount + lines[i].length >= currentNode.index) {
+                currentLine = i;
+                column = currentNode.index - charCount + currentCursor.offset;
+                break;
+            }
+            charCount += lines[i].length + 1;
+        }
+
+        if (currentLine === lines.length - 1) return;
+
+        let nextLineStart = charCount + lines[currentLine].length + 1;
+        let nextLineEnd = nextLineStart + lines[currentLine + 1].length;
+
+        // Anpassung für leere Zeilen
+        let nextLine = lines[currentLine + 1];
+        while (nextLine.length === 0 && currentLine < lines.length - 2) {
+            currentLine++;
+            nextLineStart += (lines[currentLine].length + 1);
+            nextLineEnd = nextLineStart + lines[currentLine + 1].length;
+            nextLine = lines[currentLine + 1];
+        }
+
+        let newIndex = Math.min(nextLineStart + column, nextLineEnd);
+
+        function findNodeByIndex(node: AbstractNode): TokenNode | null {
+            if (node instanceof CodeNode) {
+                for (const child of node.children) {
+                    let result = findNodeByIndex(child);
+                    if (result) return result
+                }
+            }
+            if (!(node instanceof TokenNode) || typeof node.text !== "string") return null;
+            if (node.index <= newIndex && node.index + node.text.length >= newIndex) return node;
+            if (Array.isArray(node.text)) {
+                for (let child of node.text) {
+                    let found = findNodeByIndex(child);
+                    if (found) return found;
+                }
+            }
+            return null;
+        }
+
+        let newNode = findNodeByIndex(codeNode);
+        if (newNode) {
+            currentCursor.container = newNode;
+            currentCursor.offset = newIndex - newNode.index;
+        }
     }
 }
 

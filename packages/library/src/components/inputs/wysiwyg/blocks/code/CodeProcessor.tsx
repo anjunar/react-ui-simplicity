@@ -39,9 +39,24 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
         });
     }
 
-    useEffect(() => {
-        node.dom = preRef.current
-    }, [node]);
+    function tokenDiff(oldNodes: TokenNode[], newNodes: TokenNode[]) {
+
+        let result = []
+
+        newNodes.forEach((newNode, index) => {
+            let oldNode = oldNodes[index];
+
+            if (newNode.text === oldNode?.text) {
+                oldNode.index = newNode.index
+                result.push(oldNode)
+            } else {
+                result.push(newNode)
+            }
+        })
+
+        return result
+
+    }
 
     const tokenNodes = useMemo(() => {
 
@@ -49,11 +64,43 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
 
         let nodes = toTokenNodes(tokens);
 
-        node.children.length = 0
-        node.children.push(...nodes)
+        let tokenDiffer = tokenDiff(node.children, nodes);
 
-        return nodes
+        let tokenNode = cursor.currentCursor.container as TokenNode;
+
+        let oldOffset = tokenNode.index + cursor.currentCursor.offset
+
+        node.children.length = 0
+        node.children.push(...tokenDiffer)
+
+        if (tokenNode instanceof TokenNode) {
+
+            function findTokenNodeByIndex(tokens: TokenNode[], targetIndex: number): TokenNode | null {
+                for (let token of tokens) {
+                    if (typeof token.text === "string") {
+                        if (token.index <= targetIndex && targetIndex < token.index + token.text.length) {
+                            return token;
+                        }
+                    } else {
+                        let found = findTokenNodeByIndex(token.text, targetIndex);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            }
+
+            let newTokenNode = findTokenNodeByIndex(root.flatten.filter(node => node instanceof TokenNode), oldOffset - 1) as TokenNode;
+            cursor.currentCursor.container = newTokenNode
+            cursor.currentCursor.offset = oldOffset - newTokenNode.index
+
+        }
+
+        return tokenDiffer
     }, [node.text]);
+
+    useEffect(() => {
+        node.dom = preRef.current
+    }, [node]);
 
     return (
         <pre ref={preRef} style={{overflowX: "auto", overflowY: "hidden"}}>

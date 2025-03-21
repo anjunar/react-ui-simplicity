@@ -63,33 +63,6 @@ function CursorManager(properties: CursorManager.Attributes) {
 
         if (abstractNode.dom.isConnected) {
             setCursor(abstractNode.dom, range, abstractNode)
-        } else {
-
-            let tokenNode = cursor.currentCursor.container;
-            if (tokenNode instanceof TokenNode) {
-
-                function findTokenNodeByIndex(tokens: TokenNode[], targetIndex: number): TokenNode | null {
-                    for (let token of tokens) {
-                        if (typeof token.text === "string") {
-                            if (token.index <= targetIndex && targetIndex < token.index + token.text.length) {
-                                return token;
-                            }
-                        } else {
-                            let found = findTokenNodeByIndex(token.text, targetIndex);
-                            if (found) return found;
-                        }
-                    }
-                    return null;
-                }
-
-                let foundNode = findTokenNodeByIndex(root.flatten.filter(node => node instanceof TokenNode), tokenNode.index + cursor.currentCursor.offset - 1)
-
-                cursor.currentCursor.container = foundNode
-
-                setCursor(foundNode.dom, range, foundNode)
-            }
-
-
         }
     }
 
