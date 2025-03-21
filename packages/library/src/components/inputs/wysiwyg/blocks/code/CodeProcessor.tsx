@@ -67,7 +67,10 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
         return lines;
     }
 
-    function tokenDiff(oldLines: TokenLineNode[], newLines: TokenLineNode[]): TokenLineNode[] {
+    function tokenDiff(
+        oldLines: TokenLineNode[],
+        newLines: TokenLineNode[]
+    ): TokenLineNode[] {
         const result: TokenLineNode[] = [];
 
         newLines.forEach((newLine, lineIndex) => {
@@ -76,7 +79,21 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
             if (oldLine && compareTokenLines(oldLine.children, newLine.children)) {
                 result.push(oldLine);
             } else {
-                result.push(newLine);
+                const updatedLine = new TokenLineNode(
+                    newLine.children.map((newToken, tokenIndex) => {
+                        const oldToken = oldLine?.children[tokenIndex];
+                        if (
+                            oldToken &&
+                            oldToken.text === newToken.text &&
+                            oldToken.type === newToken.type
+                        ) {
+                            return oldToken;
+                        } else {
+                            return newToken;
+                        }
+                    })
+                );
+                result.push(updatedLine);
             }
         });
 
@@ -136,7 +153,7 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
 
         }
 
-        return tokenLineNodes
+        return tokenDiffer
     }, [node.text]);
 
     useEffect(() => {
