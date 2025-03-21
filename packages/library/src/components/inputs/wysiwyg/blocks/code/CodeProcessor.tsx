@@ -6,6 +6,8 @@ import Prism, {Token} from "prismjs"
 import "prismjs/components/prism-typescript";
 import {TokenNode} from "./TokenNode";
 import TokenProcessor from "./TokenProcessor";
+import {TokenLineNode} from "./TokenLineNode";
+import TokenLineProcessor from "./TokenLineProcessor";
 
 function CodeProcessor(properties: CodeProcessor.Attributes) {
 
@@ -39,23 +41,60 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
         });
     }
 
-    function tokenDiff(oldNodes: TokenNode[], newNodes: TokenNode[]) {
+    function groupTokensIntoLines(tokens: TokenNode[]): TokenLineNode[] {
+        const lines: TokenLineNode[] = [new TokenLineNode([])];
+        let currentLine = 0;
 
-        let result = []
-
-        newNodes.forEach((newNode, index) => {
-            let oldNode = oldNodes[index];
-
-            if (newNode.text === oldNode?.text) {
-                oldNode.index = newNode.index
-                result.push(oldNode)
+        tokens.forEach((token) => {
+            if (typeof token.text === "string" && token.text.includes("\n")) {
+                const parts = token.text.split("\n");
+                parts.forEach((part, index) => {
+                    if (index > 0) {
+                        lines.push(new TokenLineNode([new TokenNode("", "text", token.index)]));
+                        currentLine++;
+                    }
+                    if (part) {
+                        lines[currentLine].children.push(
+                            new TokenNode(part, token.type, token.index + part.length)
+                        );
+                    }
+                });
             } else {
-                result.push(newNode)
+                lines[currentLine].children.push(token);
             }
-        })
+        });
 
-        return result
+        return lines;
+    }
 
+    function tokenDiff(oldLines: TokenLineNode[], newLines: TokenLineNode[]): TokenLineNode[] {
+        const result: TokenLineNode[] = [];
+
+        newLines.forEach((newLine, lineIndex) => {
+            const oldLine = oldLines[lineIndex];
+
+            if (oldLine && compareTokenLines(oldLine.children, newLine.children)) {
+                result.push(oldLine);
+            } else {
+                result.push(newLine);
+            }
+        });
+
+        return result;
+    }
+
+    function compareTokenLines(oldTokens: TokenNode[], newTokens: TokenNode[]): boolean {
+        if (oldTokens.length !== newTokens.length) {
+            return false;
+        }
+
+        for (let i = 0; i < oldTokens.length; i++) {
+            if (oldTokens[i].text !== newTokens[i].text || oldTokens[i].type !== newTokens[i].type) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     const tokenNodes = useMemo(() => {
@@ -64,11 +103,13 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
 
         let nodes = toTokenNodes(tokens);
 
-        let tokenDiffer = tokenDiff(node.children, nodes);
-
         let tokenNode = cursor.currentCursor.container as TokenNode;
 
         let oldOffset = tokenNode.index + cursor.currentCursor.offset
+
+        let tokenLineNodes = groupTokensIntoLines(nodes);
+
+        let tokenDiffer = tokenDiff(node.children, tokenLineNodes);
 
         node.children.length = 0
         node.children.push(...tokenDiffer)
@@ -95,7 +136,7 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
 
         }
 
-        return tokenDiffer
+        return tokenLineNodes
     }, [node.text]);
 
     useEffect(() => {
@@ -106,7 +147,7 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
         <pre ref={preRef} style={{overflowX: "auto", overflowY: "hidden"}}>
             <code style={{display: "block", fontFamily: "monospace", width : "max-content"}}>
                 {
-                    tokenNodes.map(node => <TokenProcessor key={node.id} node={node}/>)
+                    tokenNodes.map(node => <TokenLineProcessor key={node.id} node={node}/>)
                 }
             </code>
         </pre>
