@@ -2,8 +2,8 @@ import React, {useContext, useEffect, useRef} from "react"
 import {TokenNode} from "./TokenNode";
 import {CommandRule} from "../../commands/KeyCommand";
 import EditorState, {EditorContext} from "../../contexts/EditorState";
-import {onArrowLeft, onArrowRight, onArrowUp} from "../../utils/ProcessorUtils";
-import {AbstractContainerNode, AbstractNode} from "../../core/TreeNode";
+import {onArrowLeft, onArrowRight} from "../../utils/ProcessorUtils";
+import {AbstractNode} from "../../core/TreeNode";
 import {findParent} from "../../core/TreeNodes";
 import {CodeNode} from "./CodeNode";
 
@@ -19,9 +19,11 @@ const deleteContentBackward: CommandRule<TokenNode> = {
             let start = code.text.substring(0, index - 1)
             let end = code.text.substring(index)
 
-            code.text = start + end
+            let newText = start + end;
 
-            current.offset -= 1
+            let [container, newIndex] = code.updateText(newText, index - 2);
+            current.container = container
+            current.offset = newIndex + 1
 
             if (current.offset < 1) {
                 let prevSibling = current.container.prevSibling as TokenNode
@@ -77,10 +79,10 @@ const insertText: CommandRule<TokenNode> = {
 
             let newText = start + currentEvent.data + end;
 
-            let tokenNode = code.updateText(newText, index + 1);
+            let [container, newIndex] = code.updateText(newText, index);
 
-            current.container = tokenNode
-            current.offset += currentEvent.data.length
+            current.container = container
+            current.offset = newIndex + 1
         }
     }
 }
@@ -100,10 +102,15 @@ const insertLineBreak: CommandRule<TokenNode> = {
 
             let newText = start + "\n" + end
 
-            let tokenNode = code.updateText(newText, index + 1);
+            let result = code.updateText(newText, index + 1);
+            if (! result) {
+                result = code.updateText(newText, index + 2);
+            }
 
-            current.container = tokenNode
-            current.offset = 0
+            let [container, newIndex] = result
+
+            current.container = container
+            current.offset = newIndex
 
         }
 

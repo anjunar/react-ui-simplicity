@@ -12,19 +12,15 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
 
     const {node} = properties
 
-    const {ast: {root}, cursor, event: {currentEvent}} = useContext(EditorContext)
+    const {ast: {root, triggerAST}, cursor, event: {currentEvent}} = useContext(EditorContext)
 
     const preRef = useRef<HTMLPreElement>(null);
 
-    const tokenNodes = useMemo(() => {
+    useEffect(() => {
 
         let tokens = Prism.tokenize(node.text, Prism.languages.typescript)
 
         let nodes = toTokenNodes(tokens);
-
-        let tokenNode = cursor.currentCursor.container as TokenNode;
-
-        let oldOffset = tokenNode.index + cursor.currentCursor.offset
 
         let tokenLineNodes = groupTokensIntoLines(nodes);
 
@@ -33,29 +29,8 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
         node.children.length = 0
         node.children.push(...tokenDiffer)
 
-        if (tokenNode instanceof TokenNode) {
+        triggerAST()
 
-            function findTokenNodeByIndex(tokens: TokenNode[], targetIndex: number): TokenNode | null {
-                for (let token of tokens) {
-                    if (typeof token.text === "string") {
-                        if (token.index <= targetIndex && targetIndex <= token.index + token.text.length) {
-                            return token;
-                        }
-                    } else {
-                        let found = findTokenNodeByIndex(token.text, targetIndex);
-                        if (found) return found;
-                    }
-                }
-                return null;
-            }
-
-            let newTokenNode = findTokenNodeByIndex(root.flatten.filter(node => node instanceof TokenNode), oldOffset) as TokenNode;
-            cursor.currentCursor.container = newTokenNode
-            cursor.currentCursor.offset = oldOffset - newTokenNode.index
-
-        }
-
-        return tokenDiffer
     }, []);
 
     useEffect(() => {

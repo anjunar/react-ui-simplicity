@@ -14,7 +14,7 @@ export class CodeNode extends AbstractContainerNode<TokenLineNode> {
         super(children);
     }
 
-    updateText(newText: string, index : number) : TokenNode {
+    updateText(newText: string, index : number) : [TokenNode, number] {
         this.text = newText
 
         let tokens = Prism.tokenize(this.text, Prism.languages.typescript)
@@ -28,13 +28,19 @@ export class CodeNode extends AbstractContainerNode<TokenLineNode> {
         this.children.length = 0
         this.children.push(...tokenDiffer)
 
-        return findNode(this, node => {
+        let foundNode = findNode(this, node => {
             if (node instanceof TokenNode) {
-                if (node.index <= index && index <= node.index + node.text.length) {
+                if (node.index <= index && index < (node.index + (node.text.length === 0 ? 1 : node.text.length))) {
                     return true
                 }
             }
             return false
-        })
+        });
+
+        if (foundNode) {
+            return [foundNode, index - foundNode.index]
+        }
+
+        return null
     }
 }
