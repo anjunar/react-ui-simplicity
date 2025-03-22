@@ -33,15 +33,22 @@ export function groupTokensIntoLines(tokens: TokenNode[]): TokenLineNode[] {
     tokens.forEach((token) => {
         if (typeof token.text === "string" && token.text.includes("\n")) {
             const parts = token.text.split("\n");
+            const indexOfN = token.text.indexOf("\n")
             parts.forEach((part, index) => {
                 if (index > 0) {
-                    lines.push(new TokenLineNode([new TokenNode("", "text", token.index + index)]));
+                    lines.push(new TokenLineNode([new TokenNode("", "whitespace", token.index + index + indexOfN)]));
                     currentLine++;
                 }
                 if (part) {
-                    lines[currentLine].children.push(
-                        new TokenNode(part, token.type, token.index + index)
-                    );
+                    if (index > 0) {
+                        lines[currentLine].children.push(
+                            new TokenNode(part, token.type, token.index + index + indexOfN)
+                        );
+                    } else {
+                        lines[currentLine].children.push(
+                            new TokenNode(part, token.type, token.index + index)
+                        );
+                    }
                 }
             });
         } else {

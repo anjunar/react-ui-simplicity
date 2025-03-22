@@ -6,6 +6,7 @@ import {onArrowLeft, onArrowRight} from "../../utils/ProcessorUtils";
 import {AbstractNode} from "../../core/TreeNode";
 import {findParent} from "../../core/TreeNodes";
 import {CodeNode} from "./CodeNode";
+import {TokenLineNode} from "./TokenLineNode";
 
 const deleteContentBackward: CommandRule<TokenNode> = {
     test(value: EditorState.GeneralEvent, node: AbstractNode, container: AbstractNode): boolean {
@@ -21,15 +22,21 @@ const deleteContentBackward: CommandRule<TokenNode> = {
 
             let newText = start + end;
 
-            let [container, newIndex] = code.updateText(newText, index - 2);
-            current.container = container
-            current.offset = newIndex + 1
+            let updateText = code.updateText(newText, index - 2);
 
-            if (current.offset < 1) {
-                let prevSibling = current.container.prevSibling as TokenNode
-                current.container = prevSibling
-                current.offset = prevSibling.text.length
+            if (updateText) {
+                let [container, newIndex] = updateText;
+                current.container = container
+                current.offset = newIndex + 1
+            } else {
+                let parent = node.parent;
+                let prevSibling = parent.prevSibling as TokenLineNode
+                let lastNode = prevSibling.children[prevSibling.children.length - 1];
+
+                current.container = lastNode
+                current.offset = lastNode.text.length
             }
+
         }
     }
 }
