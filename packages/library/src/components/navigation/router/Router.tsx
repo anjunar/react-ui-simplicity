@@ -203,7 +203,7 @@ function Router(properties: Router.Attributes) {
     }, [state]);
 
     function getContextHolder() {
-        return new SystemContextHolder(childRoutes, windows);
+        return new SystemContextHolder(childRoutes, windows, systemContextHolder.darkMode);
     }
 
     return (

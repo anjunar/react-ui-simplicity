@@ -1,4 +1,4 @@
-import "prism-themes/themes/prism-darcula.css"
+import "./CodeProcessor.css"
 import React, {useContext, useEffect, useRef} from "react"
 import {CodeNode} from "./CodeNode";
 import {EditorContext} from "../../contexts/EditorState";
@@ -6,12 +6,15 @@ import Prism from "prismjs"
 import "prismjs/components/prism-typescript";
 import TokenLineProcessor from "./TokenLineProcessor";
 import {groupTokensIntoLines, tokenDiff, toTokenNodes} from "./CodeUtils";
+import {SystemContext} from "../../../../../System";
 
 function CodeProcessor(properties: CodeProcessor.Attributes) {
 
     const {node} = properties
 
     const {ast: {root, triggerAST}, cursor, event: {currentEvent}} = useContext(EditorContext)
+
+    const {darkMode} = useContext(SystemContext)
 
     const preRef = useRef<HTMLPreElement>(null);
 
@@ -37,7 +40,7 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
     }, [node]);
 
     return (
-        <pre ref={preRef} style={{overflowX: "auto", overflowY: "hidden"}} className={`language-${"typescript"}`}>
+        <pre ref={preRef} style={{overflow : "auto", maxHeight : "600px"}} className={`language-${"typescript"}`}>
             <code style={{display: "block", fontFamily: "monospace", width: "max-content"}} className={`language-${"typescript"}`}>
                 {
                     node.children.map(node => <TokenLineProcessor key={node.id} node={node}/>)

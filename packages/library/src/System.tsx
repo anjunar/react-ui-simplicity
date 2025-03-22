@@ -33,14 +33,17 @@ export class SystemContextHolder {
 
     windows: [WindowRef[], Dispatch<SetStateAction<WindowRef[]>>]
 
-    constructor(routes: Router.Route[], windows: [WindowRef[], Dispatch<SetStateAction<WindowRef[]>>]) {
+    darkMode : boolean
+
+    constructor(routes: Router.Route[], windows: [WindowRef[], Dispatch<SetStateAction<WindowRef[]>>], darkMode : boolean) {
         this.routes = routes
         this.windows = windows
+        this.darkMode = darkMode
     }
 
 }
 
-export const SystemContext = createContext(new SystemContextHolder([], null))
+export const SystemContext = createContext(new SystemContextHolder([], null, false))
 
 function System(properties : System.Attributes) {
 
@@ -119,7 +122,7 @@ function System(properties : System.Attributes) {
 
     return (
         <div className={"system"}>
-            <SystemContext.Provider value={new SystemContextHolder(routes, [windows, setWindows])}>
+            <SystemContext.Provider value={new SystemContextHolder(routes, [windows, setWindows], darkMode)}>
                 <div style={{position: "absolute", zIndex: 9999, top: 0, left: 0, height: "4px", width: "100%"}}>
                     {
                         loading.length > 0 && <Progress/>
