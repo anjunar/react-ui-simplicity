@@ -8,13 +8,13 @@ import {findNode} from "../../core/TreeNodes";
 export class CodeNode extends AbstractContainerNode<TokenLineNode> {
     type: string = "code"
 
-    text: string = "let i = 2"
+    text: string = ""
 
     constructor(children: TokenLineNode[]) {
         super(children);
     }
 
-    updateText(newText: string, index : number) : [TokenNode, number] {
+    updateText(newText: string, partText : string, index : number) : [TokenNode, number] {
         this.text = newText
 
         let tokens = Prism.tokenize(this.text, Prism.languages.typescript)
@@ -29,13 +29,30 @@ export class CodeNode extends AbstractContainerNode<TokenLineNode> {
         this.children.push(...tokenDiffer)
 
         let foundNode = findNode(this, node => {
-            if (node instanceof TokenNode) {
-                if (node.index <= index && index < (node.index + (node.text.length === 0 ? 1 : node.text.length))) {
-                    return true
+            if (node instanceof TokenNode && node.type !== "whitespace") {
+                if (node.index <= index && index <= (node.index + (node.text.length === 0 ? 1 : node.text.length))) {
+                    // @ts-ignore
+                    if (node.text.includes(partText)) {
+                        return true
+                    }
                 }
             }
             return false
         });
+
+        if (!foundNode) {
+            foundNode = findNode(this, node => {
+                if (node instanceof TokenNode) {
+                    if (node.index <= index && index <= (node.index + (node.text.length === 0 ? 1 : node.text.length))) {
+                        // @ts-ignore
+                        if (node.text.includes(partText)) {
+                            return true
+                        }
+                    }
+                }
+                return false
+            });
+        }
 
         if (foundNode) {
             return [foundNode, index - foundNode.index]

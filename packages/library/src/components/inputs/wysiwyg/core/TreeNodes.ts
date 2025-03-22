@@ -11,14 +11,25 @@ export function findParent(node: AbstractNode, callback: (node: AbstractNode) =>
     }
 }
 
-export function findNode(node: AbstractNode, callback: (node: AbstractNode) => boolean) {
+export function findNode(node: AbstractNode | AbstractNode[], callback: (node: AbstractNode) => boolean) {
 
-    if (callback(node)) {
-        return node
+    if (node instanceof AbstractNode) {
+        if (callback(node)) {
+            return node
+        }
     }
 
     if (node instanceof AbstractContainerNode) {
         for (const child of node.children) {
+            let selectedNode = findNode(child, callback);
+            if (selectedNode) {
+                return selectedNode
+            }
+        }
+    }
+
+    if (node instanceof Array) {
+        for (const child of node) {
             let selectedNode = findNode(child, callback);
             if (selectedNode) {
                 return selectedNode

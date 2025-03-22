@@ -3,10 +3,9 @@ import {TokenNode} from "./TokenNode";
 import {CommandRule} from "../../commands/KeyCommand";
 import EditorState, {EditorContext} from "../../contexts/EditorState";
 import {onArrowLeft, onArrowRight} from "../../utils/ProcessorUtils";
-import {AbstractNode} from "../../core/TreeNode";
+import {AbstractContainerNode, AbstractNode} from "../../core/TreeNode";
 import {findParent} from "../../core/TreeNodes";
 import {CodeNode} from "./CodeNode";
-import {TokenLineNode} from "./TokenLineNode";
 
 const deleteContentBackward: CommandRule<TokenNode> = {
     test(value: EditorState.GeneralEvent, node: AbstractNode, container: AbstractNode): boolean {
@@ -22,20 +21,11 @@ const deleteContentBackward: CommandRule<TokenNode> = {
 
             let newText = start + end;
 
-            let updateText = code.updateText(newText, index - 2);
+            let updateText = code.updateText(newText, "", index - 1);
 
-            if (updateText) {
-                let [container, newIndex] = updateText;
-                current.container = container
-                current.offset = newIndex + 1
-            } else {
-                let parent = node.parent;
-                let prevSibling = parent.prevSibling as TokenLineNode
-                let lastNode = prevSibling.children[prevSibling.children.length - 1];
-
-                current.container = lastNode
-                current.offset = lastNode.text.length
-            }
+            let [container, newIndex] = updateText;
+            current.container = container
+            current.offset = newIndex
 
         }
     }
@@ -48,25 +38,39 @@ const compositionUpdate: CommandRule<TokenNode> = {
     process(current, node: TokenNode, currentEvent,) {
 
         if (typeof node.text === "string") {
-            let offset = node.index + current.offset;
+            let code = findParent(node, elem => elem.type === "code") as CodeNode
 
-            let subString = node.text.substring(offset - currentEvent.data.length, offset)
+            let index = node.index + current.offset;
+
+            let subString = code.text.substring(index - currentEvent.data.length, index)
 
             if (subString === currentEvent.data) {
-                let start = node.text.substring(0, offset - currentEvent.data.length)
-                let end = node.text.substring(offset)
+                let start = code.text.substring(0, index - currentEvent.data.length)
+                let end = code.text.substring(index)
 
-                node.text = start + end
-                node.text = node.text.replaceAll(" ", "\u00A0")
-                current.offset -= currentEvent.data.length;
+                let newText = start + end;
+
+                console.log(newText)
+
+                if (newText) {
+                    let [container, newIndex] = code.updateText(newText, "", index);
+
+                    current.container = container
+                    current.offset = newIndex
+                } else {
+                    current.container = code
+                    current.offset = 0
+                }
+
             } else {
-                let start = node.text.substring(0, offset)
-                let end = node.text.substring(offset)
+                let start = code.text.substring(0, index)
+                let end = code.text.substring(index)
 
-                node.text = start + currentEvent.data + end
-                node.text = node.text.replaceAll(" ", "\u00A0")
-                current.offset += currentEvent.data.length;
+                let newText = start + currentEvent.data + end;
+                let [container, newIndex] = code.updateText(newText, currentEvent.data, index);
 
+                current.container = container
+                current.offset = newIndex + 1
             }
         }
     }
@@ -86,7 +90,7 @@ const insertText: CommandRule<TokenNode> = {
 
             let newText = start + currentEvent.data + end;
 
-            let [container, newIndex] = code.updateText(newText, index);
+            let [container, newIndex] = code.updateText(newText, currentEvent.data, index);
 
             current.container = container
             current.offset = newIndex + 1
@@ -109,12 +113,7 @@ const insertLineBreak: CommandRule<TokenNode> = {
 
             let newText = start + "\n" + end
 
-            let result = code.updateText(newText, index + 1);
-            if (! result) {
-                result = code.updateText(newText, index + 2);
-            }
-
-            let [container, newIndex] = result
+            let [container, newIndex] = code.updateText(newText, "", index + 1);
 
             current.container = container
             current.offset = newIndex
@@ -194,7 +193,7 @@ const arrowUp: CommandRule<TokenNode> = {
         let newIndex = Math.min(prevLineStart + column, prevLineEnd);
 
         function findNodeByIndex(node: AbstractNode): TokenNode | null {
-            if (node instanceof CodeNode) {
+            if (node instanceof AbstractContainerNode) {
                 for (const child of node.children) {
                     let result = findNodeByIndex(child);
                     if (result) return result
@@ -263,7 +262,7 @@ const arrowDown: CommandRule<TokenNode> = {
         let newIndex = Math.min(nextLineStart + column, nextLineEnd);
 
         function findNodeByIndex(node: AbstractNode): TokenNode | null {
-            if (node instanceof CodeNode) {
+            if (node instanceof AbstractContainerNode) {
                 for (const child of node.children) {
                     let result = findNodeByIndex(child);
                     if (result) return result
@@ -293,6 +292,22 @@ const deleteKey: CommandRule<TokenNode> = {
         return value.type === "Delete" && node === container
     },
     process(current, node, currentEvent, root) {
+        if (typeof node.text === "string") {
+            let code = findParent(node, elem => elem.type === "code") as CodeNode
+            let index = node.index + current.offset
+
+            let start = code.text.substring(0, index)
+            let end = code.text.substring(index + 1)
+
+            let newText = start + end;
+
+            let updateText = code.updateText(newText, "", index);
+
+            let [container, newIndex] = updateText;
+            current.container = container
+            current.offset = newIndex
+
+        }
     }
 }
 

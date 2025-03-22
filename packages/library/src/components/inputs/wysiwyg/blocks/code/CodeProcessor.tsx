@@ -1,10 +1,9 @@
-import "./CodeProcessor.css"
-import React, {useContext, useEffect, useMemo, useRef} from "react"
+import "prism-themes/themes/prism-darcula.css"
+import React, {useContext, useEffect, useRef} from "react"
 import {CodeNode} from "./CodeNode";
 import {EditorContext} from "../../contexts/EditorState";
 import Prism from "prismjs"
 import "prismjs/components/prism-typescript";
-import {TokenNode} from "./TokenNode";
 import TokenLineProcessor from "./TokenLineProcessor";
 import {groupTokensIntoLines, tokenDiff, toTokenNodes} from "./CodeUtils";
 
@@ -38,8 +37,8 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
     }, [node]);
 
     return (
-        <pre ref={preRef} style={{overflowX: "auto", overflowY: "hidden"}}>
-            <code style={{display: "block", fontFamily: "monospace", width: "max-content"}}>
+        <pre ref={preRef} style={{overflowX: "auto", overflowY: "hidden"}} className={`language-${"typescript"}`}>
+            <code style={{display: "block", fontFamily: "monospace", width: "max-content"}} className={`language-${"typescript"}`}>
                 {
                     node.children.map(node => <TokenLineProcessor key={node.id} node={node}/>)
                 }

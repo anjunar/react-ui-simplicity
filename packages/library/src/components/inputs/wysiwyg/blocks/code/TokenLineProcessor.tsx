@@ -15,6 +15,9 @@ function TokenLineProcessor(properties: TokenLineProcessor.Attributes) {
     return (
         <div ref={divRef}>
             {
+                node.children.length === 0 ? "<br/>" : ""
+            }
+            {
                 node.children.map(node => <TokenProcessor key={node.id} node={node}/>)
             }
         </div>
