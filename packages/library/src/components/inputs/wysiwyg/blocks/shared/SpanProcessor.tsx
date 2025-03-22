@@ -79,6 +79,8 @@ const compositionUpdate: CommandRule<TextNode> = {
             node.text = start + end
             node.text = node.text.replaceAll(" ", "\u00A0")
             current.offset -= currentEvent.data.length;
+
+            console.log(currentEvent.data)
         } else {
             let start = node.text.substring(0, current.offset)
             let end = node.text.substring(current.offset)
@@ -87,6 +89,7 @@ const compositionUpdate: CommandRule<TextNode> = {
             node.text = node.text.replaceAll(" ", "\u00A0")
             current.offset += currentEvent.data.length;
 
+            console.log(currentEvent.data)
         }
 
 

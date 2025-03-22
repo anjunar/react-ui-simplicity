@@ -50,17 +50,10 @@ const compositionUpdate: CommandRule<TokenNode> = {
 
                 let newText = start + end;
 
-                console.log(newText)
+                let [container, newIndex] = code.updateText(newText, "", index);
 
-                if (newText) {
-                    let [container, newIndex] = code.updateText(newText, "", index);
-
-                    current.container = container
-                    current.offset = newIndex
-                } else {
-                    current.container = code
-                    current.offset = 0
-                }
+                current.container = container
+                current.offset = newIndex
 
             } else {
                 let start = code.text.substring(0, index)

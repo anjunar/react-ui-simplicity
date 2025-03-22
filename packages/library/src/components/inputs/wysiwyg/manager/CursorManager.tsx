@@ -125,7 +125,7 @@ function CursorManager(properties: CursorManager.Attributes) {
                 if (selectedNode) {
                     cursor.currentCursor = {
                         container: selectedNode,
-                        offset: caretPosition.offset
+                        offset: caretPosition.offsetNode.textContent.includes("\u200B") ? caretPosition.offset - 1 : caretPosition.offset
                     }
                 } else {
                     cursor.currentCursor = null

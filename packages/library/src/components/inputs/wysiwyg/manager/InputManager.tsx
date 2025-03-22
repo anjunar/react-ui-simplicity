@@ -1,60 +1,41 @@
-import React, {useContext, useEffect} from "react"
-import {EditorContext} from "../contexts/EditorState";
-import {DomContext} from "../contexts/DomState";
+import React, { useContext, useEffect, useState } from "react";
+import { EditorContext } from "../contexts/EditorState";
+import { DomContext } from "../contexts/DomState";
+
+const allowedKeys = new Set(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End", "Backspace"]);
 
 let isComposing = false
 
 function InputManager(properties: EditorInput.Attributes) {
 
-    const {ast, event, cursor} = useContext(EditorContext)
+    const { ast, event, cursor } = useContext(EditorContext);
 
-    const {inputRef} = useContext(DomContext)
+    const { inputRef } = useContext(DomContext);
+
+    function triggerEditorEvent(type: string, data: any) {
+        event.currentEvent = {
+            queue: [],
+            instance: { type, data }
+        };
+
+        event.triggerEvent();
+    }
 
     function onInput(e: React.FormEvent<HTMLTextAreaElement>) {
-        let inputEvent = e.nativeEvent as InputEvent;
-
-        if (Reflect.has(window, "ontouchmove") || !(inputEvent.inputType === "deleteContentBackward")) {
-            event.currentEvent = {
-                queue: [],
-                instance: {
-                    type: inputEvent.inputType,
-                    data: inputEvent.data
-                }
-            }
-
-            event.triggerEvent()
+        const inputEvent = e.nativeEvent as InputEvent;
+        if (! inputEvent.isComposing) {
+            triggerEditorEvent(inputEvent.inputType, inputEvent.data);
         }
-
     }
 
     function onKeyDown(e: React.KeyboardEvent) {
-        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End", "Backspace"]
-
-        if (whiteList.indexOf(e.key) > -1) {
-
-            event.currentEvent = {
-                queue: [],
-                instance: {
-                    type: e.key,
-                    data: e.key
-                }
-            }
-
-            event.triggerEvent()
-
+        if (allowedKeys.has(e.key)) {
+            triggerEditorEvent(e.key, e.key);
         }
     }
 
-    function onCompositionUpdate(compositionEvent: React.CompositionEvent) {
-        event.currentEvent = {
-            queue: [],
-            instance: {
-                type: "compositionUpdate",
-                data: compositionEvent.data
-            }
-        }
-
-        event.triggerEvent()
+    function onCompositionUpdate(e: React.CompositionEvent) {
+        triggerEditorEvent("compositionUpdate", e.data);
     }
 
     useEffect(() => {
@@ -89,4 +70,4 @@ namespace EditorInput {
     export interface Attributes {}
 }
 
-export default InputManager
+export default InputManager;
