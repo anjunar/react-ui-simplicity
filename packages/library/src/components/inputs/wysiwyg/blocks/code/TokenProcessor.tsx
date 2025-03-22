@@ -75,7 +75,11 @@ const insertText: CommandRule<TokenNode> = {
             let start = code.text.substring(0, index)
             let end = code.text.substring(index)
 
-            code.text = start + currentEvent.data + end
+            let newText = start + currentEvent.data + end;
+
+            let tokenNode = code.updateText(newText, index + 1);
+
+            current.container = tokenNode
             current.offset += currentEvent.data.length
         }
     }
@@ -86,6 +90,22 @@ const insertLineBreak: CommandRule<TokenNode> = {
         return value.type === "insertLineBreak" && node === container
     },
     process(current, node: TokenNode, currentEvent, root) {
+
+        if (typeof node.text === "string") {
+            let code = findParent(node, elem => elem.type === "code") as CodeNode
+            let index = node.index + current.offset
+
+            let start = code.text.substring(0, index)
+            let end = code.text.substring(index)
+
+            let newText = start + "\n" + end
+
+            let tokenNode = code.updateText(newText, index + 1);
+
+            current.container = tokenNode
+            current.offset = 0
+
+        }
 
 
     }
