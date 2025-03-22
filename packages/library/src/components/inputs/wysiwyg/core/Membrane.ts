@@ -11,7 +11,9 @@ export function membrane<E extends AbstractNode>(array : E[], parentContainer : 
                             let parent = arg.parent;
                             if (parent) {
                                 let indexOf = parent.children.indexOf(arg);
-                                parent.children.splice(indexOf, 1)
+                                if (indexOf > -1) {
+                                    parent.children.splice(indexOf, 1)
+                                }
                             }
                             arg.parent = parentContainer
                         }

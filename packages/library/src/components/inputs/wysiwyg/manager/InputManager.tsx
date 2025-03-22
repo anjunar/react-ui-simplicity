@@ -1,10 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
-import { EditorContext } from "../contexts/EditorState";
-import { DomContext } from "../contexts/DomState";
+import React, {useContext, useDeferredValue, useEffect} from "react";
+import EditorState, {EditorContext} from "../contexts/EditorState";
+import {DomContext} from "../contexts/DomState";
+import {KeyCommand} from "../commands/KeyCommand";
+import {debounce} from "../../../shared/Utils";
+import GeneralEvent = EditorState.GeneralEvent;
 
 const allowedKeys = new Set(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End", "Backspace"]);
 
 let isComposing = false
+
+let queue : {queue : KeyCommand[], instance : GeneralEvent } [] = []
 
 function InputManager(properties: EditorInput.Attributes) {
 
@@ -12,13 +17,21 @@ function InputManager(properties: EditorInput.Attributes) {
 
     const { inputRef } = useContext(DomContext);
 
+    let deferredEvent = useDeferredValue(event);
+
+    useEffect(() => {
+        if (queue.length > 0) {
+            event.currentEvent = queue.shift()
+            event.triggerEvent()
+        }
+    }, [deferredEvent]);
+
     function triggerEditorEvent(type: string, data: any) {
-        event.currentEvent = {
+        queue.push({
             queue: [],
             instance: { type, data }
-        };
-
-        event.triggerEvent();
+        })
+        event.triggerEvent()
     }
 
     function onInput(e: React.FormEvent<HTMLTextAreaElement>) {
@@ -40,14 +53,16 @@ function InputManager(properties: EditorInput.Attributes) {
 
     useEffect(() => {
 
-        for (const command of event.currentEvent.queue) {
-            command.handle()
+        if (event.currentEvent) {
+            for (const command of event.currentEvent.queue) {
+                command.handle()
+            }
+
+            ast.triggerAST()
+            cursor.triggerCursor()
         }
 
-        ast.triggerAST()
-        cursor.triggerCursor()
-
-    }, [event.currentEvent.queue]);
+    }, [event.currentEvent?.queue]);
 
     return (
         <textarea ref={inputRef}

@@ -63,7 +63,7 @@ const compositionUpdate: CommandRule<TokenNode> = {
                 let [container, newIndex] = code.updateText(newText, currentEvent.data, index);
 
                 current.container = container
-                current.offset = newIndex + 1
+                current.offset = newIndex + currentEvent.data.length
             }
         }
     }

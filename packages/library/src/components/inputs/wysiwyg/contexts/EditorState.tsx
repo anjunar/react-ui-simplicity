@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {TransitionStartFunction, useState, useTransition} from "react"
 import {AbstractProvider} from "../blocks/shared/AbstractProvider";
 import {AbstractNode, RootNode, TextNode} from "../core/TreeNode";
 import {ParagraphNode} from "../blocks/paragraph/ParagraphNode";
@@ -41,6 +41,8 @@ function EditorState(properties: EditorState.Attributes) {
             instance: null
         }
     })
+
+    const transition = useTransition();
 
     let value = {
         ast: {
@@ -86,6 +88,9 @@ function EditorState(properties: EditorState.Attributes) {
             },
             triggerEvent() {
                 setEvent({...event})
+            },
+            get transition() {
+                return transition
             }
         }
     };
@@ -136,6 +141,7 @@ namespace EditorState {
                 instance: GeneralEvent
             }
             triggerEvent(): void
+            transition : [boolean, TransitionStartFunction]
         }
     }
 }

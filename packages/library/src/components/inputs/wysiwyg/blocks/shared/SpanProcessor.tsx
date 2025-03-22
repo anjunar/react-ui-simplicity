@@ -284,7 +284,7 @@ function SpanProcessor(properties: SpanNode.Attributes) {
 
     useEffect(() => {
 
-        if (currentEvent.instance) {
+        if (currentEvent?.instance) {
 
             for (const handler of registry) {
                 if (handler.test(currentEvent.instance, node, currentCursor.container)) {
@@ -303,7 +303,7 @@ function SpanProcessor(properties: SpanNode.Attributes) {
 
         }
 
-    }, [currentEvent.instance]);
+    }, [currentEvent?.instance]);
 
     let classNames = generateStyleClassNames(node);
     let style = generateStyleObject(node);

@@ -54,6 +54,20 @@ export class CodeNode extends AbstractContainerNode<TokenLineNode> {
             });
         }
 
+        if (!foundNode) {
+            foundNode = findNode(this, node => {
+                if (node instanceof TokenNode) {
+                    if (node.index <= index && index <= (node.index + node.text.length + 2)) {
+                        // @ts-ignore
+                        if (node.text.includes(partText)) {
+                            return true
+                        }
+                    }
+                }
+                return false
+            });
+        }
+
         if (foundNode) {
             return [foundNode, index - foundNode.index]
         }

@@ -112,6 +112,7 @@ function Toolbar(properties: Toolbar.Attributes) {
                 </Page>
                 <Page>
                     <div className={"editor-toolbar"}>
+                        <div style={{marginTop : "2px"}}>Color: </div>
                         <FormatSelect command={new TextColorCommand()} callback={node => node.color}>
                             {
                                 colors.map(color => (
@@ -119,6 +120,7 @@ function Toolbar(properties: Toolbar.Attributes) {
                                 ))
                             }
                         </FormatSelect>
+                        <div style={{marginTop : "2px"}}>Background: </div>
                         <FormatSelect command={new BackgroundColorCommand()} callback={node => node.backgroundColor}>
                             {
                                 colors.map(color => (
