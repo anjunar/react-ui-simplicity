@@ -1,12 +1,12 @@
 import "./CodeProcessor.css"
-import React, {useContext, useEffect, useRef} from "react"
+import React, {useContext, useEffect, useRef, useState} from "react"
 import {CodeNode} from "./CodeNode";
 import {EditorContext} from "../../contexts/EditorState";
 import Prism from "prismjs"
 import "prismjs/components/prism-typescript";
 import TokenLineProcessor from "./TokenLineProcessor";
 import {groupTokensIntoLines, tokenDiff, toTokenNodes} from "./CodeUtils";
-import {SystemContext} from "../../../../../System";
+import {TokenLineNode} from "./TokenLineNode";
 
 function CodeProcessor(properties: CodeProcessor.Attributes) {
 
@@ -14,9 +14,21 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
 
     const {ast: {root, triggerAST}, cursor, event: {currentEvent}} = useContext(EditorContext)
 
-    const {darkMode} = useContext(SystemContext)
+    const [scrollTop, setScrollTop] = useState(0)
 
     const preRef = useRef<HTMLPreElement>(null);
+
+    function onScroll(event : React.UIEvent<HTMLPreElement>) {
+        let preElement = event.target as HTMLPreElement
+
+        let newScrollTop = preElement.scrollTop
+
+        let threshold = newScrollTop - scrollTop
+
+        if (threshold > 19 || threshold < -19) {
+            setScrollTop(newScrollTop)
+        }
+    }
 
     useEffect(() => {
 
@@ -32,19 +44,25 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
         node.children.push(...tokenDiffer)
 
         triggerAST()
-
     }, []);
 
     useEffect(() => {
         node.dom = preRef.current
     }, [node]);
 
+    let start = Math.round(scrollTop / TokenLineNode.Height);
+    let end = start + CodeNode.MaximumLines
+
+    let lineNodes = node.children.slice(start, end)
+
     return (
-        <pre ref={preRef} style={{overflow : "auto", maxHeight : "600px"}} className={`language-${"typescript"}`}>
+        <pre ref={preRef} style={{overflow: "auto", maxHeight: "412px"}} onScroll={onScroll} className={`language-${"typescript"}`}>
             <code style={{display: "block", fontFamily: "monospace", width: "max-content"}} className={`language-${"typescript"}`}>
+                <div style={{height : Math.round(scrollTop / TokenLineNode.Height) * TokenLineNode.Height}}></div>
                 {
-                    node.children.map(node => <TokenLineProcessor key={node.id} node={node}/>)
+                    lineNodes.map(node => <TokenLineProcessor key={node.id} node={node}/>)
                 }
+                <div style={{height : node.children.length * TokenLineNode.Height - end * TokenLineNode.Height}}></div>
             </code>
         </pre>
     )

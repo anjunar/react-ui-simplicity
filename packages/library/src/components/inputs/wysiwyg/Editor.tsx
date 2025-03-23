@@ -12,6 +12,9 @@ import InspectorManager from "./manager/InspectorManager";
 import {EditorContext} from "./contexts/EditorState";
 import {TextNode} from "./core/TreeNode";
 import DomState, {DomContext} from "./contexts/DomState";
+import {TokenNode} from "./blocks/code/TokenNode";
+import {findParent} from "./core/TreeNodes";
+import {CodeNode} from "./blocks/code/CodeNode";
 
 function Editor(properties: Editor.Attributes) {
 
@@ -36,6 +39,17 @@ function Editor(properties: Editor.Attributes) {
                 let end = container.text.substring(currentCursor.offset);
 
                 container.text = start + text + end
+            }
+
+            if (container instanceof TokenNode) {
+                let codeNode = findParent(container, node => node instanceof CodeNode) as CodeNode
+
+                let number = container.index + currentCursor.offset;
+                let start = codeNode.text.substring(0, number);
+                let end = codeNode.text.substring(number);
+
+                let newText = start + text + end;
+                codeNode.updateText(newText, "", number)
             }
 
             ast.triggerAST()

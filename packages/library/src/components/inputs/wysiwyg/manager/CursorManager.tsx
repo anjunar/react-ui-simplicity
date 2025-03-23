@@ -4,7 +4,6 @@ import {findNode} from "../core/TreeNodes";
 import {ParagraphNode} from "../blocks/paragraph/ParagraphNode";
 import {EditorContext} from "../contexts/EditorState";
 import {DomContext} from "../contexts/DomState";
-import {TokenNode} from "../blocks/code/TokenNode";
 
 function cleanUpAST(node: AbstractNode) {
 
@@ -29,29 +28,13 @@ function CursorManager(properties: CursorManager.Attributes) {
 
     let cursorDeferredValue = useDeferredValue(cursor);
 
-    function setCursor(container: Node | HTMLElement, range: Range, node: AbstractNode) {
-
-        let abstractNode = node as TextNode
-
-        if (container instanceof HTMLElement) {
-            range.selectNode(container);
-        } else {
-            let offset = cursor.currentCursor.offset > abstractNode.text.length ? abstractNode.text.length : cursor.currentCursor.offset;
-            range.setStart(container, offset);
-            range.collapse(true);
+    function updateCursorPosition(left: number, top: number, height: number) {
+        if (cursorRef.current) {
+            cursorRef.current.style.left = `${left}px`;
+            cursorRef.current.style.top = `${top}px`;
+            cursorRef.current.style.height = `${height}px`;
+            cursorRef.current.style.display = "block";
         }
-
-        let clientRect = range.getBoundingClientRect();
-        let contentEditableRect = contentEditableRef.current.getBoundingClientRect();
-
-        cursorRef.current.style.left = clientRect.left - contentEditableRect.left + "px"
-        let number = clientRect.top - contentEditableRect.top + contentEditableRef.current.scrollTop;
-        cursorRef.current.style.top = number + "px"
-        cursorRef.current.style.height = clientRect.height + "px"
-        cursorRef.current.style.display = "block"
-
-        inputRef.current?.focus();
-        inputRef.current.style.top = number + 6 + "px"
     }
 
     function positionCursor() {
@@ -62,7 +45,27 @@ function CursorManager(properties: CursorManager.Attributes) {
         let abstractNode = cursor.currentCursor.container as (TextNode);
 
         if (abstractNode.dom.isConnected) {
-            setCursor(abstractNode.dom, range, abstractNode)
+            let abstractNode1 = abstractNode as TextNode
+
+            if (abstractNode.dom instanceof HTMLElement) {
+                range.selectNode(abstractNode.dom);
+            } else {
+                let offset = cursor.currentCursor.offset > abstractNode1.text.length ? abstractNode1.text.length : cursor.currentCursor.offset;
+                range.setStart(abstractNode.dom, offset);
+                range.collapse(true);
+            }
+
+            let clientRect = range.getBoundingClientRect();
+            let contentEditableRect = contentEditableRef.current.getBoundingClientRect();
+
+            let left = clientRect.left - contentEditableRect.left;
+            let top = clientRect.top - contentEditableRect.top + contentEditableRef.current.scrollTop;
+            let height = clientRect.height;
+
+            updateCursorPosition(left, top, height);
+
+            inputRef.current?.focus();
+            inputRef.current.style.top = top + 6 + "px"
         }
     }
 

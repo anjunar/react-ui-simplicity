@@ -1,68 +1,72 @@
-import React, {useContext, useDeferredValue, useEffect} from "react";
-import EditorState, {EditorContext} from "../contexts/EditorState";
+import React, {useContext, useEffect} from "react"
+import {EditorContext} from "../contexts/EditorState";
 import {DomContext} from "../contexts/DomState";
-import {KeyCommand} from "../commands/KeyCommand";
-import {debounce} from "../../../shared/Utils";
-import GeneralEvent = EditorState.GeneralEvent;
-
-const allowedKeys = new Set(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End", "Backspace"]);
 
 let isComposing = false
 
-let queue : {queue : KeyCommand[], instance : GeneralEvent } [] = []
-
 function InputManager(properties: EditorInput.Attributes) {
 
-    const { ast, event, cursor } = useContext(EditorContext);
+    const {ast, event, cursor} = useContext(EditorContext)
 
-    const { inputRef } = useContext(DomContext);
-
-    let deferredEvent = useDeferredValue(event);
-
-    useEffect(() => {
-        if (queue.length > 0) {
-            event.currentEvent = queue.shift()
-            event.triggerEvent()
-        }
-    }, [deferredEvent]);
-
-    function triggerEditorEvent(type: string, data: any) {
-        queue.push({
-            queue: [],
-            instance: { type, data }
-        })
-        event.triggerEvent()
-    }
+    const {inputRef} = useContext(DomContext)
 
     function onInput(e: React.FormEvent<HTMLTextAreaElement>) {
-        const inputEvent = e.nativeEvent as InputEvent;
+        let inputEvent = e.nativeEvent as InputEvent;
+
         if (! inputEvent.isComposing) {
-            triggerEditorEvent(inputEvent.inputType, inputEvent.data);
+            event.currentEvent = {
+                queue: [],
+                instance: {
+                    type: inputEvent.inputType,
+                    data: inputEvent.data
+                }
+            }
+
+            event.triggerEvent()
         }
+
     }
 
     function onKeyDown(e: React.KeyboardEvent) {
-        if (allowedKeys.has(e.key)) {
-            triggerEditorEvent(e.key, e.key);
+        const whiteList = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Home", "End", "Backspace"]
+
+        if (whiteList.indexOf(e.key) > -1) {
+
+            event.currentEvent = {
+                queue: [],
+                instance: {
+                    type: e.key,
+                    data: e.key
+                }
+            }
+
+            event.triggerEvent()
+
         }
     }
 
-    function onCompositionUpdate(e: React.CompositionEvent) {
-        triggerEditorEvent("compositionUpdate", e.data);
+    function onCompositionUpdate(compositionEvent: React.CompositionEvent) {
+        event.currentEvent = {
+            queue: [],
+            instance: {
+                type: "compositionUpdate",
+                data: compositionEvent.data
+            }
+        }
+
+        event.triggerEvent()
     }
 
     useEffect(() => {
 
-        if (event.currentEvent) {
-            for (const command of event.currentEvent.queue) {
-                command.handle()
-            }
-
-            ast.triggerAST()
-            cursor.triggerCursor()
+        for (const command of event.currentEvent.queue) {
+            command.handle()
         }
 
-    }, [event.currentEvent?.queue]);
+        ast.triggerAST()
+        cursor.triggerCursor()
+
+    }, [event.currentEvent.queue]);
 
     return (
         <textarea ref={inputRef}
@@ -85,4 +89,4 @@ namespace EditorInput {
     export interface Attributes {}
 }
 
-export default InputManager;
+export default InputManager
