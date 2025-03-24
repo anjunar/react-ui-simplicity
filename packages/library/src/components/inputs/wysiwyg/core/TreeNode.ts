@@ -7,7 +7,7 @@ function getOuterHeightWithMargin(element : HTMLElement) {
     const style = window.getComputedStyle(element);
     const marginTop = parseFloat(style.marginTop) || 0
     const marginBottom = parseFloat(style.marginBottom) || 0
-    return (element.offsetHeight) + ((marginBottom + marginTop) / 2);
+    return (element.offsetHeight) + ((marginBottom + marginTop));
 }
 
 export abstract class AbstractNode {
@@ -24,6 +24,10 @@ export abstract class AbstractNode {
         let currentDomHeight = 0
 
         Object.defineProperty(this, "domHeight", {
+            configurable : true,
+            set(value : number) {
+              domHeight = value
+            },
             get(): number {
 
                 if (this.dom instanceof HTMLElement) {
@@ -106,6 +110,13 @@ export abstract class AbstractContainerNode<C extends AbstractNode> extends Abst
         Object.defineProperty(this, "children", {
             get(): any {
                 return membraneArray
+            }
+        })
+
+        Object.defineProperty(this, "domHeight", {
+            configurable : true,
+            get(): number {
+                return this.children.reduce((prev, curr) => prev + curr.domHeight, 0)
             }
         })
 

@@ -6,6 +6,7 @@ import Prism from "prismjs"
 import "prismjs/components/prism-typescript";
 import TokenLineProcessor from "./TokenLineProcessor";
 import {groupTokensIntoLines, tokenDiff, toTokenNodes} from "./CodeUtils";
+import {Min} from "../../../../shared/Model";
 
 function CodeProcessor(properties: CodeProcessor.Attributes) {
 
@@ -20,13 +21,15 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
     const visibleBlocks = useMemo(() => {
         if (!preRef.current) return [];
 
+        preRef.current.style.height = Math.min(412, node.domHeight) + "px"
+
         let height = 0;
         return node.children.filter(child => {
-            const isVisible = (height - scrollTop) < (preRef.current.clientHeight) && (height + child.domHeight * 2) >= scrollTop
+            const isVisible = (height - scrollTop) < (preRef.current.clientHeight - 48) && (height + child.domHeight * 2) >= scrollTop
             height += child.domHeight;
             return isVisible;
         });
-    }, [node.children.length, scrollTop, preRef.current]);
+    }, [node.children.length, scrollTop]);
 
     function onWheel(event : React.WheelEvent<HTMLPreElement>) {
         event.preventDefault()
@@ -60,7 +63,7 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
     }, [node]);
 
     return (
-        <pre ref={preRef} style={{overflowY: "auto", overflowX: "scroll", maxHeight: "412px", scrollbarWidth : "none"}} onWheel={onWheel} className={`language-${"typescript"}`}>
+        <pre ref={preRef} style={{overflowY: "auto", overflowX: "scroll", height: Math.min(412, node.domHeight), scrollbarWidth : "none"}} onWheel={onWheel} className={`language-${"typescript"}`}>
             <code style={{display: "block", fontFamily: "monospace", width: "max-content"}} className={`language-${"typescript"}`}>
                 {
                     visibleBlocks.map(node => <TokenLineProcessor key={node.id} node={node}/>)

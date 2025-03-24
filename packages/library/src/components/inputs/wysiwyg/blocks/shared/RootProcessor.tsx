@@ -14,7 +14,7 @@ function RootProcessor({node}: RootNode.Attributes) {
 
         let height = 0;
         return node.children.filter(child => {
-            const isVisible = (height - scrollTop) < editorRef.current.clientHeight && (height + child.domHeight * 2) >= scrollTop
+            const isVisible = (height - scrollTop) < editorRef.current.clientHeight && (height + child.domHeight) >= scrollTop
             height += child.domHeight;
             return isVisible;
         });
@@ -29,7 +29,7 @@ function RootProcessor({node}: RootNode.Attributes) {
         if (!contentEditable) return;
 
         const handleScroll = (event: WheelEvent) => {
-
+            event.preventDefault()
             setScrollTop((prev) => {
                 let minimum = prev + event.deltaY
                 minimum = Math.max(0, minimum);
