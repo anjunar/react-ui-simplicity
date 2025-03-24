@@ -64,27 +64,10 @@ function Editor(properties: Editor.Attributes) {
         }
     }, [ast]);
 
-    useEffect(() => {
-        let listener = (event : WheelEvent) => {
-            setScrollTop((prev) => {
-                let number = Math.max(0, prev + event.deltaY);
-
-                contentEditableRef.current.scrollTop = number
-
-                return number
-            });
-        };
-        contentEditableRef.current.addEventListener("wheel", listener)
-
-        return () => {
-            return contentEditableRef.current.removeEventListener("wheel", listener)
-        }
-    }, [scrollTop]);
-
     return (
         <div ref={editorRef} className={"editor"} style={{position: "relative", ...style}}>
                 <Toolbar page={page} onPage={value => setPage(value)}/>
-                <div ref={contentEditableRef} style={{position : "relative", height : "50%", overflow: "hidden", flex : 1}}>
+                <div ref={contentEditableRef} style={{position : "relative", height : "50%", overflow: "auto", scrollbarWidth : "none", flex : 1}}>
                     <Cursor />
                     <ProcessorFactory node={ast.root}/>
                     <Inspector/>
