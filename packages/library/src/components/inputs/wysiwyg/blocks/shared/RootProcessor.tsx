@@ -7,7 +7,6 @@ function RootProcessor({node}: RootNode.Attributes) {
     const [scrollTop, setScrollTop] = useState(0)
 
     const divRef = useRef<HTMLDivElement>(null);
-    const scrollDelta = useRef(0);
     const {editorRef, contentEditableRef} = useContext(DomContext);
 
     const visibleBlocks = useMemo(() => {
@@ -26,22 +25,12 @@ function RootProcessor({node}: RootNode.Attributes) {
     }, [node]);
 
     useEffect(() => {
-        let debounceTimeout: NodeJS.Timeout | null = null;
 
         const handleScroll = (event: WheelEvent) => {
-            // event.preventDefault();
-            scrollDelta.current += event.deltaY; // Delta aufsummieren
-
-            if (debounceTimeout) clearTimeout(debounceTimeout);
-
-            debounceTimeout = setTimeout(() => {
-                setScrollTop(prev => {
-                    const maxScroll = node.domHeight - contentEditableRef.current.offsetHeight
-                    const newScrollTop = Math.max(0, Math.min(prev + scrollDelta.current, maxScroll));
-                    scrollDelta.current = 0; // Reset nach Anwendung
-                    return newScrollTop;
-                });
-            }, 50); // Debounce-Zeit (anpassbar)
+            setScrollTop(prev => {
+                const maxScroll = node.domHeight - contentEditableRef.current.offsetHeight
+                return Math.max(0, Math.min(prev + event.deltaY, maxScroll));
+            });
         };
 
         contentEditableRef.current.addEventListener("wheel", handleScroll);
