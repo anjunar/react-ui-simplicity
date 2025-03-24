@@ -15,8 +15,6 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
 
     const [scrollTop, setScrollTop] = useState(0)
 
-    let scrollTopDeferred = useDeferredValue(scrollTop);
-
     const preRef = useRef<HTMLPreElement>(null);
 
     const visibleBlocks = useMemo(() => {
@@ -24,18 +22,19 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
 
         let height = 0;
         return node.children.filter(child => {
-            const isVisible = (height - scrollTop) < (preRef.current.clientHeight + 48) && (height + child.domHeight * 2) >= scrollTop
+            const isVisible = (height - scrollTop) < (preRef.current.clientHeight) && (height + child.domHeight * 2) >= scrollTop
             height += child.domHeight;
             return isVisible;
         });
-    }, [node.children.length, scrollTopDeferred, preRef.current]);
+    }, [node.children.length, scrollTop, preRef.current]);
 
     function onWheel(event : React.WheelEvent<HTMLPreElement>) {
+        event.preventDefault()
         event.stopPropagation()
         setScrollTop((prev) => {
             let minimum = prev + event.deltaY
             minimum = Math.max(0, minimum);
-            let maximum = node.children.reduce((sum, child) => sum + child.domHeight, 0) - (preRef.current.clientHeight + 48)
+            let maximum = node.children.reduce((sum, child) => sum + child.domHeight, 0) - (preRef.current.clientHeight)
             return Math.min(minimum, maximum);
         });
     }
@@ -63,7 +62,6 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
     return (
         <pre ref={preRef} style={{overflowY: "auto", overflowX: "scroll", maxHeight: "412px", scrollbarWidth : "none"}} onWheel={onWheel} className={`language-${"typescript"}`}>
             <code style={{display: "block", fontFamily: "monospace", width: "max-content"}} className={`language-${"typescript"}`}>
-                <div style={{height : scrollTop}}></div>
                 {
                     visibleBlocks.map(node => <TokenLineProcessor key={node.id} node={node}/>)
                 }

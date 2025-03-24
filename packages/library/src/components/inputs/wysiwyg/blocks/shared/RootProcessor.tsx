@@ -29,6 +29,7 @@ function RootProcessor({node}: RootNode.Attributes) {
         if (!contentEditable) return;
 
         const handleScroll = (event: WheelEvent) => {
+
             setScrollTop((prev) => {
                 let minimum = prev + event.deltaY
                 minimum = Math.max(0, minimum);
@@ -43,7 +44,6 @@ function RootProcessor({node}: RootNode.Attributes) {
 
     return (
         <div ref={divRef} className="root">
-            <div style={{height: scrollTop}}></div>
             {visibleBlocks.map(childNode => (
                 <ProcessorFactory key={childNode.id} node={childNode}/>
             ))}

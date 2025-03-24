@@ -26,7 +26,6 @@ export abstract class AbstractNode {
         Object.defineProperty(this, "domHeight", {
             get(): number {
 
-/*
                 if (this.dom instanceof HTMLElement) {
                     currentDomHeight = getOuterHeightWithMargin(this.dom)
                 } else {
@@ -38,9 +37,9 @@ export abstract class AbstractNode {
                 }
 
                 if (currentDomHeight > 0 && domHeight > 0 && currentDomHeight !== domHeight) {
-                    return currentDomHeight
+                    domHeight = currentDomHeight
+                    return domHeight
                 }
-*/
 
                 if (domHeight === 0) {
                     if (this.dom instanceof HTMLElement) {
