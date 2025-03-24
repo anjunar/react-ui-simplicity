@@ -10,7 +10,7 @@ export class TokenLineNode extends AbstractContainerNode<TokenNode> {
 
         Object.defineProperty(this, "domHeight", {
             get(): number {
-                return this.children.reduce((prev, curr) => prev = Math.max(curr.domHeight, prev), 0)
+                return 24
             }
         })
 
