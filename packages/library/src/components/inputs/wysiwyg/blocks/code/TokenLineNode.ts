@@ -7,8 +7,6 @@ export class TokenLineNode extends AbstractContainerNode<TokenNode> {
 
     type: string = "token-line"
 
-    height : number = 19
-
     constructor(children: TokenNode[]) {
         super(children);
     }

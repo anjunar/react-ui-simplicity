@@ -44,7 +44,7 @@ function CursorManager(properties: CursorManager.Attributes) {
 
         let abstractNode = cursor.currentCursor.container as (TextNode);
 
-        if (abstractNode.dom.isConnected) {
+        if (abstractNode.dom?.isConnected) {
             let abstractNode1 = abstractNode as TextNode
 
             if (abstractNode.dom instanceof HTMLElement) {

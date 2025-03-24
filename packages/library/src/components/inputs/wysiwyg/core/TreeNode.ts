@@ -1,12 +1,63 @@
 import {v4} from "uuid";
 import {flatten} from "./TreeNodes";
 import {membrane} from "./Membrane";
+import {node} from "webpack";
+
+function getOuterHeightWithMargin(element : HTMLElement) {
+    const style = window.getComputedStyle(element);
+    const marginTop = parseFloat(style.marginTop) || 0
+    const marginBottom = parseFloat(style.marginBottom) || 0
+    return (element.offsetHeight) + ((marginBottom + marginTop) / 2);
+}
 
 export abstract class AbstractNode {
-    id : string = v4()
     abstract type : string
+
+    id : string = v4()
     dom : Node
     parent: AbstractContainerNode<any>;
+    domHeight : number
+
+    constructor() {
+
+        let domHeight = 0
+        let currentDomHeight = 0
+
+        Object.defineProperty(this, "domHeight", {
+            get(): number {
+
+/*
+                if (this.dom instanceof HTMLElement) {
+                    currentDomHeight = getOuterHeightWithMargin(this.dom)
+                } else {
+                    if (this.dom instanceof Node) {
+                        currentDomHeight = getOuterHeightWithMargin(this.dom.parentElement)
+                    } else {
+                        currentDomHeight = 0
+                    }
+                }
+
+                if (currentDomHeight > 0 && domHeight > 0 && currentDomHeight !== domHeight) {
+                    return currentDomHeight
+                }
+*/
+
+                if (domHeight === 0) {
+                    if (this.dom instanceof HTMLElement) {
+                        domHeight = getOuterHeightWithMargin(this.dom)
+                    } else {
+                        if (this.dom instanceof Node) {
+                            domHeight = getOuterHeightWithMargin(this.dom.parentElement)
+                        } else {
+                            domHeight = 0
+                        }
+                    }
+                }
+                return domHeight
+            }
+        })
+
+    }
 
     get nextSibling(): AbstractNode {
         if (!this.parent) return null;

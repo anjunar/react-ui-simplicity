@@ -19,11 +19,6 @@ export class CodeNode extends AbstractContainerNode<TokenLineNode> {
         super(children);
     }
 
-    get height() {
-        let childrenHeight = this.children.reduce((prev, currentValue) => prev += currentValue.height, 0)
-        return Math.min(childrenHeight + CodeNode.Padding, CodeNode.MaximumLines * TokenLineNode.Height + CodeNode.Padding)
-    }
-
     updateText(newText: string, partText : string, index : number) : [TokenNode, number] {
         this.text = newText
 

@@ -21,7 +21,8 @@
     "url": "^0.11.4",
     "uuid": "^11.0.5",
     "prismjs": "^1.30.0",
-    "prism-themes": "^1.1.0"
+    "prism-themes": "^1.1.0",
+    "react-window": "^1.8.11"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
