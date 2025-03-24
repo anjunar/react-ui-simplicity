@@ -21,7 +21,7 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
     const visibleBlocks = useMemo(() => {
         if (!preRef.current) return [];
 
-        preRef.current.style.height = Math.min(412, node.domHeight) + "px"
+        preRef.current.style.height = node.domHeight + "px"
 
         let height = 0;
         return node.children.filter(child => {

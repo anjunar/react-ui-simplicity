@@ -1,18 +1,15 @@
-import {AbstractContainerNode, AbstractNode, TextNode} from "../../core/TreeNode";
+import {AbstractContainerNode, TextNode} from "../../core/TreeNode";
 
 export class ParagraphNode extends AbstractContainerNode<TextNode> {
     readonly type: string = "p"
 
-    constructor(children: TextNode[]= []) {
+    constructor(children: TextNode[] = []) {
         super(children);
 
-        let superProperty = this.domHeight
-
-
         Object.defineProperty(this, "domHeight", {
-            configurable : true,
+            configurable: true,
             get(): number {
-                return superProperty + this.children.reduce((prev, curr) => prev + curr.domHeight, 0)
+                return 16 + this.children.reduce((prev, curr) => prev = Math.max(curr.domHeight, prev), 0)
             }
         })
 
