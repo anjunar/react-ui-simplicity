@@ -1,12 +1,11 @@
 import "./CodeProcessor.css"
-import React, {useContext, useEffect, useRef, useState} from "react"
+import React, {useContext, useDeferredValue, useEffect, useMemo, useRef, useState} from "react"
 import {CodeNode} from "./CodeNode";
 import {EditorContext} from "../../contexts/EditorState";
 import Prism from "prismjs"
 import "prismjs/components/prism-typescript";
 import TokenLineProcessor from "./TokenLineProcessor";
 import {groupTokensIntoLines, tokenDiff, toTokenNodes} from "./CodeUtils";
-import {TokenLineNode} from "./TokenLineNode";
 
 function CodeProcessor(properties: CodeProcessor.Attributes) {
 
@@ -16,18 +15,29 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
 
     const [scrollTop, setScrollTop] = useState(0)
 
+    let scrollTopDeferred = useDeferredValue(scrollTop);
+
     const preRef = useRef<HTMLPreElement>(null);
 
-    function onScroll(event : React.UIEvent<HTMLPreElement>) {
-        let preElement = event.target as HTMLPreElement
+    const visibleBlocks = useMemo(() => {
+        if (!preRef.current) return [];
 
-        let newScrollTop = preElement.scrollTop
+        let height = 0;
+        return node.children.filter(child => {
+            const isVisible = (height - scrollTop) < (preRef.current.clientHeight + 48) && (height + child.domHeight * 2) >= scrollTop
+            height += child.domHeight;
+            return isVisible;
+        });
+    }, [node.children.length, scrollTopDeferred, preRef.current]);
 
-        let threshold = newScrollTop - scrollTop
-
-        if (threshold > 19 || threshold < -19) {
-            setScrollTop(newScrollTop)
-        }
+    function onWheel(event : React.WheelEvent<HTMLPreElement>) {
+        event.stopPropagation()
+        setScrollTop((prev) => {
+            let minimum = prev + event.deltaY
+            minimum = Math.max(0, minimum);
+            let maximum = node.children.reduce((sum, child) => sum + child.domHeight, 0) - (preRef.current.clientHeight + 48)
+            return Math.min(minimum, maximum);
+        });
     }
 
     useEffect(() => {
@@ -50,19 +60,13 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
         node.dom = preRef.current
     }, [node]);
 
-    let start = Math.round(scrollTop / TokenLineNode.Height);
-    let end = start + CodeNode.MaximumLines
-
-    let lineNodes = node.children.slice(start, end)
-
     return (
-        <pre ref={preRef} style={{overflow: "auto", maxHeight: "412px"}} onScroll={onScroll} className={`language-${"typescript"}`}>
+        <pre ref={preRef} style={{overflowY: "auto", overflowX: "scroll", maxHeight: "412px", scrollbarWidth : "none"}} onWheel={onWheel} className={`language-${"typescript"}`}>
             <code style={{display: "block", fontFamily: "monospace", width: "max-content"}} className={`language-${"typescript"}`}>
-                <div style={{height : Math.round(scrollTop / TokenLineNode.Height) * TokenLineNode.Height}}></div>
+                <div style={{height : scrollTop}}></div>
                 {
-                    lineNodes.map(node => <TokenLineProcessor key={node.id} node={node}/>)
+                    visibleBlocks.map(node => <TokenLineProcessor key={node.id} node={node}/>)
                 }
-                <div style={{height : node.children.length * TokenLineNode.Height - end * TokenLineNode.Height}}></div>
             </code>
         </pre>
     )

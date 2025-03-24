@@ -3,7 +3,7 @@ import {TokenNode} from "./TokenNode";
 
 export class TokenLineNode extends AbstractContainerNode<TokenNode> {
 
-    static Height : number = 19
+    static Height : number = 24
 
     type: string = "token-line"
 
