@@ -15,7 +15,7 @@ function RootProcessor({ node }: RootNode.Attributes) {
 
         let height = 0;
         return node.children.filter(child => {
-            const isVisible = height - scrollTop < editorRef.current.clientHeight && height >= scrollTop
+            const isVisible = (height - scrollTop) < editorRef.current.clientHeight && height + child.domHeight >= scrollTop
             height += child.domHeight;
             return isVisible;
         });
@@ -34,10 +34,7 @@ function RootProcessor({ node }: RootNode.Attributes) {
             const target = event.target as HTMLDivElement;
             const currentScrollTop = target.scrollTop
 
-            if ((currentScrollTop - scrollTop) > 20 || (currentScrollTop - scrollTop) < - 20) {
-                setScrollTop(currentScrollTop)
-            }
-
+            setScrollTop(currentScrollTop)
         };
 
         contentEditable.addEventListener("scroll", handleScroll);

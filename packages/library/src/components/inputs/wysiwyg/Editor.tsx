@@ -1,5 +1,5 @@
 import "./Editor.css"
-import React, {useContext, useEffect, useRef, useState} from "react"
+import React, {useContext, useEffect, useState} from "react"
 import Footer from "./ui/Footer";
 import Inspector from "./ui/Inspector";
 import Toolbar from "./ui/Toolbar";
@@ -11,7 +11,7 @@ import SelectionManager from "./manager/SelectionManager";
 import InspectorManager from "./manager/InspectorManager";
 import {EditorContext} from "./contexts/EditorState";
 import {TextNode} from "./core/TreeNode";
-import DomState, {DomContext} from "./contexts/DomState";
+import {DomContext} from "./contexts/DomState";
 import {TokenNode} from "./blocks/code/TokenNode";
 import {findParent} from "./core/TreeNodes";
 import {CodeNode} from "./blocks/code/CodeNode";
@@ -21,6 +21,8 @@ function Editor(properties: Editor.Attributes) {
     const {style} = properties
 
     const [page, setPage] = useState(0)
+
+    const [scrollTop, setScrollTop] = useState(0);
 
     const {ast, cursor : {currentCursor}} = useContext(EditorContext)
 
@@ -62,10 +64,27 @@ function Editor(properties: Editor.Attributes) {
         }
     }, [ast]);
 
+    useEffect(() => {
+        let listener = (event : WheelEvent) => {
+            setScrollTop((prev) => {
+                let number = Math.max(0, prev + event.deltaY);
+
+                contentEditableRef.current.scrollTop = number
+
+                return number
+            });
+        };
+        contentEditableRef.current.addEventListener("wheel", listener)
+
+        return () => {
+            return contentEditableRef.current.removeEventListener("wheel", listener)
+        }
+    }, [scrollTop]);
+
     return (
         <div ref={editorRef} className={"editor"} style={{position: "relative", ...style}}>
                 <Toolbar page={page} onPage={value => setPage(value)}/>
-                <div ref={contentEditableRef} style={{position : "relative", height : "50%", overflow: "auto", flex : 1}}>
+                <div ref={contentEditableRef} style={{position : "relative", height : "50%", overflow: "hidden", flex : 1}}>
                     <Cursor />
                     <ProcessorFactory node={ast.root}/>
                     <Inspector/>
