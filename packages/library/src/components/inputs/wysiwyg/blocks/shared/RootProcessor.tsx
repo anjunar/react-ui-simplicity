@@ -37,6 +37,29 @@ function RootProcessor({node}: RootNode.Attributes) {
         const contentEditable = contentEditableRef.current;
         if (!contentEditable) return;
 
+        let lastY = 0;
+
+        const handleTouchStart = (event: TouchEvent) => {
+            lastY = event.touches[0].clientY;
+        };
+
+        const handleTouchMove = (event: TouchEvent) => {
+            event.preventDefault();
+            const deltaY = lastY - event.touches[0].clientY;
+            lastY = event.touches[0].clientY;
+
+            setScrollTop(prev => {
+                const maxScroll = node.domHeight - contentEditable.offsetHeight;
+                const newScrollTop = Math.max(0, Math.min(prev + deltaY, maxScroll));
+
+                contentEditable.scrollTop = newScrollTop;
+                return newScrollTop;
+            });
+        };
+
+        contentEditable.addEventListener("touchstart", handleTouchStart);
+        contentEditable.addEventListener("touchmove", handleTouchMove);
+
         const handleWheel = (event: WheelEvent) => {
             event.preventDefault();
 
@@ -50,16 +73,11 @@ function RootProcessor({node}: RootNode.Attributes) {
             });
         };
 
-        const handleScroll = (event : Event) => {
-            let target = event.target as HTMLDivElement
-            setScrollTop(target.scrollTop)
-        }
-
-        contentEditable.addEventListener("scroll", handleScroll)
         contentEditable.addEventListener("wheel", handleWheel);
         return () => {
-            contentEditable.removeEventListener("scroll", handleScroll)
             contentEditable.removeEventListener("wheel", handleWheel)
+            contentEditable.removeEventListener("touchstart", handleTouchStart);
+            contentEditable.removeEventListener("touchmove", handleTouchMove);
         }
     }, []);
     return (

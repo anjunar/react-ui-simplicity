@@ -1,5 +1,5 @@
 import "./CodeProcessor.css"
-import React, {useContext, useDeferredValue, useEffect, useMemo, useRef, useState} from "react"
+import React, {useContext, useEffect, useMemo, useRef, useState} from "react"
 import {CodeNode} from "./CodeNode";
 import {EditorContext} from "../../contexts/EditorState";
 import Prism from "prismjs"
@@ -27,31 +27,47 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
     }, [node.children.length, node.text, scrollTop]);
 
     useEffect(() => {
+
+        let pre = preRef.current
+
+        let lastY = 0;
+
+        const handleTouchStart = (event: TouchEvent) => {
+            lastY = event.touches[0].clientY;
+        };
+
+        const handleTouchMove = (event: TouchEvent) => {
+            event.preventDefault();
+            event.stopPropagation()
+            const deltaY = lastY - event.touches[0].clientY;
+            lastY = event.touches[0].clientY;
+
+            setScrollTop(prev => {
+                const maxScroll = node.children.reduce((sum, child) => sum + child.domHeight, 0)
+                return Math.max(0, Math.min(prev + deltaY, maxScroll));
+            });
+        };
+
+        pre.addEventListener("touchstart", handleTouchStart);
+        pre.addEventListener("touchmove", handleTouchMove);
+
         function onWheel(event : WheelEvent) {
             event.preventDefault()
             event.stopPropagation()
             setScrollTop((prev) => {
                 let minimum = prev + event.deltaY * 0.5
                 minimum = Math.max(0, minimum);
-                let maximum = node.children.reduce((sum, child) => sum + child.domHeight, 0) - (preRef.current.clientHeight)
+                let maximum = node.children.reduce((sum, child) => sum + child.domHeight, 0)
                 return Math.min(minimum, maximum);
             });
         }
 
-        const handleScroll = (event : Event) => {
-            let target = event.target as HTMLDivElement
-            event.preventDefault()
-            event.stopPropagation()
-
-            setScrollTop(target.scrollTop)
-        }
-
-        preRef.current.addEventListener("scroll", handleScroll)
-        preRef.current.addEventListener("wheel", onWheel)
+        pre.addEventListener("wheel", onWheel)
 
         return () => {
-            preRef.current?.removeEventListener("scroll", handleScroll)
-            preRef.current?.removeEventListener("wheel", onWheel)
+            pre.removeEventListener("wheel", onWheel)
+            pre.removeEventListener("touchstart", handleTouchStart);
+            pre.removeEventListener("touchmove", handleTouchMove);
         }
     }, []);
 
