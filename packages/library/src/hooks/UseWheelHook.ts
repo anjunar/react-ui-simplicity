@@ -12,7 +12,9 @@ export function useWheel(callback: () => {ref : React.RefObject<HTMLElement>, ma
 
         let listener = (event : Event) => {
 
-            setState(element.scrollTop)
+            if (Math.abs(state - element.scrollTop) > 20) {
+                setState(element.scrollTop)
+            }
 
         };
 
@@ -22,7 +24,7 @@ export function useWheel(callback: () => {ref : React.RefObject<HTMLElement>, ma
             element.removeEventListener("scroll", listener)
         }
 
-    }, deps);
+    }, [state, ...deps]);
 
     return [state, setState]
 }

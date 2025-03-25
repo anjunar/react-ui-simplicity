@@ -22,8 +22,6 @@ function Editor(properties: Editor.Attributes) {
 
     const [page, setPage] = useState(0)
 
-    const [scrollTop, setScrollTop] = useState(0);
-
     const {ast, cursor : {currentCursor}} = useContext(EditorContext)
 
     const {editorRef, contentEditableRef} = useContext(DomContext)

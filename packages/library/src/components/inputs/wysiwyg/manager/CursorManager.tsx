@@ -64,8 +64,8 @@ function CursorManager(properties: CursorManager.Attributes) {
 
             updateCursorPosition(left, top, height);
 
-            inputRef.current?.focus();
             inputRef.current.style.top = top + 6 + "px"
+            inputRef.current?.focus();
         }
     }
 
@@ -138,7 +138,7 @@ function CursorManager(properties: CursorManager.Attributes) {
 
                 cursor.triggerCursor()
 
-                inputRef.current?.focus();
+                inputRef.current?.focus({preventScroll : true});
 
 
             }
