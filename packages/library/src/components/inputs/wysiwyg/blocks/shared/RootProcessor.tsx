@@ -41,26 +41,6 @@ function RootProcessor({node}: RootNode.Attributes) {
         node.dom = divRef.current;
     }, [node]);
 
-    useEffect(() => {
-        const contentEditable = contentEditableRef.current;
-        if (!contentEditable) return;
-
-        const currentBottom = scrollTop + contentEditable.clientHeight;
-        const lastBlock = node.children[node.children.length - 1];
-
-        if (lastBlock) {
-            const lastBlockBottom = node.virtualHeight - lastBlock.domHeight;
-
-            // Falls der neue Block außerhalb des sichtbaren Bereichs liegt, nach unten scrollen
-            if (currentBottom < lastBlockBottom) {
-                const newScrollPosition = node.virtualHeight - contentEditable.clientHeight;
-                contentEditable.scrollTop = newScrollPosition;
-                setScrollTop(newScrollPosition);
-            }
-        }
-
-    }, [node.children.length, node.virtualHeight]);
-
     return (
         <div ref={divRef} className="root">
             <div style={{height : offset}}></div>

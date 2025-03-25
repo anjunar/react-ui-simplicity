@@ -61,24 +61,6 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
         node.dom = preRef.current;
     }, [node]);
 
-    useEffect(() => {
-        const preElement = preRef.current;
-        if (!preElement) return;
-
-        const currentBottom = scrollTop + preElement.clientHeight;
-        const lastBlock = node.children[node.children.length - 1];
-
-        if (lastBlock) {
-            const lastBlockBottom = node.virtualHeight - lastBlock.domHeight;
-
-            if (currentBottom < lastBlockBottom) {
-                const newScrollPosition = node.virtualHeight - preElement.clientHeight;
-                preElement.scrollTop = newScrollPosition;
-                setScrollTop(newScrollPosition);
-            }
-        }
-
-    }, [node.children.length, node.virtualHeight]);
 
     return (
         <pre ref={preRef} style={{overflow: "auto", maxHeight: "412px"}} className="language-typescript">
