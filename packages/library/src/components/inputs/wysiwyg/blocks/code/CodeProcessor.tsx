@@ -1,11 +1,12 @@
 import "./CodeProcessor.css"
-import React, {useContext, useEffect, useMemo, useRef, useState} from "react"
+import React, {useContext, useEffect, useMemo, useRef} from "react"
 import {CodeNode} from "./CodeNode";
 import {EditorContext} from "../../contexts/EditorState";
 import Prism from "prismjs"
 import "prismjs/components/prism-typescript";
 import TokenLineProcessor from "./TokenLineProcessor";
 import {groupTokensIntoLines, tokenDiff, toTokenNodes} from "./CodeUtils";
+import {useWheel} from "../../../../../hooks/UseWheelHook";
 
 function CodeProcessor(properties: CodeProcessor.Attributes) {
 
@@ -13,9 +14,16 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
 
     const {ast: {root, triggerAST}, cursor, event: {currentEvent}} = useContext(EditorContext)
 
-    const [scrollTop, setScrollTop] = useState(0)
-
     const preRef = useRef<HTMLPreElement>(null);
+
+    let scrollTop = useWheel(() => {
+        return {
+            stopPropagating : true,
+            preventDefault : true,
+            ref : preRef,
+            maximum : node.children.reduce((sum, child) => sum + child.domHeight, 0) - (preRef.current.clientHeight)
+        }
+    }, [preRef.current, node.children.length]);
 
     const visibleBlocks = useMemo(() => {
         let height = 0;
@@ -25,51 +33,6 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
             return isVisible;
         });
     }, [node.children.length, node.text, scrollTop]);
-
-    useEffect(() => {
-
-        let pre = preRef.current
-
-        let lastY = 0;
-
-        const handleTouchStart = (event: TouchEvent) => {
-            lastY = event.touches[0].clientY;
-        };
-
-        const handleTouchMove = (event: TouchEvent) => {
-            event.preventDefault();
-            event.stopPropagation()
-            const deltaY = lastY - event.touches[0].clientY;
-            lastY = event.touches[0].clientY;
-
-            setScrollTop(prev => {
-                const maxScroll = node.children.reduce((sum, child) => sum + child.domHeight, 0) - (preRef.current.clientHeight)
-                return Math.max(0, Math.min(prev + deltaY, maxScroll));
-            });
-        };
-
-        pre.addEventListener("touchstart", handleTouchStart);
-        pre.addEventListener("touchmove", handleTouchMove);
-
-        function onWheel(event : WheelEvent) {
-            event.preventDefault()
-            event.stopPropagation()
-            setScrollTop((prev) => {
-                let minimum = prev + event.deltaY * 0.5
-                minimum = Math.max(0, minimum);
-                let maximum = node.children.reduce((sum, child) => sum + child.domHeight, 0) - (preRef.current.clientHeight)
-                return Math.min(minimum, maximum);
-            });
-        }
-
-        pre.addEventListener("wheel", onWheel)
-
-        return () => {
-            pre.removeEventListener("wheel", onWheel)
-            pre.removeEventListener("touchstart", handleTouchStart);
-            pre.removeEventListener("touchmove", handleTouchMove);
-        }
-    }, []);
 
     useEffect(() => {
 
