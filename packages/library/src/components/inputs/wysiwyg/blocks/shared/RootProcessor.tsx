@@ -9,6 +9,15 @@ function RootProcessor({node}: RootNode.Attributes) {
     const divRef = useRef<HTMLDivElement>(null);
     const {editorRef, contentEditableRef} = useContext(DomContext);
 
+    const offset = useMemo(() => {
+        let height = 0;
+        for (const child of node.children) {
+            if (height + child.domHeight > scrollTop) break;
+            height += child.domHeight;
+        }
+        return height;
+    }, [node.children.length, scrollTop]);
+
     const visibleBlocks = useMemo(() => {
         if (!editorRef.current) return [];
 
@@ -25,21 +34,28 @@ function RootProcessor({node}: RootNode.Attributes) {
     }, [node]);
 
     useEffect(() => {
+        const contentEditable = contentEditableRef.current;
+        if (!contentEditable) return;
 
         const handleScroll = (event: WheelEvent) => {
+            event.preventDefault();
+
             setScrollTop(prev => {
-                const maxScroll = node.domHeight - contentEditableRef.current.offsetHeight
-                return Math.max(0, Math.min(prev + event.deltaY, maxScroll));
+                const maxScroll = node.domHeight - contentEditable.offsetHeight;
+                const newScrollTop = Math.max(0, Math.min(prev + event.deltaY, maxScroll));
+
+                contentEditable.scrollTop = newScrollTop;
+
+                return newScrollTop;
             });
         };
 
-        contentEditableRef.current.addEventListener("wheel", handleScroll);
-        return () => contentEditableRef.current.removeEventListener("wheel", handleScroll);
-    }, [contentEditableRef.current, scrollTop]);
-
+        contentEditable.addEventListener("wheel", handleScroll);
+        return () => contentEditable.removeEventListener("wheel", handleScroll);
+    }, []);
     return (
         <div ref={divRef} className="root">
-            <div style={{height : scrollTop}}></div>
+            <div style={{height : offset}}></div>
             {visibleBlocks.map(childNode => (
                 <ProcessorFactory key={childNode.id} node={childNode}/>
             ))}

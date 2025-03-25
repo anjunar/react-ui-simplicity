@@ -20,7 +20,7 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
     const visibleBlocks = useMemo(() => {
         let height = 0;
         return node.children.filter(child => {
-            const isVisible = (height - scrollTop) < (node.domHeight - 48) && (height + child.domHeight * 2) >= scrollTop
+            const isVisible = (height - scrollTop) < (node.domHeight - 48) && (height + child.domHeight) >= scrollTop
             height += child.domHeight;
             return isVisible;
         });
@@ -31,7 +31,7 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
             event.preventDefault()
             event.stopPropagation()
             setScrollTop((prev) => {
-                let minimum = prev + event.deltaY
+                let minimum = prev + event.deltaY * 0.5
                 minimum = Math.max(0, minimum);
                 let maximum = node.children.reduce((sum, child) => sum + child.domHeight, 0) - (preRef.current.clientHeight)
                 return Math.min(minimum, maximum);
