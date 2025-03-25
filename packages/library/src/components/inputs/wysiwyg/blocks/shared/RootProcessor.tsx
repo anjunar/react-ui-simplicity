@@ -37,7 +37,7 @@ function RootProcessor({node}: RootNode.Attributes) {
         const contentEditable = contentEditableRef.current;
         if (!contentEditable) return;
 
-        const handleScroll = (event: WheelEvent) => {
+        const handleWheel = (event: WheelEvent) => {
             event.preventDefault();
 
             setScrollTop(prev => {
@@ -50,8 +50,17 @@ function RootProcessor({node}: RootNode.Attributes) {
             });
         };
 
-        contentEditable.addEventListener("wheel", handleScroll);
-        return () => contentEditable.removeEventListener("wheel", handleScroll);
+        const handleScroll = (event : Event) => {
+            let target = event.target as HTMLDivElement
+            setScrollTop(target.scrollTop)
+        }
+
+        contentEditable.addEventListener("scroll", handleScroll)
+        contentEditable.addEventListener("wheel", handleWheel);
+        return () => {
+            contentEditable.removeEventListener("scroll", handleScroll)
+            contentEditable.removeEventListener("wheel", handleWheel)
+        }
     }, []);
     return (
         <div ref={divRef} className="root">

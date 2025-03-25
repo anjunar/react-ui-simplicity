@@ -38,12 +38,22 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
             });
         }
 
+        const handleScroll = (event : Event) => {
+            let target = event.target as HTMLDivElement
+            event.preventDefault()
+            event.stopPropagation()
+
+            setScrollTop(target.scrollTop)
+        }
+
+        preRef.current.addEventListener("scroll", handleScroll)
         preRef.current.addEventListener("wheel", onWheel)
 
         return () => {
+            preRef.current?.removeEventListener("scroll", handleScroll)
             preRef.current?.removeEventListener("wheel", onWheel)
         }
-    }, [scrollTop]);
+    }, []);
 
     useEffect(() => {
 
