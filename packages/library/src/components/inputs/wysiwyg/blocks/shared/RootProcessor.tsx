@@ -14,7 +14,7 @@ function RootProcessor({node}: RootNode.Attributes) {
             ref : contentEditableRef,
             maximum : node.virtualHeight - contentEditableRef.current.offsetHeight
         }
-    }, [contentEditableRef.current, node.children.length, node.virtualHeight])
+    }, [contentEditableRef.current, node.children.length, node.virtualHeight]);
 
     const offset = useMemo(() => {
         let height = 0;
@@ -30,7 +30,8 @@ function RootProcessor({node}: RootNode.Attributes) {
 
         let height = 0;
         return node.children.filter(child => {
-            const isVisible = (height - scrollTop) <= contentEditableRef.current.clientHeight && (height + child.domHeight) >= scrollTop
+            const isVisible = (height - scrollTop) <= contentEditableRef.current.clientHeight &&
+                (height + child.domHeight) >= scrollTop;
             height += child.domHeight;
             return isVisible;
         });
@@ -44,15 +45,21 @@ function RootProcessor({node}: RootNode.Attributes) {
         const contentEditable = contentEditableRef.current;
         if (!contentEditable) return;
 
-        const isAtBottom = (scrollTop + contentEditable.clientHeight) >= (node.domHeight - 150)
+        const currentBottom = scrollTop + contentEditable.clientHeight;
+        const lastBlock = node.children[node.children.length - 1];
 
-        if (isAtBottom) {
-            let number = node.domHeight - contentEditable.clientHeight;
-            contentEditable.scrollTop = number
-            setScrollTop(number)
+        if (lastBlock) {
+            const lastBlockBottom = node.virtualHeight - lastBlock.domHeight;
+
+            // Falls der neue Block außerhalb des sichtbaren Bereichs liegt, nach unten scrollen
+            if (currentBottom < lastBlockBottom) {
+                const newScrollPosition = node.virtualHeight - contentEditable.clientHeight;
+                contentEditable.scrollTop = newScrollPosition;
+                setScrollTop(newScrollPosition);
+            }
         }
 
-    }, [node.children.length, node.domHeight]);
+    }, [node.children.length, node.virtualHeight]);
 
     return (
         <div ref={divRef} className="root">
@@ -60,7 +67,7 @@ function RootProcessor({node}: RootNode.Attributes) {
             {visibleBlocks.map(childNode => (
                 <ProcessorFactory key={childNode.id} node={childNode}/>
             ))}
-            <div style={{height : node.virtualHeight - (contentEditableRef.current?.clientHeight || 0) - offset}}></div>
+            <div style={{height: Math.max(0, node.virtualHeight - (contentEditableRef.current?.clientHeight || 0) - offset)}}></div>
         </div>
     );
 }

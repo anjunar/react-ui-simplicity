@@ -10,51 +10,18 @@ export function useWheel(callback: () => {ref : React.RefObject<HTMLElement>, ma
 
         let element = ref.current;
 
-        let lastY = 0;
+        let listener = (event : Event) => {
 
-        const handleTouchStart = (event: TouchEvent) => {
-            lastY = event.touches[0].clientY;
+            setState(element.scrollTop)
+
         };
 
-        const handleTouchMove = (event: TouchEvent) => {
-            if (preventDefault) {
-                event.preventDefault();
-            }
-            if (stopPropagating) {
-                event.stopPropagation()
-            }
-
-            const deltaY = lastY - event.touches[0].clientY;
-            lastY = event.touches[0].clientY;
-
-            setState(prev => {
-                return Math.max(0, Math.min(prev + deltaY, maximum));
-            });
-        };
-
-        element.addEventListener("touchstart", handleTouchStart);
-        element.addEventListener("touchmove", handleTouchMove);
-
-        let wheelListener = (event : WheelEvent) => {
-            if (preventDefault) {
-                event.preventDefault();
-            }
-            if (stopPropagating) {
-                event.stopPropagation()
-            }
-
-            setState(prev => {
-                return Math.max(0, Math.min(prev + event.deltaY, maximum));
-            });
-        };
-
-        element.addEventListener("wheel", wheelListener)
+        element.addEventListener("scroll", listener)
 
         return () => {
-            element.removeEventListener("wheel", wheelListener)
-            element.removeEventListener("touchstart", handleTouchStart);
-            element.removeEventListener("touchmove", handleTouchMove);
+            element.removeEventListener("scroll", listener)
         }
+
     }, deps);
 
     return [state, setState]

@@ -10,21 +10,19 @@ import {useWheel} from "../../../../../hooks/UseWheelHook";
 
 function CodeProcessor(properties: CodeProcessor.Attributes) {
 
-    const {node} = properties
-
-    const {ast: {root, triggerAST}, cursor, event: {currentEvent}} = useContext(EditorContext)
+    const {node} = properties;
+    const {ast: {root, triggerAST}, cursor, event: {currentEvent}} = useContext(EditorContext);
 
     const [renderPass, setRenderPass] = useState(0);
-
     const preRef = useRef<HTMLPreElement>(null);
 
     let [scrollTop, setScrollTop] = useWheel(() => {
         return {
-            stopPropagating : true,
-            ref : preRef,
-            maximum : node.virtualHeight - preRef.current.clientHeight
-        }
-    }, [preRef.current, node.children.length]);
+            stopPropagating: true,
+            ref: preRef,
+            maximum: node.virtualHeight - preRef.current.clientHeight
+        };
+    }, [preRef.current, node.children.length, node.virtualHeight]);
 
     const offset = useMemo(() => {
         let height = 0;
@@ -38,51 +36,67 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
     const visibleBlocks = useMemo(() => {
         let height = 0;
         return node.children.filter(child => {
-            const isVisible = (height - scrollTop) <= (node.domHeight) && (height + child.domHeight) >= scrollTop
+            const isVisible = (height - scrollTop) <= preRef.current?.clientHeight &&
+                (height + child.domHeight) >= scrollTop;
             height += child.domHeight;
             return isVisible;
         });
     }, [node.children.length, node.text, scrollTop, renderPass]);
 
     useEffect(() => {
-
-        let tokens = Prism.tokenize(node.text, Prism.languages.typescript)
-
+        let tokens = Prism.tokenize(node.text, Prism.languages.typescript);
         let nodes = toTokenNodes(tokens);
-
         let tokenLineNodes = groupTokensIntoLines(nodes);
-
         let tokenDiffer = tokenDiff(node.children, tokenLineNodes);
 
-        node.children.length = 0
-        node.children.push(...tokenDiffer)
+        node.children.length = 0;
+        node.children.push(...tokenDiffer);
 
-        triggerAST()
+        triggerAST();
 
         setTimeout(() => setRenderPass(1), 0);
     }, []);
 
     useEffect(() => {
-        node.dom = preRef.current
+        node.dom = preRef.current;
     }, [node]);
 
+    useEffect(() => {
+        const preElement = preRef.current;
+        if (!preElement) return;
+
+        const currentBottom = scrollTop + preElement.clientHeight;
+        const lastBlock = node.children[node.children.length - 1];
+
+        if (lastBlock) {
+            const lastBlockBottom = node.virtualHeight - lastBlock.domHeight;
+
+            if (currentBottom < lastBlockBottom) {
+                const newScrollPosition = node.virtualHeight - preElement.clientHeight;
+                preElement.scrollTop = newScrollPosition;
+                setScrollTop(newScrollPosition);
+            }
+        }
+
+    }, [node.children.length, node.virtualHeight]);
+
     return (
-        <pre ref={preRef} style={{overflow: "auto", maxHeight: "412px"}} className={`language-${"typescript"}`}>
-            <code style={{display: "block", fontFamily: "monospace", width: "max-content"}} className={`language-${"typescript"}`}>
-                <div style={{height : offset}}></div>
+        <pre ref={preRef} style={{overflow: "auto", maxHeight: "412px"}} className="language-typescript">
+            <code style={{display: "block", fontFamily: "monospace", width: "max-content"}} className="language-typescript">
+                <div style={{height: offset}}></div>
                 {
                     visibleBlocks.map(node => <TokenLineProcessor key={node.id} node={node}/>)
                 }
-                <div style={{height : node.virtualHeight - (preRef.current?.clientHeight || 0) - offset}}></div>
+                <div style={{height: Math.max(0, node.virtualHeight - (preRef.current?.clientHeight || 0) - offset)}}></div>
             </code>
         </pre>
-    )
+    );
 }
 
 namespace CodeProcessor {
     export interface Attributes {
-        node: CodeNode
+        node: CodeNode;
     }
 }
 
-export default CodeProcessor
+export default CodeProcessor;
