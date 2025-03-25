@@ -6,7 +6,7 @@ table.table {
 
 table.table > tbody > tr > td {
     height: 48px;
-    vertical-align: top;
+    vertical-align: middle;
     min-width: 20px;
     white-space: nowrap;
     padding-right: 5px;

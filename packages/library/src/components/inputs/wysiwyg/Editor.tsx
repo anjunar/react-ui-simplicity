@@ -67,7 +67,7 @@ function Editor(properties: Editor.Attributes) {
     return (
         <div ref={editorRef} className={"editor"} style={{position: "relative", ...style}}>
                 <Toolbar page={page} onPage={value => setPage(value)}/>
-                <div ref={contentEditableRef} style={{position : "relative", height : "50%", overflow: "auto", scrollbarWidth : "none", flex : 1}}>
+                <div ref={contentEditableRef} style={{position : "relative", height : "50%", overflowY: "auto", overflowX : "hidden", flex : 1}}>
                     <Cursor />
                     <ProcessorFactory node={ast.root}/>
                     <Inspector/>

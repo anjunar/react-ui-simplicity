@@ -12,11 +12,15 @@ figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
   border: 0;
+  box-sizing: border-box;
   vertical-align: baseline;
+  margin: 0;
+  padding: 0;
 }
 
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
+  box-sizing: border-box;
   display: block;
 }
 body {
@@ -24,8 +28,14 @@ body {
   margin: 0;
 }
 ol, ul {
-  list-style: decimal;
+  padding-left: 40px;
 }
+
+p {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
 blockquote, q {
   quotes: none;
 }
@@ -63,4 +73,9 @@ select, textarea {
 
 pre {
   white-space: pre-wrap;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 100, 100, 0.5) transparent;
 }

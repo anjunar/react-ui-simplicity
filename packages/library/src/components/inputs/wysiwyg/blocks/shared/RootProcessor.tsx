@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useMemo, useRef, useState} from "react";
+import React, {useContext, useEffect, useMemo, useRef} from "react";
 import {RootNode} from "../../core/TreeNode";
 import ProcessorFactory from "./ProcessorFactory";
 import {DomContext} from "../../contexts/DomState";
@@ -7,14 +7,14 @@ import {useWheel} from "../../../../../hooks/UseWheelHook";
 function RootProcessor({node}: RootNode.Attributes) {
 
     const divRef = useRef<HTMLDivElement>(null);
-    const {editorRef, contentEditableRef} = useContext(DomContext);
+    const {contentEditableRef} = useContext(DomContext);
 
     const [scrollTop, setScrollTop] = useWheel(() => {
         return {
             ref : contentEditableRef,
-            maximum : node.domHeight - contentEditableRef.current.offsetHeight
+            maximum : node.virtualHeight - contentEditableRef.current.offsetHeight
         }
-    }, [contentEditableRef.current, node.children.length])
+    }, [contentEditableRef.current, node.children.length, node.virtualHeight])
 
     const offset = useMemo(() => {
         let height = 0;
@@ -26,15 +26,15 @@ function RootProcessor({node}: RootNode.Attributes) {
     }, [node.children.length, scrollTop]);
 
     const visibleBlocks = useMemo(() => {
-        if (!editorRef.current) return [];
+        if (!contentEditableRef.current) return [];
 
         let height = 0;
         return node.children.filter(child => {
-            const isVisible = (height - scrollTop) < editorRef.current.clientHeight && (height + child.domHeight) >= scrollTop
+            const isVisible = (height - scrollTop) <= contentEditableRef.current.clientHeight && (height + child.domHeight) >= scrollTop
             height += child.domHeight;
             return isVisible;
         });
-    }, [node.children.length, scrollTop, editorRef.current]);
+    }, [node.children.length, scrollTop, contentEditableRef.current]);
 
     useEffect(() => {
         node.dom = divRef.current;
@@ -55,11 +55,12 @@ function RootProcessor({node}: RootNode.Attributes) {
     }, [node.children.length, node.domHeight]);
 
     return (
-        <div ref={divRef} className="root" style={{ paddingBottom: "150px", minHeight: `calc(100vh + 150px)`}}>
+        <div ref={divRef} className="root">
             <div style={{height : offset}}></div>
             {visibleBlocks.map(childNode => (
                 <ProcessorFactory key={childNode.id} node={childNode}/>
             ))}
+            <div style={{height : node.virtualHeight - (contentEditableRef.current?.clientHeight || 0) - offset}}></div>
         </div>
     );
 }

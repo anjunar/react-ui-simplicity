@@ -21,11 +21,19 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
     let [scrollTop, setScrollTop] = useWheel(() => {
         return {
             stopPropagating : true,
-            preventDefault : true,
             ref : preRef,
-            maximum : node.children.reduce((sum, child) => sum + child.domHeight, 0) - (preRef.current.clientHeight)
+            maximum : node.virtualHeight - preRef.current.clientHeight
         }
     }, [preRef.current, node.children.length]);
+
+    const offset = useMemo(() => {
+        let height = 0;
+        for (const child of node.children) {
+            if (height + child.domHeight > scrollTop) break;
+            height += child.domHeight;
+        }
+        return height;
+    }, [node.children.length, scrollTop]);
 
     const visibleBlocks = useMemo(() => {
         let height = 0;
@@ -59,11 +67,13 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
     }, [node]);
 
     return (
-        <pre ref={preRef} style={{overflowY: "auto", overflowX: "scroll", maxHeight: "412px", scrollbarWidth : "none"}} className={`language-${"typescript"}`}>
+        <pre ref={preRef} style={{overflow: "auto", maxHeight: "412px"}} className={`language-${"typescript"}`}>
             <code style={{display: "block", fontFamily: "monospace", width: "max-content"}} className={`language-${"typescript"}`}>
+                <div style={{height : offset}}></div>
                 {
                     visibleBlocks.map(node => <TokenLineProcessor key={node.id} node={node}/>)
                 }
+                <div style={{height : node.virtualHeight - (preRef.current?.clientHeight || 0) - offset}}></div>
             </code>
         </pre>
     )

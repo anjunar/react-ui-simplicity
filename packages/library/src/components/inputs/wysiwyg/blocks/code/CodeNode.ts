@@ -15,6 +15,10 @@ export class CodeNode extends AbstractContainerNode<TokenLineNode> {
         super(children);
     }
 
+    get virtualHeight() : number {
+        return this.children.reduce((prev, curr) => prev + curr.domHeight, 0)
+    }
+
     updateText(newText: string, partText : string, index : number) : [TokenNode, number] {
         this.text = newText
 

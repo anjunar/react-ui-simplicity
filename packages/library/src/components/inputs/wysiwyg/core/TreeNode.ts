@@ -3,13 +3,6 @@ import {flatten} from "./TreeNodes";
 import {membrane} from "./Membrane";
 import {node} from "webpack";
 
-function getOuterHeightWithMargin(element : HTMLElement) {
-    const style = window.getComputedStyle(element);
-    const marginTop = parseFloat(style.marginTop) || 0
-    const marginBottom = parseFloat(style.marginBottom) || 0
-    return (element.offsetHeight) + ((marginBottom + marginTop));
-}
-
 export abstract class AbstractNode {
     abstract type : string
 
@@ -24,18 +17,8 @@ export abstract class AbstractNode {
         let currentDomHeight = 0
 
         Object.defineProperty(this, "domHeight", {
-            configurable : true,
             get(): number {
-
-                if (this.dom instanceof HTMLElement) {
-                    currentDomHeight = getOuterHeightWithMargin(this.dom)
-                } else {
-                    if (this.dom instanceof Node) {
-                        currentDomHeight = getOuterHeightWithMargin(this.dom.parentElement)
-                    } else {
-                        currentDomHeight = 0
-                    }
-                }
+                currentDomHeight = this.getDomHeight();
 
                 if (currentDomHeight > 0 && domHeight > 0 && currentDomHeight !== domHeight) {
                     domHeight = currentDomHeight
@@ -43,20 +26,24 @@ export abstract class AbstractNode {
                 }
 
                 if (domHeight === 0) {
-                    if (this.dom instanceof HTMLElement) {
-                        domHeight = getOuterHeightWithMargin(this.dom)
-                    } else {
-                        if (this.dom instanceof Node) {
-                            domHeight = getOuterHeightWithMargin(this.dom.parentElement)
-                        } else {
-                            domHeight = 0
-                        }
-                    }
+                    domHeight = this.getDomHeight();
                 }
                 return domHeight
             }
         })
 
+    }
+
+    private getDomHeight() {
+        if (this.dom instanceof HTMLElement) {
+            return this.dom.offsetHeight
+        } else {
+            if (this.dom instanceof Node) {
+                return this.dom.parentElement.offsetHeight
+            } else {
+                return 0
+            }
+        }
     }
 
     get nextSibling(): AbstractNode {
@@ -128,6 +115,10 @@ export class RootNode extends AbstractContainerNode<AbstractNode> {
 
     constructor(children: AbstractNode[] = []) {
         super(children);
+    }
+
+    get virtualHeight() : number {
+        return this.children.reduce((prev, curr) => prev + curr.domHeight, 0)
     }
 
     get flatten() : AbstractNode[] {

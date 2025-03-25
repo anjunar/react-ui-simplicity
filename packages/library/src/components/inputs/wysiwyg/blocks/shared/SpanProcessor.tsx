@@ -309,7 +309,7 @@ function SpanProcessor(properties: SpanNode.Attributes) {
     let style = generateStyleObject(node);
 
     return (
-        <span ref={spanRef}
+        <span ref={spanRef} data-height={node.domHeight}
               style={Object.keys(style).length === 0 ? null : style}
               className={classNames.length === 0 ? null : classNames.join(" ")}>
             {node.text.length === 0 ? "\u200B" : node.text}
