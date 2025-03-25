@@ -8,8 +8,6 @@ export class TokenNode extends AbstractNode {
 
     index: number
 
-    domHeight = 24
-
     constructor(content: string | TokenNode[], type: string, index: number) {
         super();
         this.text = content;

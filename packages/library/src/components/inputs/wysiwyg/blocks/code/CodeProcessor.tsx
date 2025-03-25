@@ -1,5 +1,5 @@
 import "./CodeProcessor.css"
-import React, {useContext, useEffect, useMemo, useRef} from "react"
+import React, {useContext, useEffect, useMemo, useRef, useState} from "react"
 import {CodeNode} from "./CodeNode";
 import {EditorContext} from "../../contexts/EditorState";
 import Prism from "prismjs"
@@ -14,9 +14,11 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
 
     const {ast: {root, triggerAST}, cursor, event: {currentEvent}} = useContext(EditorContext)
 
+    const [renderPass, setRenderPass] = useState(0);
+
     const preRef = useRef<HTMLPreElement>(null);
 
-    let scrollTop = useWheel(() => {
+    let [scrollTop, setScrollTop] = useWheel(() => {
         return {
             stopPropagating : true,
             preventDefault : true,
@@ -28,11 +30,11 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
     const visibleBlocks = useMemo(() => {
         let height = 0;
         return node.children.filter(child => {
-            const isVisible = (height - scrollTop) < (node.domHeight - 48) && (height + child.domHeight) >= scrollTop
+            const isVisible = (height - scrollTop) <= (node.domHeight) && (height + child.domHeight) >= scrollTop
             height += child.domHeight;
             return isVisible;
         });
-    }, [node.children.length, node.text, scrollTop]);
+    }, [node.children.length, node.text, scrollTop, renderPass]);
 
     useEffect(() => {
 
@@ -48,6 +50,8 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
         node.children.push(...tokenDiffer)
 
         triggerAST()
+
+        setTimeout(() => setRenderPass(1), 0);
     }, []);
 
     useEffect(() => {
@@ -55,7 +59,7 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
     }, [node]);
 
     return (
-        <pre ref={preRef} style={{overflowY: "auto", overflowX: "scroll", height: node.domHeight, scrollbarWidth : "none"}} className={`language-${"typescript"}`}>
+        <pre ref={preRef} style={{overflowY: "auto", overflowX: "scroll", maxHeight: "412px", scrollbarWidth : "none"}} className={`language-${"typescript"}`}>
             <code style={{display: "block", fontFamily: "monospace", width: "max-content"}} className={`language-${"typescript"}`}>
                 {
                     visibleBlocks.map(node => <TokenLineProcessor key={node.id} node={node}/>)

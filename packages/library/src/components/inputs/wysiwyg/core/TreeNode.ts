@@ -25,9 +25,6 @@ export abstract class AbstractNode {
 
         Object.defineProperty(this, "domHeight", {
             configurable : true,
-            set(value : number) {
-              domHeight = value
-            },
             get(): number {
 
                 if (this.dom instanceof HTMLElement) {
@@ -110,13 +107,6 @@ export abstract class AbstractContainerNode<C extends AbstractNode> extends Abst
         Object.defineProperty(this, "children", {
             get(): any {
                 return membraneArray
-            }
-        })
-
-        Object.defineProperty(this, "domHeight", {
-            configurable : true,
-            get(): number {
-                return this.children.reduce((prev, curr) => prev + curr.domHeight, 0)
             }
         })
 

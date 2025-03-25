@@ -24,15 +24,6 @@ function InspectorManager(properties: InspectorManager.Attributes) {
 
                 let selectedNode: AbstractNode = findNode(ast.root, (node) => node.dom === caretPosition.offsetNode);
 
-                if (!selectedNode) {
-                    selectedNode = findNode(ast.root, (node) => {
-                        if (node.type === "code") {
-                            return node.dom.contains(caretPosition.offsetNode)
-                        }
-                        return false
-                    });
-                }
-
                 if (selectedNode) {
                     cursor.currentCursor = {
                         container: selectedNode,
@@ -55,7 +46,7 @@ function InspectorManager(properties: InspectorManager.Attributes) {
 
             onContentClick(event)
 
-            const container = editorRef.current;
+            const container = contentEditableRef.current;
 
             let viewport = document.getElementById("viewport") || document.querySelector("body");
             let boundingClientRect = viewport.getBoundingClientRect();

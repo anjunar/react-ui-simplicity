@@ -7,12 +7,5 @@ export class TokenLineNode extends AbstractContainerNode<TokenNode> {
 
     constructor(children: TokenNode[]) {
         super(children);
-
-        Object.defineProperty(this, "domHeight", {
-            get(): number {
-                return 24
-            }
-        })
-
     }
 }

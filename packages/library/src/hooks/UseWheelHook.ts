@@ -1,6 +1,6 @@
 import React, {DependencyList, useEffect, useState} from "react";
 
-export function useWheel(callback: () => {ref : React.RefObject<HTMLElement>, maximum : number, stopPropagating? : boolean, preventDefault? : boolean}, deps : DependencyList) {
+export function useWheel(callback: () => {ref : React.RefObject<HTMLElement>, maximum : number, stopPropagating? : boolean, preventDefault? : boolean}, deps : DependencyList) : [number, React.Dispatch<number>] {
 
     const [state, setState] = useState(0)
 
@@ -57,5 +57,5 @@ export function useWheel(callback: () => {ref : React.RefObject<HTMLElement>, ma
         }
     }, deps);
 
-    return state
+    return [state, setState]
 }

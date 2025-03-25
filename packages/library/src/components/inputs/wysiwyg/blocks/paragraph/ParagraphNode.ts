@@ -5,14 +5,6 @@ export class ParagraphNode extends AbstractContainerNode<TextNode> {
 
     constructor(children: TextNode[] = []) {
         super(children);
-
-        Object.defineProperty(this, "domHeight", {
-            configurable: true,
-            get(): number {
-                return 16 + this.children.reduce((prev, curr) => prev = Math.max(curr.domHeight, prev), 0)
-            }
-        })
-
     }
 
     mergeAdjacentTextNodes() {

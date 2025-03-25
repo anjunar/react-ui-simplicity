@@ -9,7 +9,7 @@ function RootProcessor({node}: RootNode.Attributes) {
     const divRef = useRef<HTMLDivElement>(null);
     const {editorRef, contentEditableRef} = useContext(DomContext);
 
-    const scrollTop = useWheel(() => {
+    const [scrollTop, setScrollTop] = useWheel(() => {
         return {
             ref : contentEditableRef,
             maximum : node.domHeight - contentEditableRef.current.offsetHeight
@@ -40,8 +40,22 @@ function RootProcessor({node}: RootNode.Attributes) {
         node.dom = divRef.current;
     }, [node]);
 
+    useEffect(() => {
+        const contentEditable = contentEditableRef.current;
+        if (!contentEditable) return;
+
+        const isAtBottom = (scrollTop + contentEditable.clientHeight) >= (node.domHeight - 150)
+
+        if (isAtBottom) {
+            let number = node.domHeight - contentEditable.clientHeight;
+            contentEditable.scrollTop = number
+            setScrollTop(number)
+        }
+
+    }, [node.children.length, node.domHeight]);
+
     return (
-        <div ref={divRef} className="root">
+        <div ref={divRef} className="root" style={{ paddingBottom: "150px", minHeight: `calc(100vh + 150px)`}}>
             <div style={{height : offset}}></div>
             {visibleBlocks.map(childNode => (
                 <ProcessorFactory key={childNode.id} node={childNode}/>
