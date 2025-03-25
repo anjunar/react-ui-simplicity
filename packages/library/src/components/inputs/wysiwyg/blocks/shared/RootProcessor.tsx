@@ -44,7 +44,6 @@ function RootProcessor({node}: RootNode.Attributes) {
         };
 
         const handleTouchMove = (event: TouchEvent) => {
-            event.preventDefault();
             const deltaY = lastY - event.touches[0].clientY;
             lastY = event.touches[0].clientY;
 

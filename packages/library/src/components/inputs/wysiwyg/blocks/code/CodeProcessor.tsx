@@ -43,7 +43,7 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
             lastY = event.touches[0].clientY;
 
             setScrollTop(prev => {
-                const maxScroll = node.children.reduce((sum, child) => sum + child.domHeight, 0)
+                const maxScroll = node.children.reduce((sum, child) => sum + child.domHeight, 0) - (preRef.current.clientHeight)
                 return Math.max(0, Math.min(prev + deltaY, maxScroll));
             });
         };
@@ -57,7 +57,7 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
             setScrollTop((prev) => {
                 let minimum = prev + event.deltaY * 0.5
                 minimum = Math.max(0, minimum);
-                let maximum = node.children.reduce((sum, child) => sum + child.domHeight, 0)
+                let maximum = node.children.reduce((sum, child) => sum + child.domHeight, 0) - (preRef.current.clientHeight)
                 return Math.min(minimum, maximum);
             });
         }
