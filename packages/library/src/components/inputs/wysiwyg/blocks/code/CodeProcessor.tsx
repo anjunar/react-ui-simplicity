@@ -41,7 +41,7 @@ function CodeProcessor(properties: CodeProcessor.Attributes) {
             height += child.domHeight;
             return isVisible;
         });
-    }, [node.children.length, node.text, scrollTop, renderPass]);
+    }, [node.text, scrollTop, renderPass, node.children.map(node => node.id).join(", ")]);
 
     useEffect(() => {
         let tokens = Prism.tokenize(node.text, Prism.languages.typescript);

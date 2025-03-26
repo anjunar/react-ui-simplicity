@@ -35,7 +35,7 @@ function RootProcessor({node}: RootNode.Attributes) {
             height += child.domHeight;
             return isVisible;
         });
-    }, [node.children.length, scrollTop, contentEditableRef.current]);
+    }, [scrollTop, contentEditableRef.current, node.children.map(node => node.id).join(", ")]);
 
     useEffect(() => {
         node.dom = divRef.current;
