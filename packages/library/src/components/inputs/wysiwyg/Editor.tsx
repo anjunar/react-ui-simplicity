@@ -15,6 +15,7 @@ import {DomContext} from "./contexts/DomState";
 import {TokenNode} from "./blocks/code/TokenNode";
 import {findParent} from "./core/TreeNodes";
 import {CodeNode} from "./blocks/code/CodeNode";
+import InputText from "./ui/InputText";
 
 function Editor(properties: Editor.Attributes) {
 
@@ -63,18 +64,19 @@ function Editor(properties: Editor.Attributes) {
     }, [ast]);
 
     return (
-        <div ref={editorRef} className={"editor"} style={{position: "relative", ...style}}>
+        <div ref={editorRef} className={"editor"} style={style}>
                 <Toolbar page={page} onPage={value => setPage(value)}/>
                 <div ref={contentEditableRef} style={{position : "relative", height : "50%", overflowY: "auto", overflowX : "hidden", flex : 1}}>
                     <Cursor />
                     <ProcessorFactory node={ast.root}/>
                     <Inspector/>
-                    <InputManager/>
+                    <InputText/>
                 </div>
                 <CursorManager/>
                 <SelectionManager/>
                 <InspectorManager/>
-                <Footer page={page} onPage={(value) => setPage(value)}/>
+                <InputManager/>
+            <Footer page={page} onPage={(value) => setPage(value)}/>
         </div>
     )
 }

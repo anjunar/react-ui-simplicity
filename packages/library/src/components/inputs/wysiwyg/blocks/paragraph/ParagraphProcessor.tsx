@@ -13,7 +13,7 @@ function ParagraphProcessor(properties: ParagraphProcessor.Attributes) {
     }, [node]);
 
     return (
-        <p ref={divRef} className={node.justify ? node.justify : null} data-height={node.domHeight}>
+        <p ref={divRef} className={node.justify ? node.justify : null}>
             {node.children.length === 0 ? <br/> : ""}
             {
                 node.children.map(node => <ProcessorFactory key={node.id} node={node}/>)
