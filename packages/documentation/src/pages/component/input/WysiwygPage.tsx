@@ -1,7 +1,5 @@
 import React from "react";
-import {CodeProvider, DomState, Editor, EditorState, ImageProvider, ListProvider, ParagraphProvider, TableProvider} from "react-ui-simplicity";
-import {RootNode} from "react-ui-simplicity/src/components/inputs/wysiwyg/core/TreeNode";
-import {CodeNode} from "react-ui-simplicity/src/components/inputs/wysiwyg/blocks/code/CodeNode";
+import {CodeNode, CodeProvider, DomState, Editor, EditorState, ImageProvider, ListProvider, ParagraphProvider, RootNode, TableProvider} from "react-ui-simplicity";
 
 export default function WysiwygPage() {
     return (
