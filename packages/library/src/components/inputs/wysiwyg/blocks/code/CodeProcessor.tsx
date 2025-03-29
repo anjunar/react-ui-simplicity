@@ -3,7 +3,7 @@ import React, {useContext, useEffect, useMemo, useRef, useState} from "react"
 import {CodeNode} from "./CodeNode";
 import {EditorContext} from "../../contexts/EditorState";
 import Prism from "prismjs"
-import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-typescript.js";
 import TokenLineProcessor from "./TokenLineProcessor";
 import {groupTokensIntoLines, tokenDiff, toTokenNodes} from "./CodeUtils";
 import {useWheel} from "../../../../../hooks/UseWheelHook";
