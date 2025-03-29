@@ -22,6 +22,12 @@ import CollectionDescriptor from "./descriptors/CollectionDescriptor";
 import EnumDescriptor from "./descriptors/EnumDescriptor";
 import NodeDescriptor from "./descriptors/NodeDescriptor";
 import ObjectDescriptor from "./descriptors/ObjectDescriptor";
+import {AbstractContainerNode, AbstractNode, RootNode, TextNode} from "../components/inputs/wysiwyg/core/TreeNode";
+import {CodeNode} from "../components/inputs/wysiwyg/blocks/code/CodeNode";
+import {ImageNode} from "../components/inputs/wysiwyg/blocks/image/ImageNode";
+import {ItemNode, ListNode} from "../components/inputs/wysiwyg/blocks/list/ListNode";
+import {ParagraphNode} from "../components/inputs/wysiwyg/blocks/paragraph/ParagraphNode";
+import {TableCellNode, TableNode, TableRowNode} from "../components/inputs/wysiwyg/blocks/table/TableNode";
 
 export function init() {
 
@@ -43,6 +49,19 @@ export function init() {
     registerEntity(EmailValidator)
     registerEntity(PastValidator)
     registerEntity(PatternValidator)
+
+    registerEntity(AbstractNode)
+    registerEntity(AbstractContainerNode)
+    registerEntity(RootNode)
+    registerEntity(TextNode)
+    registerEntity(CodeNode)
+    registerEntity(ImageNode)
+    registerEntity(ItemNode)
+    registerEntity(ListNode)
+    registerEntity(ParagraphNode)
+    registerEntity(TableCellNode)
+    registerEntity(TableRowNode)
+    registerEntity(TableNode)
 
     registerConverter(Date, new DateConverter())
     registerConverter(LocalDateTime, new LocalDateTimeConverter())

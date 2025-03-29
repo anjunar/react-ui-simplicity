@@ -56,7 +56,7 @@ function EditorState(properties: EditorState.Attributes) {
                 setAstState({...astState})
             }
         },
-        providers : providers,
+        providers: providers,
         cursor: {
             get currentCursor() {
                 return cursorState.currentCursor
@@ -104,8 +104,8 @@ function EditorState(properties: EditorState.Attributes) {
 
 namespace EditorState {
     export interface Attributes {
-        children : React.ReactNode
-        providers : AbstractProvider<any, any, any, any>[]
+        children: React.ReactNode
+        providers: AbstractProvider<any, any, any, any>[]
     }
 
     export interface GeneralEvent {
@@ -114,7 +114,7 @@ namespace EditorState {
     }
 
     export interface Context {
-        providers : AbstractProvider<any, any, any, any>[]
+        providers: AbstractProvider<any, any, any, any>[]
         ast: {
             root: RootNode,
             triggerAST(): void
@@ -141,7 +141,7 @@ namespace EditorState {
                 instance: GeneralEvent
             }
             triggerEvent(): void
-            transition : [boolean, TransitionStartFunction]
+            transition: [boolean, TransitionStartFunction]
         }
     }
 }

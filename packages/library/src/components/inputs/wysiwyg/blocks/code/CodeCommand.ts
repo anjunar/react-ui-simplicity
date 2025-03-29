@@ -12,7 +12,9 @@ export class CodeCommand extends AbstractCommand<AbstractNode> {
         let grandParent = parent.parent;
 
         let tokenNode = new TokenNode("", "text", 0);
-        let codeNode = new CodeNode([new TokenLineNode([tokenNode])]);
+        let tokenLineNode = new TokenLineNode([tokenNode]);
+        let codeNode = new CodeNode("");
+        codeNode.appendChild(tokenLineNode)
 
         if (node instanceof TextNode && node.text) {
             grandParent.insertChild(index + 1, codeNode)

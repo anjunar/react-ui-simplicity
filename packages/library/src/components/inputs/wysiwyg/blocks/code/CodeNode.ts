@@ -4,13 +4,21 @@ import Prism from "prismjs";
 import {TokenNode} from "./TokenNode";
 import {groupTokensIntoLines, tokenDiff, toTokenNodes} from "./CodeUtils";
 import {findNode} from "../../core/TreeNodes";
+import Basic from "../../../../../mapper/annotations/Basic";
+import Entity from "../../../../../mapper/annotations/Entity";
+import {node} from "webpack";
 
+@Entity("CodeNode")
 export class CodeNode extends AbstractContainerNode<TokenLineNode> {
 
-    text: string = "import \"./Editor.css\"\nimport React, {useContext, useEffect, useState} from \"react\"\nimport Footer from \"./ui/Footer\";\nimport Inspector from \"./ui/Inspector\";\nimport Toolbar from \"./ui/Toolbar\";\nimport Cursor from \"./ui/Cursor\";\nimport ProcessorFactory from \"./blocks/shared/ProcessorFactory\";\nimport InputManager from \"./manager/InputManager\";\nimport CursorManager from \"./manager/CursorManager\";\nimport SelectionManager from \"./manager/SelectionManager\";\nimport InspectorManager from \"./manager/InspectorManager\";\nimport {EditorContext} from \"./contexts/EditorState\";\nimport {TextNode} from \"./core/TreeNode\";\nimport {DomContext} from \"./contexts/DomState\";\nimport {TokenNode} from \"./blocks/code/TokenNode\";\nimport {findParent} from \"./core/TreeNodes\";\nimport {CodeNode} from \"./blocks/code/CodeNode\";\n\nfunction Editor(properties: Editor.Attributes) {\n\n    const {style} = properties\n\n    const [page, setPage] = useState(0)\n\n    const [scrollTop, setScrollTop] = useState(0);\n\n    const {ast, cursor : {currentCursor}} = useContext(EditorContext)\n\n    const {editorRef, contentEditableRef} = useContext(DomContext)\n\n    useEffect(() => {\n        function onPaste(event : ClipboardEvent) {\n            event.preventDefault()\n\n            let text = event.clipboardData.getData(\"text\");\n\n            let container = currentCursor.container;\n\n            if (container instanceof TextNode) {\n                let start = container.text.substring(0, currentCursor.offset);\n                let end = container.text.substring(currentCursor.offset);\n\n                container.text = start + text + end\n            }\n\n            if (container instanceof TokenNode) {\n                let codeNode = findParent(container, node => node instanceof CodeNode) as CodeNode\n\n                let number = container.index + currentCursor.offset;\n                let start = codeNode.text.substring(0, number);\n                let end = codeNode.text.substring(number);\n\n                let newText = start + text + end;\n                codeNode.updateText(newText, \"\", number)\n            }\n\n            ast.triggerAST()\n        }\n\n        document.addEventListener(\"paste\", onPaste)\n\n        return () => {\n            document.removeEventListener(\"paste\", onPaste)\n        }\n    }, [ast]);\n\n    return (\n        <div ref={editorRef} className={\"editor\"} style={{position: \"relative\", ...style}}>\n                <Toolbar page={page} onPage={value => setPage(value)}/>\n                <div ref={contentEditableRef} style={{position : \"relative\", height : \"50%\", overflow: \"auto\", scrollbarWidth : \"none\", flex : 1}}>\n                    <Cursor />\n                    <ProcessorFactory node={ast.root}/>\n                    <Inspector/>\n                    <InputManager/>\n                </div>\n                <CursorManager/>\n                <SelectionManager/>\n                <InspectorManager/>\n                <Footer page={page} onPage={(value) => setPage(value)}/>\n        </div>\n    )\n}\n\nnamespace Editor {\n    export interface Attributes {\n        style?: React.CSSProperties,\n    }\n}\n\nexport default Editor"
+    @Basic()
+    text: string = ""
 
-    constructor(children: TokenLineNode[]) {
-        super(children);
+    readonly children: TokenLineNode[]
+
+    constructor(text: string) {
+        super([]);
+        this.text = text;
     }
 
     get virtualHeight() : number {

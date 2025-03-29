@@ -10,24 +10,35 @@ import CursorManager from "./manager/CursorManager";
 import SelectionManager from "./manager/SelectionManager";
 import InspectorManager from "./manager/InspectorManager";
 import {EditorContext} from "./contexts/EditorState";
-import {TextNode} from "./core/TreeNode";
+import {RootNode, TextNode} from "./core/TreeNode";
 import {DomContext} from "./contexts/DomState";
 import {TokenNode} from "./blocks/code/TokenNode";
 import {findParent} from "./core/TreeNodes";
 import {CodeNode} from "./blocks/code/CodeNode";
 import InputText from "./ui/InputText";
+import {useInput} from "../../../hooks/UseInputHook";
 
 function Editor(properties: Editor.Attributes) {
 
-    const {style} = properties
+    const {style, name, standalone, value} = properties
 
     const [page, setPage] = useState(0)
+
+    const [model, root, setRoot] = useInput(name, value, standalone, "editor")
 
     const {ast, cursor : {currentCursor}} = useContext(EditorContext)
 
     const {editorRef, contentEditableRef} = useContext(DomContext)
 
     useEffect(() => {
+        ast.root = root
+        ast.triggerAST()
+    }, [root]);
+
+    useEffect(() => {
+
+        setRoot(ast.root)
+
         function onPaste(event : ClipboardEvent) {
             event.preventDefault()
 
@@ -83,7 +94,10 @@ function Editor(properties: Editor.Attributes) {
 
 namespace Editor {
     export interface Attributes {
-        style?: React.CSSProperties,
+        style?: React.CSSProperties
+        name? : string
+        standalone? : boolean
+        value? : RootNode
     }
 }
 

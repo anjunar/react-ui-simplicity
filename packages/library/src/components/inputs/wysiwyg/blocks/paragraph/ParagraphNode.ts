@@ -1,6 +1,15 @@
 import {AbstractContainerNode, TextNode} from "../../core/TreeNode";
+import Entity from "../../../../../mapper/annotations/Entity";
+import {node} from "webpack";
+import Basic from "../../../../../mapper/annotations/Basic";
 
+@Entity("ParagraphNode")
 export class ParagraphNode extends AbstractContainerNode<TextNode> {
+
+    $type = "ParagraphNode"
+
+    @Basic()
+    readonly children: TextNode[];
 
     constructor(children: TextNode[] = []) {
         super(children);

@@ -18,6 +18,7 @@ function ProcessorFactory(properties: ProcessorFactory.Attributes) : React.React
         .with(RootNode, (node) => {
             return <RootProcessor node={node as RootNode}/>
         })
+        // @ts-ignore
         .with(AbstractNode, (node) => {
             let provider = providers.find(provider => node instanceof provider.node);
             return React.createElement(provider.processor, {node})

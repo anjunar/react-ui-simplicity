@@ -1,17 +1,19 @@
-import {v4} from "uuid";
 import {flatten} from "./TreeNodes";
 import {membrane} from "./Membrane";
-import {node} from "webpack";
+import AbstractEntity from "../../../../domain/container/AbstractEntity";
+import Basic from "../../../../mapper/annotations/Basic";
+import MappedSuperclass from "../../../../mapper/annotations/MappedSuperclass";
+import Entity from "../../../../mapper/annotations/Entity";
 
-export class AbstractNode {
+@MappedSuperclass("AbstractNode")
+export abstract class AbstractNode extends AbstractEntity {
 
-    id : string = v4()
-    dom : Node
+    dom: Node
     parent: AbstractContainerNode<any>;
-    domHeight : number
+    domHeight: number
 
     constructor() {
-
+        super();
         let domHeight = 0
         let currentDomHeight = 0
 
@@ -57,7 +59,7 @@ export class AbstractNode {
         return index > 0 ? this.parent.children[index - 1] : null;
     }
 
-    get parentIndex() : number {
+    get parentIndex(): number {
         if (this.parent) {
             return this.parent.children.indexOf(this)
         }
@@ -71,7 +73,7 @@ export class AbstractNode {
         }
     }
 
-    after(node : AbstractNode) {
+    after(node: AbstractNode) {
         let index = this.parentIndex;
         let parent = this.parent
         parent.children.splice(index + 1, 0, node)
@@ -79,11 +81,13 @@ export class AbstractNode {
 
 }
 
+@MappedSuperclass("AbstractContainerNode")
 export abstract class AbstractContainerNode<C extends AbstractNode> extends AbstractNode {
 
-    readonly children : C[]
+    readonly abstract children: C[]
 
-    justify : string
+    @Basic()
+    justify: string
 
     protected constructor(children: C[]) {
         super();
@@ -96,7 +100,7 @@ export abstract class AbstractContainerNode<C extends AbstractNode> extends Abst
             }
         })
 
-        this.children.push(...children)
+        membraneArray.push(...children)
     }
 
     appendChild(node: C) {
@@ -109,44 +113,65 @@ export abstract class AbstractContainerNode<C extends AbstractNode> extends Abst
 
 }
 
+@Entity("RootNode")
 export class RootNode extends AbstractContainerNode<AbstractNode> {
+
+    $type = "RootNode"
+
+    @Basic()
+    readonly children: AbstractNode[];
+
     constructor(children: AbstractNode[] = []) {
         super(children);
     }
 
-    get virtualHeight() : number {
+    get virtualHeight(): number {
         return this.children.reduce((prev, curr) => prev + curr.domHeight, 0)
     }
 
-    get flatten() : AbstractNode[] {
+    get flatten(): AbstractNode[] {
         return flatten(this)
     }
 
 }
 
+@Entity("TextNode")
 export class TextNode extends AbstractNode {
 
-    block : "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" = "p"
+    $type = "TextNode"
 
-    text : string = ""
+    @Basic()
+    block: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" = "p"
 
-    bold : boolean = false
+    @Basic()
+    text: string = ""
 
-    italic : boolean = false
+    @Basic()
+    bold: boolean = false
 
-    deleted : boolean = false
+    @Basic()
+    italic: boolean = false
 
-    sup : boolean = false
+    @Basic()
+    deleted: boolean = false
 
-    sub : boolean = false
+    @Basic()
+    sup: boolean = false
 
-    fontFamily : string = ""
+    @Basic()
+    sub: boolean = false
 
-    fontSize : string = ""
+    @Basic()
+    fontFamily: string = ""
 
-    color : string = ""
+    @Basic()
+    fontSize: string = ""
 
-    backgroundColor : string = ""
+    @Basic()
+    color: string = ""
+
+    @Basic()
+    backgroundColor: string = ""
 
     constructor(text: string = "") {
         super();
