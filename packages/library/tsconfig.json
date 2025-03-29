@@ -6,7 +6,7 @@
     "emitDecoratorMetadata": true,
     "target": "ES6",
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "lib": ["dom", "dom.iterable", "esnext"],
     "noImplicitAny": false,
     "allowJs": true,

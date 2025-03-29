@@ -3,7 +3,6 @@ import App from "./App";
 import HomePage from "./pages/home/HomePage";
 import FormsPage from "./pages/component/FormsPage";
 import InputPage from "./pages/component/input/InputPage";
-import EditorPage from "./pages/component/input/EditorPage";
 import SelectPage from "./pages/component/input/SelectPage";
 import LazySelectPage from "./pages/component/input/LazySelectPage";
 import ImagePage from "./pages/component/input/ImagePage";
@@ -41,10 +40,6 @@ export const routes: Router.Route[] = [
                         path: "/forms",
                         component: FormsPage,
                         children: [
-                            {
-                                path: "/editor",
-                                component: EditorPage
-                            },
                             {
                                 path: "/input",
                                 component: InputPage

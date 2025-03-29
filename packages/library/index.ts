@@ -12,6 +12,9 @@ export {default as LazySelect} from "./src/components/inputs/select/lazy/LazySel
 export {default as VideoUpload} from "./src/components/inputs/upload/video/VideoUpload"
 export {default as Image} from "./src/components/inputs/upload/image/Image"
 export {default as ImageUpload} from "./src/components/inputs/upload/image/ImageUpload"
+export {default as Media} from "./src/components/inputs/upload/image/Media"
+export {default as Thumbnail} from "./src/components/inputs/upload/image/Thumbnail"
+
 export {default as Editor} from "./src/components/inputs/wysiwyg/Editor"
 export {default as EditorState} from "./src/components/inputs/wysiwyg/contexts/EditorState"
 export {default as DomState} from "./src/components/inputs/wysiwyg/contexts/DomState"
@@ -79,10 +82,6 @@ export {default as PatternValidator} from "./src/domain/descriptors/validators/P
 export {default as SizeValidator} from "./src/domain/descriptors/validators/SizeValidator"
 export {default as Validator} from "./src/domain/descriptors/validators/Validator"
 export {default as ValidatorContainer} from "./src/domain/descriptors/validators/ValidatorContainer"
-
-export {default as EditorModel} from "./src/domain/components/input/editor/EditorModel"
-export {default as Media} from "./src/domain/components/input/image/Media"
-export {default as Thumbnail} from "./src/domain/components/input/image/Thumbnail"
 
 export {default as CollectionDescriptor} from "./src/domain/descriptors/CollectionDescriptor"
 export {default as EnumDescriptor} from "./src/domain/descriptors/EnumDescriptor"

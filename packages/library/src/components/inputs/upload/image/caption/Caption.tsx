@@ -1,6 +1,6 @@
 import "./Caption.css"
 import React, {CSSProperties, MutableRefObject, useEffect, useRef} from "react"
-import Media from "../../../../../domain/components/input/image/Media";
+import Media from "../Media";
 
 function Caption(properties: Caption.Attributes) {
 

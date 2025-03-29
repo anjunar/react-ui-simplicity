@@ -1,8 +1,8 @@
 import "./ImageUpload.css"
 import React, {CSSProperties, useDeferredValue, useLayoutEffect, useMemo, useRef, useState} from "react"
 import Caption from "./caption/Caption"
-import Media from "../../../../domain/components/input/image/Media";
-import Thumbnail from "../../../../domain/components/input/image/Thumbnail";
+import Media from "./Media";
+import Thumbnail from "./Thumbnail";
 import {useInput} from "../../../../hooks/UseInputHook";
 
 function ImageUpload(properties: ImageUpload.Attributes) {

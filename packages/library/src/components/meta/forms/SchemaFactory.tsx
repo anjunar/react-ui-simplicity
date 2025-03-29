@@ -8,13 +8,20 @@ import SchemaSubForm from "./SchemaSubForm"
 import SchemaFormArray from "./SchemaFormArray"
 import SubForm from "../../inputs/form/SubForm"
 import {SchemaFormContext} from "./SchemaForm"
-import Editor from "../../inputs/editor/Editor";
 import {FormContext} from "../../inputs/form/Form";
 import {findClass} from "../../../mapper/Registry";
 import {Validator} from "../../shared/Model";
 import CollectionDescriptor from "../../../domain/descriptors/CollectionDescriptor";
 import ObjectDescriptor from "../../../domain/descriptors/ObjectDescriptor";
 import Validable from "../../../domain/descriptors/Validable";
+import EditorState from "../../inputs/wysiwyg/contexts/EditorState";
+import DomState from "../../inputs/wysiwyg/contexts/DomState";
+import Editor from "../../inputs/wysiwyg/Editor";
+import {ParagraphProvider} from "../../inputs/wysiwyg/blocks/paragraph/ParagraphProvider";
+import {ListProvider} from "../../inputs/wysiwyg/blocks/list/ListProvider";
+import {ImageProvider} from "../../inputs/wysiwyg/blocks/image/ImageProvider";
+import {TableProvider} from "../../inputs/wysiwyg/blocks/table/TableProvider";
+import {CodeProvider} from "../../inputs/wysiwyg/blocks/code/CodeProvider";
 
 function SchemaFactory(properties: SchemaFactory.Attributes) {
 
@@ -80,7 +87,12 @@ function SchemaFactory(properties: SchemaFactory.Attributes) {
         }
         case "editor" : {
             return (
-                <Editor name={name} style={{height: "calc(100% - 48px)", width: "100%"}}/>
+                <EditorState providers={[new ParagraphProvider(), new ListProvider(), new ImageProvider(), new TableProvider(), new CodeProvider()]}>
+                    <DomState>
+                        <Editor name={name} style={{height: "calc(100% - 48px)", width: "100%"}}/>
+                    </DomState>
+                </EditorState>
+
             )
         }
         case "image":

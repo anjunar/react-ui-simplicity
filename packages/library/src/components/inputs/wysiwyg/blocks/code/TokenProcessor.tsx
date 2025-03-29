@@ -14,19 +14,21 @@ const deleteContentBackward: CommandRule<TokenNode> = {
     process(current, node, currentEvent, root) {
         if (typeof node.text === "string") {
             let code = findParent(node, elem => elem instanceof CodeNode) as CodeNode
-            let index = node.index + current.offset
 
-            let start = code.text.substring(0, index - 1)
-            let end = code.text.substring(index)
+            if (code.text) {
+                let index = node.index + current.offset
 
-            let newText = start + end;
+                let start = code.text.substring(0, index - 1)
+                let end = code.text.substring(index)
 
-            let updateText = code.updateText(newText, "", index - 1);
+                let newText = start + end;
 
-            let [container, newIndex] = updateText;
-            current.container = container
-            current.offset = newIndex
+                let updateText = code.updateText(newText, "", index - 1);
 
+                let [container, newIndex] = updateText;
+                current.container = container
+                current.offset = newIndex
+            }
         }
     }
 }

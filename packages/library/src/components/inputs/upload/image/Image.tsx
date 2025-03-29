@@ -2,7 +2,7 @@ import "./Image.css"
 import React, {CSSProperties, useState} from "react";
 import Window from "../../../modal/window/Window";
 import ImageUpload from "./ImageUpload";
-import Media from "../../../../domain/components/input/image/Media";
+import Media from "./Media";
 import {useInput} from "../../../../hooks/UseInputHook";
 import {createPortal} from "react-dom";
 

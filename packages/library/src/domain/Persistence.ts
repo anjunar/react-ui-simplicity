@@ -1,10 +1,9 @@
 import {registerConverter, registerEntity} from "../mapper/Registry";
 import LinkObject from "./container/LinkObject";
-import Media from "./components/input/image/Media";
-import Editor from "./components/input/editor/EditorModel";
+import Media from "../components/inputs/upload/image/Media";
 import TableObject from "./container/TableObject";
 import RowObject from "./container/RowObject";
-import Thumbnail from "./components/input/image/Thumbnail";
+import Thumbnail from "../components/inputs/upload/image/Thumbnail";
 import DateConverter from "../mapper/converters/DateConverter";
 import LocalDateTimeConverter from "../mapper/converters/LocalDateTimeConverter";
 import LocalDateConverter from "../mapper/converters/LocalDateConverter";
@@ -36,7 +35,6 @@ export function init() {
     registerEntity(LinkObject)
     registerEntity(Media)
     registerEntity(Thumbnail)
-    registerEntity(Editor)
 
     registerEntity(CollectionDescriptor)
     registerEntity(EnumDescriptor)

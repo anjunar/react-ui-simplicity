@@ -5,6 +5,7 @@
   "types": "build/types/index.d.ts",
   "type": "module",
   "scripts": {
+    "generate-barrels": "barrelsby -d ./src/ -D -E -s filesystem",
     "build": "webpack --config webpack.config.js --mode=production"
   },
   "keywords": [],
@@ -20,14 +21,15 @@
     "prismjs": "^1.30.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "uuid": "^11.0.5",
-    "react-window": "^1.8.11"
+    "react-window": "^1.8.11",
+    "uuid": "^11.0.5"
   },
   "devDependencies": {
     "@types/prismjs": "^1.26.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@types/uuid": "^10.0.0",
+    "barrelsby": "^2.8.1",
     "css-loader": "^7.1.2",
     "html-webpack-plugin": "^5.6.3",
     "reflect-metadata": "^0.2.2",
