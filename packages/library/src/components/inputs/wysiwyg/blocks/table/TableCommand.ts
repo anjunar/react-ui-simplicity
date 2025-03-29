@@ -13,7 +13,15 @@ export class TableCommand extends AbstractCommand<AbstractNode> {
 
         let textNode = new TextNode();
 
-        grandParent.insertChild(index + 1, new TableNode([new TableRowNode([new TableCellNode([new ParagraphNode([textNode])]), new TableCellNode([new ParagraphNode([new TextNode()])])])]))
+        let tableNode = new TableNode([new TableRowNode([new TableCellNode([new ParagraphNode([textNode])]), new TableCellNode([new ParagraphNode([new TextNode()])])])]);
+
+
+        if (node instanceof TextNode && node.text) {
+            grandParent.insertChild(index + 1, tableNode)
+        } else {
+            parent.remove()
+            grandParent.insertChild(index + 1, tableNode)
+        }
 
         context.cursor.currentCursor.container = textNode
         context.cursor.currentCursor.offset = 0

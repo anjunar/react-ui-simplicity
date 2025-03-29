@@ -3,8 +3,7 @@ import {flatten} from "./TreeNodes";
 import {membrane} from "./Membrane";
 import {node} from "webpack";
 
-export abstract class AbstractNode {
-    abstract type : string
+export class AbstractNode {
 
     id : string = v4()
     dom : Node
@@ -75,7 +74,7 @@ export abstract class AbstractNode {
     after(node : AbstractNode) {
         let index = this.parentIndex;
         let parent = this.parent
-        parent.children.splice(index + 1, 1, node)
+        parent.children.splice(index + 1, 0, node)
     }
 
 }
@@ -111,8 +110,6 @@ export abstract class AbstractContainerNode<C extends AbstractNode> extends Abst
 }
 
 export class RootNode extends AbstractContainerNode<AbstractNode> {
-    readonly type: string = "root"
-
     constructor(children: AbstractNode[] = []) {
         super(children);
     }
@@ -128,8 +125,6 @@ export class RootNode extends AbstractContainerNode<AbstractNode> {
 }
 
 export class TextNode extends AbstractNode {
-
-    readonly type: string = "text"
 
     block : "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" = "p"
 

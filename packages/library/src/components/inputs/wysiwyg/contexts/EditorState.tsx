@@ -105,7 +105,7 @@ function EditorState(properties: EditorState.Attributes) {
 namespace EditorState {
     export interface Attributes {
         children : React.ReactNode
-        providers : AbstractProvider<any, any, any>[]
+        providers : AbstractProvider<any, any, any, any>[]
     }
 
     export interface GeneralEvent {
@@ -114,7 +114,7 @@ namespace EditorState {
     }
 
     export interface Context {
-        providers : AbstractProvider<any, any, any>[]
+        providers : AbstractProvider<any, any, any, any>[]
         ast: {
             root: RootNode,
             triggerAST(): void

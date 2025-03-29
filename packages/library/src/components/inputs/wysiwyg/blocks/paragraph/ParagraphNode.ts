@@ -1,7 +1,6 @@
 import {AbstractContainerNode, TextNode} from "../../core/TreeNode";
 
 export class ParagraphNode extends AbstractContainerNode<TextNode> {
-    readonly type: string = "p"
 
     constructor(children: TextNode[] = []) {
         super(children);

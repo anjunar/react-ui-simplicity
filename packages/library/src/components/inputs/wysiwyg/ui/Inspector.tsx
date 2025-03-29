@@ -22,7 +22,7 @@ function Inspector(properties: Inspector.Attributes) {
             let cursor = currentCursor.container
 
             while (cursor) {
-                let provider = providers.find(provider => provider.type === cursor.type)
+                let provider = providers.find(provider => cursor instanceof provider.node)
 
                 if (provider) {
                     nodes.push(cursor)
@@ -46,7 +46,7 @@ function Inspector(properties: Inspector.Attributes) {
         if (currentCursor) {
             let selectedNode = hierarchicalNodes.find(node => node.id === selectedNodeId)
             if (selectedNode) {
-                let provider = providers.find(provider => provider.type === selectedNode.type)
+                let provider = providers.find(provider => selectedNode instanceof provider.node)
                 return React.createElement(provider.tool, {node: selectedNode})
             }
             return <div>Select an Element</div>
@@ -62,7 +62,7 @@ function Inspector(properties: Inspector.Attributes) {
                     {
                         hierarchicalNodes.map(node => (
                                 <option key={node.id} value={node.id}>
-                                    {providers.find(provider => provider.type === node.type).title}
+                                    {providers.find(provider => node instanceof provider.node).title}
                                 </option>
                             )
                         )

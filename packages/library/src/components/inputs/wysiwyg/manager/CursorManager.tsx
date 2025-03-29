@@ -114,15 +114,6 @@ function CursorManager(properties: CursorManager.Attributes) {
                     }
                 } else {
                     selectedNode = findNode(root, (node) => node.dom === caretPosition.offsetNode);
-
-                    if (!selectedNode) {
-                        selectedNode = findNode(root, (node) => {
-                            if (node.type === "code") {
-                                return node.dom.contains(caretPosition.offsetNode)
-                            }
-                            return false
-                        });
-                    }
                 }
 
                 if (selectedNode) {

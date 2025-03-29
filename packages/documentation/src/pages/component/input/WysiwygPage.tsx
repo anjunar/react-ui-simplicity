@@ -1,7 +1,5 @@
 import React from "react";
-import {Editor, EditorState, ImageProvider, ListProvider, ParagraphProvider, TableProvider} from "react-ui-simplicity";
-import {CodeProvider} from "react-ui-simplicity/src/components/inputs/wysiwyg/blocks/code/CodeProvider";
-import DomState from "react-ui-simplicity/src/components/inputs/wysiwyg/contexts/DomState";
+import {CodeProvider, DomState, Editor, EditorState, ImageProvider, ListProvider, ParagraphProvider, TableProvider} from "react-ui-simplicity";
 
 export default function WysiwygPage() {
     return (

@@ -14,7 +14,12 @@ export class CodeCommand extends AbstractCommand<AbstractNode> {
         let tokenNode = new TokenNode("", "text", 0);
         let codeNode = new CodeNode([new TokenLineNode([tokenNode])]);
 
-        grandParent.insertChild(index + 1, codeNode)
+        if (node instanceof TextNode && node.text) {
+            grandParent.insertChild(index + 1, codeNode)
+        } else {
+            parent.remove()
+            grandParent.insertChild(index + 1, codeNode)
+        }
 
         context.cursor.currentCursor.container = tokenNode
         context.cursor.currentCursor.offset = 0

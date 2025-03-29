@@ -136,7 +136,7 @@ function Toolbar(properties: Toolbar.Attributes) {
                 <Page>
                     <div className={"editor-toolbar"}>
                         {
-                            providers.map((provider: AbstractProvider<any, any, any>) => (
+                            providers.map((provider: AbstractProvider<any, any, any, any>) => (
                                 <ActionButton key={provider.type} command={new provider.command()}>{provider.icon}</ActionButton>
                             ))
                         }

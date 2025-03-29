@@ -11,8 +11,14 @@ export class ListCommand extends AbstractCommand<AbstractNode> {
         let grandParent = parent.parent;
 
         let textNode = new TextNode();
+        let listNode = new ListNode([new ItemNode([new ParagraphNode([textNode])],)]);
 
-        grandParent.insertChild(index + 1, new ListNode([new ItemNode([new ParagraphNode([textNode])],)]))
+        if (node instanceof TextNode && node.text) {
+            grandParent.insertChild(index + 1, listNode)
+        } else {
+            parent.remove()
+            grandParent.insertChild(index + 1, listNode)
+        }
 
         context.cursor.currentCursor.container = textNode
         context.cursor.currentCursor.offset = 0

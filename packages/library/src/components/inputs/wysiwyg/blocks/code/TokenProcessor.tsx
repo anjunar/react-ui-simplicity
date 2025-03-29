@@ -13,7 +13,7 @@ const deleteContentBackward: CommandRule<TokenNode> = {
     },
     process(current, node, currentEvent, root) {
         if (typeof node.text === "string") {
-            let code = findParent(node, elem => elem.type === "code") as CodeNode
+            let code = findParent(node, elem => elem instanceof CodeNode) as CodeNode
             let index = node.index + current.offset
 
             let start = code.text.substring(0, index - 1)
@@ -38,7 +38,7 @@ const compositionUpdate: CommandRule<TokenNode> = {
     process(current, node: TokenNode, currentEvent,) {
 
         if (typeof node.text === "string") {
-            let code = findParent(node, elem => elem.type === "code") as CodeNode
+            let code = findParent(node, elem => elem instanceof CodeNode) as CodeNode
 
             let index = node.index + current.offset;
 
@@ -75,7 +75,7 @@ const insertText: CommandRule<TokenNode> = {
     },
     process(current, node, currentEvent, root) {
         if (typeof node.text === "string") {
-            let code = findParent(node, elem => elem.type === "code") as CodeNode
+            let code = findParent(node, elem => elem instanceof CodeNode) as CodeNode
             let index = node.index + current.offset
 
             let start = code.text.substring(0, index)
@@ -98,7 +98,7 @@ const insertLineBreak: CommandRule<TokenNode> = {
     process(current, node: TokenNode, currentEvent, root) {
 
         if (typeof node.text === "string") {
-            let code = findParent(node, elem => elem.type === "code") as CodeNode
+            let code = findParent(node, elem => elem instanceof CodeNode) as CodeNode
             let index = node.index + current.offset
 
             let start = code.text.substring(0, index)
@@ -151,7 +151,7 @@ const arrowUp: CommandRule<TokenNode> = {
         const currentNode = currentCursor.container as TokenNode;
         if (!currentNode || typeof currentNode.text !== "string") return;
 
-        const codeNode = findParent(currentNode, node => node.type === "code") as CodeNode;
+        const codeNode = findParent(currentNode, node => node instanceof CodeNode) as CodeNode;
         if (!codeNode) return;
 
         const lines = codeNode.text.split("\n");
@@ -220,7 +220,7 @@ const arrowDown: CommandRule<TokenNode> = {
         const currentNode = currentCursor.container as TokenNode;
         if (!currentNode || typeof currentNode.text !== "string") return;
 
-        const codeNode = findParent(currentNode, node => node.type === "code") as CodeNode;
+        const codeNode = findParent(currentNode, node => node instanceof CodeNode) as CodeNode;
         if (!codeNode) return;
 
         const lines = codeNode.text.split("\n");
@@ -286,7 +286,7 @@ const deleteKey: CommandRule<TokenNode> = {
     },
     process(current, node, currentEvent, root) {
         if (typeof node.text === "string") {
-            let code = findParent(node, elem => elem.type === "code") as CodeNode
+            let code = findParent(node, elem => elem instanceof CodeNode) as CodeNode
             let index = node.index + current.offset
 
             let start = code.text.substring(0, index)
@@ -309,7 +309,10 @@ const endKey: CommandRule<TokenNode> = {
         return value.type === "End" && node === container
     },
     process(current, node, currentEvent, root) {
-        current.offset = node.text.length
+        let parent = node.parent;
+        let child = parent.children[parent.children.length - 1];
+        current.container = child
+        current.offset = child.text.length
     }
 }
 
@@ -318,6 +321,9 @@ const homeKey: CommandRule<TokenNode> = {
         return value.type === "Home" && node === container
     },
     process(current, node, currentEvent, root) {
+        let parent = node.parent;
+        let child = parent.children[0];
+        current.container = child
         current.offset = 0
     }
 }
