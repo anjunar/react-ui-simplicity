@@ -5,8 +5,8 @@ import Section from "../../../layout/content/Section";
 import Features from "../../../layout/content/Features";
 import info from "./SelectPage.json"
 import {ActiveObject, Form, HighLight, Select, useForm} from "react-ui-simplicity";
-import Option = Select.Option;
 import Props from "../../../layout/content/Props";
+import Option = Select.Option;
 
 function SelectPage() {
 

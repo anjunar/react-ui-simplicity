@@ -1,17 +1,9 @@
 import "./LazySelect.css"
-import React, {
-    createContext,
-    CSSProperties,
-    useDeferredValue,
-    useEffect,
-    useLayoutEffect,
-    useRef,
-    useState
-} from "react"
+import React, {createContext, CSSProperties, useDeferredValue, useEffect, useLayoutEffect, useRef, useState} from "react"
 import {Max, Min, Validator} from "../../../shared/Model"
 import withPageable from "../../../shared/Pageable"
-import Loader = withPageable.Loader;
 import {useInput} from "../../../../hooks/UseInputHook";
+import Loader = withPageable.Loader;
 
 function LazySelectRenderer(properties: LazySelectRenderer.Attributes) {
 

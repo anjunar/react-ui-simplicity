@@ -4,8 +4,7 @@ import Section from "../../../layout/content/Section";
 import Features from "../../../layout/content/Features";
 import info from "./JSONMapperPage.json"
 import User from "../../../domain/control/User";
-import {Button, FormSchemaFactory, HighLight, Page, Pages, SchemaForm, Tab, Table, Tabs, useForm} from "react-ui-simplicity";
-import Highlight from "react-highlight";
+import {Button, FormSchemaFactory, HighLight, Page, Pages, SchemaForm, Tab, Tabs, useForm} from "react-ui-simplicity";
 
 export default function JSONMapperPage({user}: { user: User }) {
 

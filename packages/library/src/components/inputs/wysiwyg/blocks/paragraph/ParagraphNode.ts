@@ -1,6 +1,5 @@
 import {AbstractContainerNode, TextNode} from "../../core/TreeNode";
 import Entity from "../../../../../mapper/annotations/Entity";
-import {node} from "webpack";
 import Basic from "../../../../../mapper/annotations/Basic";
 
 @Entity("ParagraphNode")

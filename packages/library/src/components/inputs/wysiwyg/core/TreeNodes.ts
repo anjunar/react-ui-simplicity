@@ -1,4 +1,4 @@
-import {AbstractContainerNode, AbstractNode, RootNode, TextNode} from "./TreeNode";
+import {AbstractContainerNode, AbstractNode} from "./TreeNode";
 
 export function findParent(node: AbstractNode, callback: (node: AbstractNode) => boolean) {
 

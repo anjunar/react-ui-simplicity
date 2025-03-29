@@ -1,7 +1,6 @@
 import 'reflect-metadata'
 import {registerProperty} from "../Registry";
 import NodeDescriptor from "../../domain/descriptors/NodeDescriptor";
-import ActiveObject from "../../domain/container/ActiveObject";
 
 function Basic(configuration? : Basic.Configuration) {
     return function (target : any, propertyKey: string) {

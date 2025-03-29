@@ -1,5 +1,5 @@
 import "./Tabs.css"
-import React, {CSSProperties, useMemo, useState} from "react"
+import React, {CSSProperties, useMemo} from "react"
 import {v4} from "uuid";
 
 function Tabs(properties: Tabs.Attributes) {

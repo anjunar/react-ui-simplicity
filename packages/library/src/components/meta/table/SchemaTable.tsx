@@ -7,7 +7,6 @@ import NodeDescriptor from "../../../domain/descriptors/NodeDescriptor";
 import CollectionDescriptor from "../../../domain/descriptors/CollectionDescriptor";
 import {Temporal, TemporalAccessor, TemporalAmount} from "@js-joda/core";
 import Validable from "../../../domain/descriptors/Validable";
-import Tab from "../../layout/tabs/Tab";
 
 function SchemaTable(properties: SchemaTable.Attributes) {
 

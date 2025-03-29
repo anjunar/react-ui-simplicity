@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import PageLayout from "../../layout/content/PageLayout";
 import Section from "../../layout/content/Section";
-import {ActiveObject, Button, Form, FormModel, Input, InputContainer, SubForm, useForm, Window, HighLight} from "react-ui-simplicity";
+import {ActiveObject, Button, Form, FormModel, HighLight, Input, InputContainer, SubForm, useForm, Window} from "react-ui-simplicity";
 import {createPortal} from "react-dom";
 
 function FormsPage() {

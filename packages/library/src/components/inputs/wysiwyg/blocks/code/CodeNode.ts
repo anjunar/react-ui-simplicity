@@ -6,7 +6,6 @@ import {groupTokensIntoLines, tokenDiff, toTokenNodes} from "./CodeUtils";
 import {findNode} from "../../core/TreeNodes";
 import Basic from "../../../../../mapper/annotations/Basic";
 import Entity from "../../../../../mapper/annotations/Entity";
-import {node} from "webpack";
 
 @Entity("CodeNode")
 export class CodeNode extends AbstractContainerNode<TokenLineNode> {

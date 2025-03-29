@@ -5,7 +5,6 @@ import {AsyncValidator, Error, FormModel, Validator} from "../../shared/Model";
 import LinkContainerObject from "../../../domain/container/LinkContainerObject";
 import NodeDescriptor from "../../../domain/descriptors/NodeDescriptor";
 import Validable from "../../../domain/descriptors/Validable";
-import ObjectDescriptor from "../../../domain/descriptors/ObjectDescriptor";
 
 export const SchemaFormContext = createContext<(name: string) => NodeDescriptor & Validable>(null)
 

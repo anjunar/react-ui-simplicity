@@ -1,6 +1,6 @@
 import "./VideoUpload.css"
 import React, {Fragment, useContext, useLayoutEffect, useMemo, useRef, useState} from "react"
-import {Model, FormModel} from "../../../shared/Model"
+import {FormModel, Model} from "../../../shared/Model"
 import {FormContext} from "../../form/Form"
 
 function VideoUpload(properties: VideoUpload.Attributes) {

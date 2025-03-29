@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import info from "./SchemaFormPage.json"
 import Section from "../../../layout/content/Section";
-import {FormSchemaFactory, HighLight, mapForm, Page, Pages, SchemaForm, SchemaFormArray, SchemaSubForm, SubForm, Tab, Tabs, useForm} from "react-ui-simplicity";
+import {FormSchemaFactory, HighLight, Page, Pages, SchemaForm, Tab, Tabs, useForm} from "react-ui-simplicity";
 import Features from "../../../layout/content/Features";
 import User from "../../../domain/control/User";
 import Props from "../../../layout/content/Props";

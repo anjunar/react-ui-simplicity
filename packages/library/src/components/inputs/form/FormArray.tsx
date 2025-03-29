@@ -1,7 +1,6 @@
 import React, {useContext, useLayoutEffect, useMemo, useState} from "react"
 import {FormContext} from "./Form"
-import {ArrayModel, FormModel, Max, Min} from "../../shared/Model";
-import ActiveObject from "../../../domain/container/ActiveObject";
+import {ArrayModel, FormModel, Max, Min} from "../../shared";
 
 function FormArray(properties : FormArray.Attributes) {
 

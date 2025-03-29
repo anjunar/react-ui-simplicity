@@ -2,7 +2,6 @@ import webpack from 'webpack';
 import path from 'path';
 import HtmlPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
-import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import PreloadWebpackPlugin from "@vue/preload-webpack-plugin"
 
 

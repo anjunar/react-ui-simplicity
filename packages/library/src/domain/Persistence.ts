@@ -21,12 +21,7 @@ import CollectionDescriptor from "./descriptors/CollectionDescriptor";
 import EnumDescriptor from "./descriptors/EnumDescriptor";
 import NodeDescriptor from "./descriptors/NodeDescriptor";
 import ObjectDescriptor from "./descriptors/ObjectDescriptor";
-import {AbstractContainerNode, AbstractNode, RootNode, TextNode} from "../components/inputs/wysiwyg";
-import {CodeNode} from "../components/inputs/wysiwyg";
-import {ImageNode} from "../components/inputs/wysiwyg";
-import {ItemNode, ListNode} from "../components/inputs/wysiwyg";
-import {ParagraphNode} from "../components/inputs/wysiwyg";
-import {TableCellNode, TableNode, TableRowNode} from "../components/inputs/wysiwyg";
+import {AbstractContainerNode, AbstractNode, CodeNode, ImageNode, ItemNode, ListNode, ParagraphNode, RootNode, TableCellNode, TableNode, TableRowNode, TextNode} from "../components/inputs/wysiwyg";
 
 export function init() {
 

@@ -4,8 +4,8 @@ import PageLayout from "../../../layout/content/PageLayout";
 import Section from "../../../layout/content/Section";
 import Features from "../../../layout/content/Features";
 import {HighLight, List, Pageable} from "react-ui-simplicity";
-import Item = List.Item;
 import Props from "../../../layout/content/Props";
+import Item = List.Item;
 
 export default function ListPage() {
 

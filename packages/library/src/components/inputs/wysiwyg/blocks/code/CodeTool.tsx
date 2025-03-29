@@ -1,8 +1,7 @@
-import React, {useContext, useEffect, useRef, useState} from "react"
+import React, {useContext} from "react"
 import {CodeNode} from "./CodeNode";
 import {EditorContext} from "../../contexts/EditorState";
 import OrderNode from "../shared/OrderNode";
-import {findNearestTextRight} from "../../utils/ProcessorUtils";
 import {findNode} from "../../core/TreeNodes";
 import {TextNode} from "../../core/TreeNode";
 import {TokenNode} from "./TokenNode";

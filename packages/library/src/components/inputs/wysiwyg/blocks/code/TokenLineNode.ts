@@ -1,6 +1,5 @@
 import {AbstractContainerNode} from "../../core/TreeNode";
 import {TokenNode} from "./TokenNode";
-import Basic from "../../../../../mapper/annotations/Basic";
 import Entity from "../../../../../mapper/annotations/Entity";
 
 @Entity("TokenLineNode")

@@ -1,17 +1,6 @@
 import "./Input.css"
-import React, {CSSProperties, useCallback, useLayoutEffect, useRef, useState} from "react"
-import {
-    Model,
-    AsyncValidator,
-    Email,
-    Max,
-    MaxLength,
-    Min,
-    MinLength,
-    Pattern,
-    Required,
-    Validator
-} from "../../shared/Model"
+import React, {useCallback, useLayoutEffect, useRef} from "react"
+import {AsyncValidator, Email, Max, MaxLength, Min, MinLength, Model, Pattern, Required, Validator} from "../../shared/Model"
 import {Duration, LocalDate, LocalDateTime, LocalTime, Temporal, TemporalAmount} from "@js-joda/core";
 import {format} from "../../shared/DateTimeUtils";
 import {useInput} from "../../../hooks/UseInputHook";
