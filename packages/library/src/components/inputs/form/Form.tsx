@@ -31,6 +31,28 @@ function Form(properties: Form.Attributes) {
         [form]
     )
 
+    const buttons = useMemo(() => {
+        return new Map<HTMLButtonElement, (event : MouseEvent) => void>
+    }, []);
+
+    const addButtonHandler = useCallback(() => {
+        return (button : HTMLButtonElement) => {
+            let handler = (event : MouseEvent) => {
+                onSubmitHandler(event)
+            };
+            button.addEventListener("click", handler)
+            buttons.set(button, handler)
+        };
+    }, []);
+
+    const removeButtonHandler = useCallback(() => {
+        return (button : HTMLButtonElement) => {
+            let handler = buttons.get(button);
+            button.removeEventListener("click", handler)
+            buttons.delete(button)
+        };
+    }, []);
+
     useLayoutEffect(() => {
 
         let callbacks = debounce((validate: boolean) => {
@@ -79,25 +101,15 @@ function Form(properties: Form.Attributes) {
             }
         }
 
-        let buttons = new Map<HTMLButtonElement, (event : MouseEvent) => void>
+        if (form.registerButtons.indexOf(addButtonHandler) === -1) {
+            form.registerButtons.push(addButtonHandler)
+        }
 
-        form.registerButtons.push((button) => {
-            let handler = (event : MouseEvent) => {
-                onSubmitHandler(event)
-            };
-            button.addEventListener("click", handler)
-            let oldButtonHandler = buttons.get(button);
-            if (oldButtonHandler) {
-                button.removeEventListener("click", oldButtonHandler)
-            }
-            buttons.set(button, handler)
-        })
+        if (form.removeButtons.indexOf(removeButtonHandler) === -1) {
+            form.removeButtons.push(removeButtonHandler)
+        }
 
-        form.removeButtons.push((button) => {
-            let handler = buttons.get(button);
-            button.removeEventListener("click", handler)
-            buttons.delete(button)
-        })
+
 
     }, []);
 
