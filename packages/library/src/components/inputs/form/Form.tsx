@@ -86,6 +86,10 @@ function Form(properties: Form.Attributes) {
                 onSubmitHandler(event)
             };
             button.addEventListener("click", handler)
+            let oldButtonHandler = buttons.get(button);
+            if (oldButtonHandler) {
+                button.removeEventListener("click", oldButtonHandler)
+            }
             buttons.set(button, handler)
         })
 
@@ -95,9 +99,6 @@ function Form(properties: Form.Attributes) {
             buttons.delete(button)
         })
 
-        return () => {
-            buttons.forEach((handler, button) => button.removeEventListener("click", handler))
-        }
     }, []);
 
     return (
