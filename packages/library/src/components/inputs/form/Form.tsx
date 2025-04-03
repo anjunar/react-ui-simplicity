@@ -35,22 +35,18 @@ function Form(properties: Form.Attributes) {
         return new Map<HTMLButtonElement, (event : MouseEvent) => void>
     }, []);
 
-    const addButtonHandler = useCallback(() => {
-        return (button : HTMLButtonElement) => {
-            let handler = (event : MouseEvent) => {
-                onSubmitHandler(event)
-            };
-            button.addEventListener("click", handler)
-            buttons.set(button, handler)
+    const addButtonHandler = useCallback((button : HTMLButtonElement) => {
+        let handler = (event : MouseEvent) => {
+            onSubmitHandler(event)
         };
+        button.addEventListener("click", handler)
+        buttons.set(button, handler)
     }, []);
 
-    const removeButtonHandler = useCallback(() => {
-        return (button : HTMLButtonElement) => {
-            let handler = buttons.get(button);
-            button.removeEventListener("click", handler)
-            buttons.delete(button)
-        };
+    const removeButtonHandler = useCallback((button : HTMLButtonElement) => {
+        let handler = buttons.get(button);
+        button.removeEventListener("click", handler)
+        buttons.delete(button)
     }, []);
 
     useLayoutEffect(() => {
