@@ -92,8 +92,12 @@ function Form(properties: Form.Attributes) {
         form.removeButtons.push((button) => {
             let handler = buttons.get(button);
             button.removeEventListener("click", handler)
+            buttons.delete(button)
         })
 
+        return () => {
+            buttons.forEach((handler, button) => button.removeEventListener("click", handler))
+        }
     }, []);
 
     return (
