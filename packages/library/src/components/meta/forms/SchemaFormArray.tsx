@@ -1,6 +1,6 @@
 import "./SchemaFormArray.css"
 import FormArray from "../../inputs/form/FormArray"
-import React, {useContext, useMemo} from "react"
+import React, {CSSProperties, useContext, useMemo} from "react"
 import {SchemaFormContext} from "./SchemaForm"
 import {configureValidators} from "../../shared/Model";
 import {findClass} from "../../../mapper/Registry";
@@ -12,7 +12,7 @@ import Validable from "../../../domain/descriptors/Validable";
 
 function SchemaFormArray(properties: SchemaFormArray.Attributes) {
 
-    const {children, name} = properties
+    const {children, name, style} = properties
 
     const context = useContext(SchemaFormContext)
 
@@ -45,6 +45,7 @@ function SchemaFormArray(properties: SchemaFormArray.Attributes) {
         <SchemaFormContext.Provider value={node}>
             <FormArray {...validators}
                        name={name}
+                       style={style}
                        formArrayContext={formArrayContext}
                        onCreate={() => onCreate()}>
                 {(elements: any[]) => children({elements, form: formArrayContext})}
@@ -57,6 +58,7 @@ namespace SchemaFormArray {
     export interface Attributes {
         name: string
         children: (value: any) => React.ReactNode
+        style? : CSSProperties
     }
 }
 

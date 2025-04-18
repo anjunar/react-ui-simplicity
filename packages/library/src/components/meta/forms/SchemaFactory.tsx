@@ -68,7 +68,7 @@ function SchemaFactory(properties: SchemaFactory.Attributes) {
                 <SchemaFactory key={key} name={key} style={{flex : 1}}/>
             ))
             return (
-                <SchemaFormArray name={name}>
+                <SchemaFormArray name={name} {...rest}>
                     {({elements, form}: { elements: any[], form: any }) =>
                         elements.map((element, index) => (
                             <SubForm key={element.id} index={index}>

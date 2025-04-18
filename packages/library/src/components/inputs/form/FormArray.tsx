@@ -1,4 +1,4 @@
-import React, {useContext, useLayoutEffect, useMemo, useState} from "react"
+import React, {CSSProperties, useContext, useLayoutEffect, useMemo, useState} from "react"
 import {FormContext} from "./Form"
 import {ArrayModel, FormModel, Max, Min} from "../../shared";
 
@@ -74,7 +74,7 @@ function FormArray(properties : FormArray.Attributes) {
     }
 
     return (
-        <div>
+        <div className={"form-array"} {...rest}>
             <FormContext.Provider value={form}>
                 {children(context.value[name])}
             </FormContext.Provider>
@@ -99,6 +99,7 @@ namespace FormArray {
         max? : number
         formArrayContext? : any
         onCreate? : () => any
+        style? : CSSProperties
     }
 }
 
