@@ -84,7 +84,7 @@ function LazySelectRenderer(properties: LazySelectRenderer.Attributes) {
         let option = getValue(event)
 
         if (multiSelect) {
-            const find = state.findIndex((element: any) => getId(element) === getId(option))
+            const find = state ? state.findIndex((element: any) => getId(element) === getId(option)) : -1
             if (find !== -1) {
                 state.splice(find, 1)
             } else {
