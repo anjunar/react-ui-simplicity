@@ -95,7 +95,7 @@ function SchemaLazySelect(properties: SchemaLazySelect.Attributes) {
 
 
     return (
-        <InputContainer name={name} placeholder={contextSchema.title}>
+        <InputContainer name={name} placeholder={contextSchema.title} {...rest}>
             <LazySelect
                 disabled={disabled || contextSchema.readOnly}
                 name={name}
@@ -105,7 +105,6 @@ function SchemaLazySelect(properties: SchemaLazySelect.Attributes) {
                 multiSelect={multiSelect}
                 validators={validators}
                 {...configureValidators(contextSchema)}
-                {...rest}
             >
                 <LazySelect.Option>
                     {({option, index, selected}) => {
