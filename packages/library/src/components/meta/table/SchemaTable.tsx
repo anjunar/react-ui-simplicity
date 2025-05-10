@@ -1,4 +1,4 @@
-import React, {CSSProperties, useState} from "react"
+import React, {CSSProperties, useMemo, useState} from "react"
 import Table from "../../lists/table/Table"
 import SchemaFactory from "./SchemaFactory";
 import Image from "../../inputs/upload/image/Image";
@@ -24,6 +24,7 @@ function SchemaTable(properties: SchemaTable.Attributes) {
 
     const tableLoader = new (class extends SchemaTable.Loader {
         onLoad(query: any, callback: any) {
+            loader.listener = tableLoader.listener
             loader.onLoad(query, (rows, size, loadedSchema) => {
                     if (schema && loadedSchema) {
                         if (JSON.stringify(schema) !== JSON.stringify(loadedSchema)) {
@@ -54,13 +55,17 @@ function SchemaTable(properties: SchemaTable.Attributes) {
 
             }
 
-            return object[key]
-                .map((object: any) =>
-                    Object.keys(object)
-                        .filter(key => naming.indexOf(key) > -1)
-                        .map(key => object[key])
-                )
-                .join(" ")
+            if (object[key]) {
+                return object[key]
+                    .map((object: any) =>
+                        Object.keys(object)
+                            .filter(key => naming.indexOf(key) > -1)
+                            .map(key => object[key])
+                    )
+                    .join(" ")
+            } else {
+                return ""
+            }
         }
 
         if (property.$type === "ObjectDescriptor") {
@@ -76,12 +81,15 @@ function SchemaTable(properties: SchemaTable.Attributes) {
                     .filter(([key, object]) => {
                         return naming.indexOf(key) > -1
                     })
-                    .map(([key, object]) => {
-                        if (object instanceof Temporal) {
+                    .map(([key1, value]) => {
+                        if (value instanceof Temporal) {
                             // @ts-ignore
-                            return object.toJSON()
+                            return value.toJSON()
                         }
-                        return object
+                        if (value instanceof Object) {
+                            return renderCellContent(object[key], key1, property.properties[key1] as NodeDescriptor & Validable)
+                        }
+                        return value
                     })
                     .join(" ")
             }
@@ -115,7 +123,7 @@ function SchemaTable(properties: SchemaTable.Attributes) {
             </Table.Filter>
             <Table.Head>
                 {toArray(schema).map(([key, value]) => (
-                    <Table.Head.Cell key={key} property={key}>
+                        <Table.Head.Cell key={key} property={key} sortable={value.type === "String" || value.type === "Number" || value.type === "Date" || value.type === "Boolean" || value.type === "Temporal"}>
                         {value.title}
                     </Table.Head.Cell>
                 ))}
