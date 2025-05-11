@@ -63,7 +63,7 @@ export default function SchemaFormPage({user}: { user: User }) {
                     </Pages>
                 </Section>
                 <Section text={"Example"}>
-                    <SchemaForm value={form}>
+                    <SchemaForm value={form} onSubmit={null}>
                         <FormSchemaFactory name={"name"}/>
                         <FormSchemaFactory name={"firstName"}/>
                         <FormSchemaFactory name={"lastName"}/>

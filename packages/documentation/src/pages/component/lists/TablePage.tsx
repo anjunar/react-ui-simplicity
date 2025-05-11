@@ -35,10 +35,10 @@ export default function TablePage() {
                 <Section text={"Example"}>
                     <Table loader={loader} className={"table"} style={{width : "100%"}}>
                         <Table.Head>
-                            <Table.Head.Cell property={"position"}>Position</Table.Head.Cell>
-                            <Table.Head.Cell property={"name"}>Name</Table.Head.Cell>
-                            <Table.Head.Cell property={"weight"}>Weight</Table.Head.Cell>
-                            <Table.Head.Cell property={"symbol"}>Symbol</Table.Head.Cell>
+                            <Table.Head.Cell property={"position"} sortable={true}>Position</Table.Head.Cell>
+                            <Table.Head.Cell property={"name"} sortable={true}>Name</Table.Head.Cell>
+                            <Table.Head.Cell property={"weight"} sortable={true}>Weight</Table.Head.Cell>
+                            <Table.Head.Cell property={"symbol"} sortable={true}>Symbol</Table.Head.Cell>
                         </Table.Head>
                         <Table.Body>
                             <Table.Body.Cell>

@@ -1,0 +1,15 @@
+.markdown-editor {
+    display: flex;
+    flex-direction: column;
+
+    .content {
+        outline: 0;
+        flex: 1;
+        height: 50%;
+    }
+
+    .view {
+        flex: 1;
+        height: 50%;
+    }
+}

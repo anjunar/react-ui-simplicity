@@ -25,6 +25,7 @@ import UseInputHookPage from "./pages/platform/hooks/UseInputHookPage";
 import UseMatchMediaHookPage from "./pages/platform/hooks/UseMatchMediaHookPage";
 import JSONMapperPage from "./pages/platform/mapper/JSONMapperPage";
 import WysiwygPage from "./pages/component/input/WysiwygPage";
+import MarkDownPage from "./pages/component/input/MarkDownPage";
 
 export const routes: Router.Route[] = [
     {
@@ -40,6 +41,10 @@ export const routes: Router.Route[] = [
                         path: "/forms",
                         component: FormsPage,
                         children: [
+                            {
+                                path: "/editor",
+                                component: MarkDownPage
+                            },
                             {
                                 path: "/input",
                                 component: InputPage

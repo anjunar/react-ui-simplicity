@@ -36,7 +36,7 @@ export default function JSONMapperPage({user}: { user: User }) {
                     <Features value={info.features}/>
                 </Section>
                 <Section text={"Example"}>
-                    <SchemaForm value={form}>
+                    <SchemaForm value={form} onSubmit={null}>
                         <FormSchemaFactory name={"name"}/>
                         <FormSchemaFactory name={"firstName"}/>
                         <FormSchemaFactory name={"lastName"}/>
