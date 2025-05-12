@@ -1,7 +1,8 @@
 import React, {useContext, useEffect, useState} from "react"
 import {MarkDownContext} from "../../MarkDown";
-import {Token} from "marked";
-import AbstractCommand from "../../commands/FormatCommand";
+import {AbstractCommand} from "../../commands/FormatCommand";
+import { Node } from 'unist';
+
 
 function FormatButton(properties: FormatButton.Attributes) {
 
@@ -11,10 +12,15 @@ function FormatButton(properties: FormatButton.Attributes) {
 
     const [disabled, setDisabled] = useState(false)
 
-    const {model, textAreaRef, cursor} = useContext(MarkDownContext)
+    const {model, textAreaRef, cursor, updateAST} = useContext(MarkDownContext)
 
     function onClick() {
-        command.execute(textAreaRef.current)
+        command.execute(active, cursor, textAreaRef.current)
+
+        if (active) {
+            updateAST()
+        }
+
         setActive(!active)
     }
 
@@ -32,7 +38,7 @@ function FormatButton(properties: FormatButton.Attributes) {
 namespace FormatButton {
     export interface Attributes {
         children: React.ReactNode
-        callback: (node: Token[]) => boolean
+        callback: (node: Node[]) => boolean
         command: AbstractCommand
     }
 }

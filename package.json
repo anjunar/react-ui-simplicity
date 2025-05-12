@@ -7,8 +7,5 @@
   "workspaces": [
     "packages/library",
     "packages/documentation"
-  ],
-  "dependencies": {
-    "react-window": "^1.8.11"
-  }
+  ]
 }

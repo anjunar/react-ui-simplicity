@@ -2,9 +2,14 @@ import "./MarkDown.css"
 import React, {CSSProperties, RefObject, useEffect, useMemo, useRef, useState} from "react"
 import Toolbar from "./ui/Toolbar";
 import Footer from "./ui/Footer";
-import {Token} from "marked";
-import {factory, findNodesByOffsets} from "./parser/MarkedFactory";
 import EditorModel = MarkDown.EditorModel;
+import {findNodesByRange, reMarkFactoryForHTML, reMarkFactoryForMarkDown} from "./parser/ReMarkFactory";
+import type { Root } from 'mdast';
+import { Node } from 'unist';
+import rehypeStringify from "rehype-stringify";
+import remarkStringify from "remark-stringify";
+import {unified} from "unified";
+
 
 export const MarkDownContext = React.createContext<MarkDown.Context>(null)
 
@@ -18,21 +23,26 @@ function MarkDown(properties: MarkDown.Attributes) {
 
     const [page, setPage] = useState(0)
 
+    const [astUpdate, setAstUpdate] = useState(false)
+
     const [model, setModel] = useState<EditorModel>({
         store: {
             files: []
         },
-        ast: []
+        ast: null
     })
 
     const [text, setText] = useState('**test**');
 
-    const [cursor, setCursor] = useState<Token[]>(null)
+    const [cursor, setCursor] = useState<Node[]>(null)
 
-    const marked = useMemo(() => {
-        return factory(model)
+    const reMarkForHTML = useMemo(() => {
+        return reMarkFactoryForHTML(model)
     }, []);
 
+    const reMarkForMarkDown = useMemo(() => {
+        return reMarkFactoryForMarkDown(model)
+    }, []);
 
     function onStoreClick(file: MarkDown.File) {
         let textArea = textAreaRef.current;
@@ -43,7 +53,7 @@ function MarkDown(properties: MarkDown.Attributes) {
         let pre = textArea.value.substring(0, selectionStart);
         let post = textArea.value.substring(selectionEnd);
 
-        textArea.value = `${pre}![Picture](${file.name} "${file.name}")${post}`
+        textArea.value = `${pre}![Picture](${file.name})${post}`
 
         const event = new Event('input', { bubbles: true, cancelable: true});
 
@@ -51,15 +61,15 @@ function MarkDown(properties: MarkDown.Attributes) {
     }
 
     function onSelect() {
-        let nodesByOffsets = findNodesByOffsets(model.ast, textAreaRef.current.selectionStart, textAreaRef.current.selectionEnd);
+        let textArea = textAreaRef.current;
 
-        console.log(nodesByOffsets)
+        const nodes = findNodesByRange(model.ast, textArea.selectionStart, textArea.selectionEnd);
 
-        setCursor(nodesByOffsets)
+        setCursor(nodes)
     }
 
     useEffect(() => {
-        let ast = marked.lexer(text);
+        let ast = reMarkForHTML.parse(text);
 
         setModel({
             store: model.store,
@@ -70,18 +80,34 @@ function MarkDown(properties: MarkDown.Attributes) {
 
     useEffect(() => {
 
-        viewRef.current.innerHTML = marked.parser(model.ast)
+        if (model.ast) {
+            reMarkForHTML.run(model.ast)
+                .then((tree : any) => reMarkForHTML
+                    .stringify(tree)
+                )
+                .then(html => viewRef.current.innerHTML = html)
+        }
 
     }, [model]);
 
+    useEffect(() => {
+        if (model.ast) {
+            let markDown : string = reMarkForMarkDown.stringify(model.ast);
+
+            if (markDown !== text) {
+                setText(markDown)
+            }
+        }
+    }, [astUpdate]);
+
     return (
         <div className={"markdown-editor"} style={style}>
-            <MarkDownContext.Provider value={{model: model, textAreaRef, cursor}}>
+            <MarkDownContext.Provider value={{model: model, textAreaRef, cursor, updateAST() { setAstUpdate(! astUpdate) }}}>
                 <Toolbar page={page} onPage={value => setPage(value)}/>
                 <textarea onSelect={onSelect} ref={textAreaRef} onInput={(event: any) => setText(event.target.value)} value={text} className={"content"}></textarea>
                 <div>
                     {
-                        model.store.files.map(file => <img title={file.name} src={file.data} style={{height: "32px"}} onClick={() => onStoreClick(file)}/>)
+                        model.store.files.map(file => <img key={file.name} title={file.name} src={file.data} style={{height: "32px"}} onClick={() => onStoreClick(file)}/>)
                     }
                 </div>
                 <div ref={viewRef} className={"view"}></div>
@@ -98,7 +124,7 @@ namespace MarkDown {
 
     export interface EditorModel {
         store: FileStore
-        ast: Token[]
+        ast: Root
     }
 
     export interface File {
@@ -115,7 +141,8 @@ namespace MarkDown {
     export interface Context {
         model: EditorModel
         textAreaRef: RefObject<HTMLTextAreaElement>
-        cursor: Token[]
+        cursor: Node[]
+        updateAST() : void
     }
 }
 

@@ -5,8 +5,8 @@ import FormatSelect from "./toolbar/FormatSelect";
 import Pages from "../../../layout/pages/Pages";
 import Page from "../../../layout/pages/Page";
 import {MarkDownContext} from "../MarkDown";
-import {ImageCommand} from "../../wysiwyg/blocks/image/ImageCommand";
 import NewImageCommand from "../commands/NewImageCommand";
+import {BoldCommand, ItalicCommand} from "../commands/FormatCommand";
 
 const colors = [
     /*
@@ -45,7 +45,7 @@ function Toolbar(properties: Toolbar.Attributes) {
 
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const {model, textAreaRef} = useContext(MarkDownContext)
+    const {model, textAreaRef, cursor} = useContext(MarkDownContext)
 
     function onBlockCallback(node: any): string {
         return "p"
@@ -66,9 +66,9 @@ function Toolbar(properties: Toolbar.Attributes) {
                             <option value={"h6"}>H6</option>
                             <option value={"p"}>Paragraph</option>
                         </FormatSelect>
-                        <FormatButton command={null} callback={nodes => nodes.length > 0 && nodes.every(token => token.type === "strong")}>format_bold</FormatButton>
-                        <FormatButton command={null} callback={nodes => nodes.length > 0 && nodes.every(token => token.type === "em")}>format_italic</FormatButton>
-                        <FormatButton command={null} callback={nodes => nodes.length > 0 && nodes.every(token => token.type === "del")}>strikethrough_s</FormatButton>
+                        <FormatButton command={new BoldCommand()} callback={nodes => nodes.some(token => token.type === "strong")}>format_bold</FormatButton>
+                        <FormatButton command={new ItalicCommand()} callback={nodes => nodes.some(token => token.type === "emphasis")}>format_italic</FormatButton>
+                        <FormatButton command={null} callback={nodes => nodes.some(token => token.type === "del")}>strikethrough_s</FormatButton>
 {/*
                         <FormatButton command={null} callback={node => node.sub}>subscript</FormatButton>
                         <FormatButton command={null} callback={node => node.sup}>superscript</FormatButton>
