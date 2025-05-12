@@ -13,15 +13,6 @@ function Footer(properties: Footer.Attributes) {
                     <span className={"material-icons"}>text_format</span>
                 </Tab>
                 <Tab>
-                    <span className={"material-icons"}>format_size</span>
-                </Tab>
-                <Tab>
-                    <span className={"material-icons"}>palette</span>
-                </Tab>
-                <Tab>
-                    <span className={"material-icons"}>construction</span>
-                </Tab>
-                <Tab>
                     <span className={"material-icons"}>widgets</span>
                 </Tab>
             </Tabs>

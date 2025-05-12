@@ -1,10 +1,10 @@
 import MarkDown from "../MarkDown";
-import ImageStore = MarkDown.FileStore;
 import {RefObject} from "react";
+import EditorModel = MarkDown.EditorModel;
 
 export default class NewImageCommand {
 
-    constructor(store : ImageStore, inputRef : RefObject<HTMLInputElement>, textAreaRef : RefObject<HTMLTextAreaElement>) {
+    constructor(model: EditorModel, inputRef: RefObject<HTMLInputElement>, textAreaRef: RefObject<HTMLTextAreaElement>) {
 
         let input = inputRef.current;
         let textArea = textAreaRef.current;
@@ -19,17 +19,21 @@ export default class NewImageCommand {
                 reader.onload = e => {
                     if (reader.result) {
 
-                        store.files.push({
-                            name : file.name,
-                            type : file.type,
-                            data : reader.result as string,
-                            lastModified : file.lastModified
+                        model.store.files.push({
+                            name: file.name,
+                            type: file.type,
+                            data: reader.result as string,
+                            lastModified: file.lastModified
                         })
 
                         let pre = textArea.value.substring(0, selectionStart);
                         let post = textArea.value.substring(selectionEnd);
 
-                        textArea.value = `${pre}![Bild](${file.name})${post}`
+                        textArea.value = `${pre}![Picture](${file.name})${post}`
+
+                        const event = new Event('input', {bubbles: true, cancelable: true})
+
+                        textArea.dispatchEvent(event);
 
                     }
                 }
@@ -38,7 +42,6 @@ export default class NewImageCommand {
         })
 
         input.click()
-
 
 
     }
