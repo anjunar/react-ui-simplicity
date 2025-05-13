@@ -1,12 +1,11 @@
 import React, {useContext, useEffect, useState} from "react"
 import {MarkDownContext} from "../../MarkDown";
-import {AbstractCommand} from "../../commands/FormatCommand";
-import { Node } from 'unist';
+import {AbstractFormatCommand} from "../../commands/FormatCommand";
 
 
 function FormatButton(properties: FormatButton.Attributes) {
 
-    const {children, callback, command} = properties
+    const {children, command, title} = properties
 
     const [active, setActive] = useState(false)
 
@@ -26,20 +25,21 @@ function FormatButton(properties: FormatButton.Attributes) {
 
     useEffect(() => {
         if (cursor !== null) {
-            setActive(callback(cursor))
+            setActive(command.isActive(active, cursor, textAreaRef.current))
+            setDisabled(! command.canExecute(cursor, textAreaRef.current))
         }
     }, [cursor])
 
     return (
-        <button disabled={disabled} className={`material-icons${active ? " active" : ""}`} onClick={onClick}>{children}</button>
+        <button title={title} disabled={disabled} className={`material-icons${active ? " active" : ""}`} onClick={onClick}>{children}</button>
     )
 }
 
 namespace FormatButton {
     export interface Attributes {
         children: React.ReactNode
-        callback: (node: Node[]) => boolean
-        command: AbstractCommand
+        command: AbstractFormatCommand
+        title: string
     }
 }
 

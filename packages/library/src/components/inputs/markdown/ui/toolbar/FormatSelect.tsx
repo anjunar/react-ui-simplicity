@@ -1,82 +1,36 @@
-import React, {useContext, useEffect, useState} from "react"
-import {MarkDownContext} from "../../MarkDown";
+import React, { useContext, useEffect, useState } from "react";
+import { MarkDownContext } from "../../MarkDown";
+import {HeadingCommand} from "../../commands/SelectCommand";
 
-function FormatSelect(properties: FormatSelect.Attributes) {
+function FormatSelect(props: FormatSelect.Attributes) {
+    const { children, command, style } = props;
 
-    const {children, callback, command, className, style} = properties
+    const [value, setValue] = useState("p");
+    const [disabled, setDisabled] = useState(true);
 
-    const [value, setValue] = useState("p")
-
-    const [disabled, setDisabled] = useState(true)
-
-    const {model, textAreaRef, cursor} = useContext(MarkDownContext)
-
-    let textAreaElement = textAreaRef.current;
+    const { model, textAreaRef, cursor, updateAST } = useContext(MarkDownContext);
 
     useEffect(() => {
-
-        if (textAreaElement?.value.charAt(textAreaElement.selectionStart - 1) === "\n") {
-            setDisabled(false)
-        } else {
-            setDisabled(true)
-        }
-
-    }, [textAreaElement?.selectionStart]);
+        setDisabled(! command.isActive(textAreaRef.current, cursor))
+    }, [cursor]);
 
     useEffect(() => {
-
-        if (! disabled) {
-
-            let pre = textAreaElement.value.substring(0, textAreaElement.selectionStart);
-            let post = textAreaElement.value.substring(textAreaElement.selectionStart);
-
-            let heading = ""
-
-            switch (value) {
-                case "h1" : heading = "# "
-                    break
-                case "h2" : heading = "## "
-                    break
-                case "h3" : heading = "### "
-                    break
-                case "h4" : heading = "#### "
-                    break
-                case "h5" : heading = "##### "
-                    break
-                case "h6" : heading = "###### "
-                    break
-                default : heading = ""
-
-            }
-
-            textAreaElement.value = `${pre}${heading}${post}`
-
-            const event = new Event('input', {bubbles: true, cancelable: true})
-
-            textAreaElement.dispatchEvent(event);
-
-
-        }
-
+        command.execute(textAreaRef.current, cursor, value, updateAST);
     }, [value]);
 
     return (
-        <select disabled={disabled} value={value} className={className} style={style} onChange={event => setValue(event.target.value)}>
-            {
-                children
-            }
+        <select disabled={disabled} value={value} style={style} onChange={event => setValue(event.target.value)}>
+            {children}
         </select>
-    )
+    );
 }
 
 namespace FormatSelect {
     export interface Attributes {
-        children: React.ReactNode[]
-        callback: any
-        command: any
-        className?: string
-        style?: React.CSSProperties
+        children: React.ReactNode[];
+        command?: HeadingCommand;
+        style?: React.CSSProperties;
     }
 }
 
-export default FormatSelect
+export default FormatSelect;

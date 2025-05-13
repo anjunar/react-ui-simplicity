@@ -6,9 +6,6 @@ import EditorModel = MarkDown.EditorModel;
 import {findNodesByRange, reMarkFactoryForHTML, reMarkFactoryForMarkDown} from "./parser/ReMarkFactory";
 import type { Root } from 'mdast';
 import { Node } from 'unist';
-import rehypeStringify from "rehype-stringify";
-import remarkStringify from "remark-stringify";
-import {unified} from "unified";
 
 
 export const MarkDownContext = React.createContext<MarkDown.Context>(null)
@@ -65,7 +62,7 @@ function MarkDown(properties: MarkDown.Attributes) {
 
         const nodes = findNodesByRange(model.ast, textArea.selectionStart, textArea.selectionEnd);
 
-        setCursor(nodes)
+        setCursor(nodes.filter(node => node.type !== "root"))
     }
 
     useEffect(() => {

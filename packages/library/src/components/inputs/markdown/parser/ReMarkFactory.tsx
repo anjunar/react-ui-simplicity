@@ -4,6 +4,8 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import remarkStringify from 'remark-stringify';
+import rehypePrism from 'rehype-prism-plus'
+import remarkGfm from 'remark-gfm'
 import {visit} from 'unist-util-visit';
 import type {Element} from 'hast';
 import { Node } from 'unist';
@@ -30,7 +32,9 @@ export function reMarkFactoryForHTML(model : EditorModel) {
         .use(remarkParse)
         .use(remarkRehype)
         .use(createImagePlugin(model))
+        .use(rehypePrism)
         .use(rehypeStringify)
+        .use(remarkGfm)
 
 }
 
@@ -39,7 +43,9 @@ export function reMarkFactoryForMarkDown(model : EditorModel) {
         .use(remarkParse)
         .use(remarkRehype)
         .use(createImagePlugin(model))
+        .use(rehypePrism)
         .use(remarkStringify)
+        .use(remarkGfm)
 
 }
 

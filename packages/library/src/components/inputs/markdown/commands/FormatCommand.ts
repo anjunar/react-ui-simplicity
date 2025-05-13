@@ -15,54 +15,80 @@ export function unwrapFormatInline(nodes: Node[], typeToRemove: string): void {
     }
 }
 
-export abstract class AbstractCommand {
+export abstract class AbstractFormatCommand {
 
-    abstract execute(state : boolean, cursor : Node[], textArea : HTMLTextAreaElement) : void
+    abstract isActive(state : boolean, cursor : Node[], textArea : HTMLTextAreaElement) : boolean
 
-}
+    canExecute(cursor : Node[], textArea : HTMLTextAreaElement) : boolean {
+        return ! cursor.some(node => node.type === "table" || node.type === "heading")
+    }
 
-export class BoldCommand extends AbstractCommand {
-
-    execute(state : boolean, cursor : Node[], textArea : HTMLTextAreaElement) : void {
-
+    execute(state : boolean, cursor : Node[], textArea : HTMLTextAreaElement) :  void {
         if (state) {
-            unwrapFormatInline(cursor, "strong")
+            unwrapFormatInline(cursor, this.type)
         } else {
             let pre = textArea.value.substring(0, textArea.selectionStart)
             let selection = textArea.value.substring(textArea.selectionStart, textArea.selectionEnd)
             let post = textArea.value.substring(textArea.selectionEnd)
 
-            textArea.value = `${pre}**${selection}**${post}`
+            textArea.value = `${pre}${this.symbol}${selection}${this.symbol}${post}`
 
             const event = new Event('input', {bubbles: true, cancelable: true})
 
             textArea.dispatchEvent(event);
 
         }
+    }
 
+    abstract get type() : string
+
+    abstract get symbol() : string
+
+}
+
+export class BoldCommand extends AbstractFormatCommand {
+
+    isActive(state: boolean, cursor: Node[], textArea: HTMLTextAreaElement): boolean {
+        return cursor.some(token => token.type === "strong")
+    }
+
+    get symbol() {
+        return "**"
+    }
+
+    get type() {
+        return "strong"
+    }
+}
+
+export class ItalicCommand extends AbstractFormatCommand {
+
+    isActive(state: boolean, cursor: Node[], textArea: HTMLTextAreaElement): boolean {
+        return cursor.some(token => token.type === "emphasis")
+    }
+
+    get symbol() {
+        return "*"
+    }
+
+    get type() {
+        return "emphasis"
     }
 
 }
 
-export class ItalicCommand extends AbstractCommand {
+export class DeletedCommand extends AbstractFormatCommand {
 
-    execute(state : boolean, cursor : Node[], textArea : HTMLTextAreaElement) : void {
+    isActive(state: boolean, cursor: Node[], textArea: HTMLTextAreaElement): boolean {
+        return cursor.some(token => token.type === "delete")
+    }
 
-        if (state) {
-            unwrapFormatInline(cursor, "emphasis")
-        } else {
-            let pre = textArea.value.substring(0, textArea.selectionStart)
-            let selection = textArea.value.substring(textArea.selectionStart, textArea.selectionEnd)
-            let post = textArea.value.substring(textArea.selectionEnd)
+    get symbol() {
+        return "~~"
+    }
 
-            textArea.value = `${pre}*${selection}*${post}`
-
-            const event = new Event('input', {bubbles: true, cancelable: true})
-
-            textArea.dispatchEvent(event);
-
-        }
-
+    get type() {
+        return "delete"
     }
 
 }

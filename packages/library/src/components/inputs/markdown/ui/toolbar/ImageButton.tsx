@@ -1,10 +1,17 @@
-import MarkDown from "../MarkDown";
-import {RefObject} from "react";
-import EditorModel = MarkDown.EditorModel;
+import React, {useContext, useEffect, useRef, useState} from "react"
+import {MarkDownContext} from "../../MarkDown";
 
-export default class NewImageCommand {
+function ImageButton(properties: ImageButton.Attributes) {
 
-    constructor(model: EditorModel, inputRef: RefObject<HTMLInputElement>, textAreaRef: RefObject<HTMLTextAreaElement>) {
+    const {children, title} = properties
+
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const [disabled, setDisabled] = useState(true)
+
+    const {model, textAreaRef, cursor} = useContext(MarkDownContext)
+
+    function onClick() {
 
         let input = inputRef.current;
         let textArea = textAreaRef.current;
@@ -42,7 +49,28 @@ export default class NewImageCommand {
         })
 
         input.click()
+    }
+
+    useEffect(() => {
+        if (cursor !== null) {
+            setDisabled(cursor.length > 0)
+        }
+    }, [cursor]);
 
 
+    return (
+        <div className={"image-button"}>
+            <input ref={inputRef} type={"file"} style={{display: "none"}}/>
+            <button disabled={disabled} title={title} className={"material-icons"} onClick={onClick}>{children}</button>
+        </div>
+    )
+}
+
+namespace ImageButton {
+    export interface Attributes {
+        children: React.ReactNode
+        title : string
     }
 }
+
+export default ImageButton

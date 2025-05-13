@@ -22,6 +22,8 @@
     "remark-stringify": "^11.0.0",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
+    "rehype-prism-plus": "^2.0.1",
+    "remark-gfm": "^4.0.1",
     "unified": "^11.0.5",
     "url": "^0.11.4",
     "uuid": "^11.0.5",
