@@ -20,7 +20,7 @@ export abstract class AbstractFormatCommand {
     abstract isActive(state : boolean, cursor : Node[], textArea : HTMLTextAreaElement) : boolean
 
     canExecute(cursor : Node[], textArea : HTMLTextAreaElement) : boolean {
-        return ! cursor.some(node => node.type === "table" || node.type === "heading")
+        return ! cursor.some(node => node.type === "heading")
     }
 
     execute(state : boolean, cursor : Node[], textArea : HTMLTextAreaElement) :  void {

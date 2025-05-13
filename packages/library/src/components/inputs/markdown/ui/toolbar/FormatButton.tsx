@@ -21,6 +21,8 @@ function FormatButton(properties: FormatButton.Attributes) {
         }
 
         setActive(!active)
+
+        textAreaRef.current.focus()
     }
 
     useEffect(() => {

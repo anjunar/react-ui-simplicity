@@ -1,5 +1,5 @@
 import "./Toolbar.css"
-import React from "react"
+import React, {useContext} from "react"
 import FormatButton from "./toolbar/FormatButton";
 import FormatSelect from "./toolbar/FormatSelect";
 import Pages from "../../../layout/pages/Pages";
@@ -10,14 +10,22 @@ import {BlockQuoteCommand, CodeCommand, HorizontalLineCommand, ListActionCommand
 import {HeadingCommand} from "../commands/SelectCommand";
 import ImageButton from "./toolbar/ImageButton";
 import LinkButton from "./toolbar/LinkButton";
+import {MarkDownContext} from "../MarkDown";
 
 function Toolbar(properties: Toolbar.Attributes) {
 
     const {page, onPage} = properties
 
+    const {textAreaRef} = useContext(MarkDownContext)
+
+    function onPageClick(value : number) {
+        onPage(value)
+        textAreaRef.current?.focus()
+    }
+
     return (
         <div style={{display: "flex", justifyContent: "space-between"}}>
-            <button className={"material-icons"} onClick={() => onPage(page - 1 === -1 ? 1 : page - 1)}>arrow_left</button>
+            <button className={"material-icons"} onClick={() => onPageClick(page - 1 === -1 ? 1 : page - 1)}>arrow_left</button>
             <Pages page={page}>
                 <Page>
                     <div className={"editor-toolbar"}>
@@ -47,7 +55,7 @@ function Toolbar(properties: Toolbar.Attributes) {
                     </div>
                 </Page>
             </Pages>
-            <button className={"material-icons"} onClick={() => onPage(page + 1 === 2 ? 0 : page + 1)}>arrow_right</button>
+            <button className={"material-icons"} onClick={() => onPageClick(page + 1 === 2 ? 0 : page + 1)}>arrow_right</button>
         </div>
     )
 }

@@ -11,6 +11,14 @@ import type {Element} from 'hast';
 import { Node } from 'unist';
 import EditorModel = MarkDown.EditorModel;
 
+export const encodeBase64 = (type: string, subType: string, data: string) => {
+    if (data) {
+        return `data:${type}/${subType};base64,${data}`
+    }
+    return null
+}
+
+
 function createImagePlugin(model: EditorModel): Plugin {
     return () => (tree: any) => {
         visit(tree, 'element', (node: Element) => {
@@ -19,7 +27,7 @@ function createImagePlugin(model: EditorModel): Plugin {
                 const file = model.store.files.find(f => f.name === href);
 
                 if (file) {
-                    node.properties.src = file.data;
+                    node.properties.src = encodeBase64(file.type, file.subType, file.data);
                     node.properties.style = 'width: 100%';
                 }
             }

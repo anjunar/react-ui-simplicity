@@ -3,7 +3,7 @@ import React, {CSSProperties, RefObject, useEffect, useMemo, useRef, useState} f
 import Toolbar from "./ui/Toolbar";
 import Footer from "./ui/Footer";
 import EditorModel = MarkDown.EditorModel;
-import {findNodesByRange, reMarkFactoryForHTML, reMarkFactoryForMarkDown} from "./parser/ReMarkFactory";
+import {encodeBase64, findNodesByRange, reMarkFactoryForHTML, reMarkFactoryForMarkDown} from "./parser/ReMarkFactory";
 import type { Root } from 'mdast';
 import { Node } from 'unist';
 
@@ -104,7 +104,7 @@ function MarkDown(properties: MarkDown.Attributes) {
                 <textarea onSelect={onSelect} ref={textAreaRef} onInput={(event: any) => setText(event.target.value)} value={text} className={"content"}></textarea>
                 <div>
                     {
-                        model.store.files.map(file => <img key={file.name} title={file.name} src={file.data} style={{height: "32px"}} onClick={() => onStoreClick(file)}/>)
+                        model.store.files.map(file => <img key={file.name} title={file.name} src={encodeBase64(file.type, file.subType, file.data)} style={{height: "32px"}} onClick={() => onStoreClick(file)}/>)
                     }
                 </div>
                 <div ref={viewRef} className={"view"}></div>
@@ -127,6 +127,7 @@ namespace MarkDown {
     export interface File {
         name: string,
         type: string
+        subType: string,
         lastModified: number
         data: string
     }

@@ -12,6 +12,7 @@ function ActionButton(properties: ActionButton.Attributes) {
 
     function executeCommand() {
         command.execute(textAreaRef.current)
+        textAreaRef.current.focus()
     }
 
     useEffect(() => {

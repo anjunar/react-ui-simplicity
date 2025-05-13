@@ -28,7 +28,7 @@ export class HeadingCommand {
         if (!cursor) {
             return;
         }
-        
+
         const currentHeadingNode = cursor?.find(node => node.type === "heading");
 
         let paragraph = cursor.find(node => node.type === "paragraph");
@@ -57,6 +57,8 @@ export class HeadingCommand {
             textarea.value = `${pre}${heading}${post}`;
             const event = new Event('input', { bubbles: true, cancelable: true });
             textarea.dispatchEvent(event);
+            textarea.focus()
+            textarea.setSelectionRange(pre.length + heading.length, pre.length + heading.length);
         }
     }
 

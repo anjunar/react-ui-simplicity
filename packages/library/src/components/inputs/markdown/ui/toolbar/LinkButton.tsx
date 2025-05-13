@@ -33,6 +33,8 @@ function LinkButton(properties: LinkButton.Attributes) {
         const event = new Event('input', {bubbles: true, cancelable: true})
         textArea.dispatchEvent(event);
 
+        textArea.focus()
+
         setOpen(false)
         setInput("")
         setName("")
